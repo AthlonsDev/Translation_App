@@ -17,6 +17,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.translation_app.databinding.ActivityCameraBinding
+import com.example.translation_app.ui.dashboard.DashboardFragment
 import com.example.translation_app.ui.home.HomeFragment
 import com.google.common.util.concurrent.ListenableFuture
 import java.io.File
@@ -168,7 +169,7 @@ class CameraActivity: AppCompatActivity() {
             bmp.recycle()
 
             //Pop intent
-            val in1 = Intent(this, ImageActivity::class.java)
+            val in1 = Intent(this, DashboardFragment::class.java)
             in1.putExtra("image", filename)
             startActivity(in1)
         } catch (e: java.lang.Exception) {

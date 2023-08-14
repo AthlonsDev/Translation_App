@@ -27,6 +27,7 @@ class DashboardFragment : Fragment() {
     private val binding get() = _binding!!
     private val pickImage = 100
     private var imageUri: Uri? = null
+    var bmp: Bitmap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +44,15 @@ class DashboardFragment : Fragment() {
         binding.galleryBtn.setOnClickListener {
             val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
             startActivityForResult(gallery, pickImage)
+        }
+
+        val filename = requireActivity().intent.getStringExtra("image")
+        try {
+            val `is` = requireActivity().openFileInput(filename)
+            bmp = BitmapFactory.decodeStream(`is`)
+            `is`.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
 
