@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.translation_app.CameraActivity
 import com.example.translation_app.ImageActivity
 import com.example.translation_app.TextRecognition
 import com.example.translation_app.databinding.FragmentDashboardBinding
@@ -46,10 +47,16 @@ class DashboardFragment : Fragment() {
             startActivityForResult(gallery, pickImage)
         }
 
+        binding.cameraBtn.setOnClickListener {
+            val intent = Intent(activity, CameraActivity::class.java)
+            startActivity(intent)
+        }
+
         val filename = requireActivity().intent.getStringExtra("image")
         try {
             val `is` = requireActivity().openFileInput(filename)
             bmp = BitmapFactory.decodeStream(`is`)
+            processImage(bmp!!)
             `is`.close()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -98,25 +105,6 @@ class DashboardFragment : Fragment() {
             }
         }
 
-        fun goToImageViewer(bmp: Bitmap) {
-            try {
-                //Write file
-                val filename = "bitmap.png"
-                val stream = requireActivity().openFileOutput(filename, AppCompatActivity.MODE_PRIVATE)
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, stream)
-
-                //Cleanup
-                stream.close()
-                bmp.recycle()
-
-                //Pop intent
-                val in1 = Intent(activity, ImageActivity::class.java)
-                in1.putExtra("image", filename)
-                startActivity(in1)
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-            }
-        }
 
 
     override fun onDestroyView() {
