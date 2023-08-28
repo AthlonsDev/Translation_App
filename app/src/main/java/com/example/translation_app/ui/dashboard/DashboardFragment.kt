@@ -34,6 +34,7 @@ class DashboardFragment : Fragment() {
     private val pickImage = 100
     private var imageUri: Uri? = null
     var bmp: Bitmap? = null
+    var targetLanguage = "ENGLISH"
 
     override fun onCreateView(
         inflater: LayoutInflater,
