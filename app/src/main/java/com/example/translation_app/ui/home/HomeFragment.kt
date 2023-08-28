@@ -1,24 +1,31 @@
 package com.example.translation_app.ui.home
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.translation_app.CameraActivity
+import com.example.translation_app.Constants
 import com.example.translation_app.GalleryActivity
 import com.example.translation_app.databinding.FragmentHomeBinding
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import java.util.Locale
+
 
 class HomeFragment : Fragment() {
 
@@ -27,7 +34,6 @@ class HomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,6 +45,8 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        homeViewModel.manageLanguageModels()
 
         val textView: TextView = binding.textHome
         homeViewModel.text.observe(viewLifecycleOwner) {
@@ -62,7 +70,58 @@ class HomeFragment : Fragment() {
             startActivity(intent)
         }
 
+        val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
+        binding.micButton.setOnTouchListener(OnTouchListener { v, event ->
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    RecSpeech()
+                    binding.micButton.setText("Listening...")
+                }
+                MotionEvent.ACTION_UP -> {
+                    speechRecognizer.stopListening()
+                    binding.micButton.setText("Tap to Speak")
+                }
+            }
+            v?.onTouchEvent(event) ?: true
+        })
+
+        if(ContextCompat.checkSelfPermission(requireContext(), Constants.REQUIRED_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED){
+            checkPermission();
+        }
+
         return root
+    }
+
+    fun RecSpeech() {
+
+        val speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+
+        onBeginningOfSpeech()
+        //get result of speech
+//        onResults(speechRecognizerIntent.extras!!)
+    }
+
+    fun onBeginningOfSpeech() {
+        binding.inputText.setText("Listening...")
+    }
+
+
+    fun onResults(bundle: Bundle) {
+//        val micBtn = micButton.setImageResource(R.drawable.ic_mic_black_off)
+        val data = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+        binding.inputText.setText(data!![0])
+    }
+
+    private fun checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf<String>(Constants.REQUIRED_PERMISSIONS[1]),
+                Constants.REQUEST_CODE_SPEECH_INPUT
+            )
+        }
     }
 
     fun identifyLanguage(text: String, homeViewModel: HomeViewModel) {

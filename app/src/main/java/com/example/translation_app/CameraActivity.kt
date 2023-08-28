@@ -18,8 +18,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.translation_app.databinding.ActivityCameraBinding
 import com.example.translation_app.ui.dashboard.DashboardFragment
-import com.example.translation_app.ui.home.HomeFragment
 import com.google.common.util.concurrent.ListenableFuture
+import org.checkerframework.checker.nullness.qual.NonNull
 import java.io.File
 import java.io.FileDescriptor
 import java.io.IOException
@@ -55,7 +55,7 @@ class CameraActivity: AppCompatActivity() {
                 Toast.LENGTH_SHORT).show()
         } else {
             ActivityCompat.requestPermissions(
-                this, Constants.REQUIRED_PERMISSION,
+                this, Constants.REQUIRED_PERMISSIONS,
                 Constants.REQUEST_CODE_PERMISSIONS
             )
         }
@@ -66,11 +66,13 @@ class CameraActivity: AppCompatActivity() {
 
         startCamera()
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
     }
 
 
     private  fun allPermissionGranted() =
-        Constants.REQUIRED_PERMISSION.all {
+        Constants.REQUIRED_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(
                 baseContext, it
             ) == PackageManager.PERMISSION_GRANTED
@@ -151,7 +153,7 @@ class CameraActivity: AppCompatActivity() {
             val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
             parcelFileDescriptor.close()
 //            imageView.setImageBitmap(image)
-            goToImageViewer(image)
+            newInstance(image)
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -169,13 +171,46 @@ class CameraActivity: AppCompatActivity() {
             bmp.recycle()
 
             //Pop intent
-            val in1 = Intent(this, DashboardFragment::class.java)
+            val in1 = Intent(this, MainActivity::class.java)
             in1.putExtra("image", filename)
             startActivity(in1)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
     }
+
+    fun newInstance(bmp: Bitmap) {
+        try {
+            //Write file
+            val filename = "bitmap.png"
+            val stream = openFileOutput(filename, MODE_PRIVATE)
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, stream)
+
+            //Cleanup
+            stream.close()
+            bmp.recycle()
+
+            //Declaring fragment manager from making data
+            val fragmentManager = supportFragmentManager
+            val fragmentTransaction = fragmentManager.beginTransaction()
+            val fragment = DashboardFragment()
+
+//            bundle is initialized
+//            data is passed in the fragment using this bundle
+            val bundle = Bundle()
+            bundle.putString("image", filename)
+            fragment.arguments = bundle
+            fragmentTransaction.add(R.id.preview, fragment)
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.commit()
+            this.finish()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+
+
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()

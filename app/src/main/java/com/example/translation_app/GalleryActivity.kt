@@ -43,14 +43,14 @@ class GalleryActivity: AppCompatActivity() {
                     Toast.LENGTH_SHORT).show()
                 } else {
                 ActivityCompat.requestPermissions(
-                this, Constants.REQUIRED_PERMISSION,
+                this, Constants.REQUIRED_PERMISSIONS,
                     Constants.REQUEST_CODE_PERMISSIONS
                 )
             }
         }
 
         private fun allPermissionGranted() =
-            Constants.REQUIRED_PERMISSION.all {
+            Constants.REQUIRED_PERMISSIONS.all {
                 ContextCompat.checkSelfPermission(
                     baseContext, it
                 ) == PackageManager.PERMISSION_GRANTED

@@ -1,23 +1,28 @@
 package com.example.translation_app.ui.dashboard
 
 import android.content.Intent
+import android.content.Intent.getIntent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.translation_app.CameraActivity
-import com.example.translation_app.ImageActivity
+import com.example.translation_app.R
 import com.example.translation_app.TextRecognition
 import com.example.translation_app.databinding.FragmentDashboardBinding
 import java.io.FileDescriptor
 import java.io.IOException
+
 
 class DashboardFragment : Fragment() {
 
@@ -52,19 +57,22 @@ class DashboardFragment : Fragment() {
             startActivity(intent)
         }
 
-        val filename = requireActivity().intent.getStringExtra("image")
-        try {
-            val `is` = requireActivity().openFileInput(filename)
+
+        val args = arguments
+        val message = args?.getString("image")
+        if (args != null) {
+            val `is` = requireActivity().openFileInput(message)
             bmp = BitmapFactory.decodeStream(`is`)
-            processImage(bmp!!)
+//            processImage(bmp!!)
             `is`.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
+        binding.previewImage.setImageBitmap(bmp)
 
 
         return root
     }
+
+
 
 
 
@@ -91,10 +99,11 @@ class DashboardFragment : Fragment() {
         }
 
         private fun processImage(bitmap: Bitmap) {
-//            binding.previewImage.setImageBitmap(bitmap)
+            binding.previewImage.setImageBitmap(bitmap)
             val tr = TextRecognition()
             var inputText = ""
             tr.initTextRec(bitmap) { text ->
+
                 inputText = text.toString()
                 binding.inputText.text = text.toString()
                 tr.identifyLanguage(inputText) {
