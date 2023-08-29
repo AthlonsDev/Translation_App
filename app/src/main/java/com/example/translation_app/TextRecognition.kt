@@ -49,7 +49,7 @@ class TextRecognition: Activity() {
                 // Task failed with an exception
                 // ...
 //                Toast.makeText(this, "Failed to recognize text", Toast.LENGTH_SHORT).show()
-                output = "Failed to recognize text ${e.message}"
+                param("Failed to recognize text ${e.message}")
             }
 
     }
@@ -96,6 +96,28 @@ class TextRecognition: Activity() {
                 // ...
                 param("Failed to translate text ${exception.message}")
             }
+    }
+
+    fun processTextBlock(result: Text) {
+        // [START mlkit_process_text_block]
+        val resultText = result.text
+        for (block in result.textBlocks) {
+            val blockText = block.text
+            val blockCornerPoints = block.cornerPoints
+            val blockFrame = block.boundingBox
+            for (line in block.lines) {
+                val lineText = line.text
+                val lineCornerPoints = line.cornerPoints
+                val lineFrame = line.boundingBox
+                for (element in line.elements) {
+                    val elementText = element.text
+                    val elementCornerPoints = element.cornerPoints
+                    val elementFrame = element.boundingBox
+                }
+            }
+
+        }
+        // [END mlkit_process_text_block]
     }
 
 }

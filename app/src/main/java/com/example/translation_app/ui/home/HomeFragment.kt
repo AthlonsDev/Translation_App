@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
+import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -57,6 +58,9 @@ class HomeFragment : Fragment() {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        binding.inputText.movementMethod = ScrollingMovementMethod()
+        binding.outputText.movementMethod = ScrollingMovementMethod()
 
         // get reference to the string array that we just created
         val languages = resources.getStringArray(R.array.Languages)
