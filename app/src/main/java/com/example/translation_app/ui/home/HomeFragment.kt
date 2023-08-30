@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.translation_app.CameraActivity
 import com.example.translation_app.Constants
+import com.example.translation_app.EntityExtraction
 import com.example.translation_app.GalleryActivity
 import com.example.translation_app.R
 import com.example.translation_app.databinding.FragmentHomeBinding

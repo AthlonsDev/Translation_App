@@ -50,16 +50,7 @@ class HomeViewModel : ViewModel() {
                 // Error.
             }
 
-// Delete the German model if it's on the device.
-//        modelManager.deleteDownloadedModel(germanModel)
-//            .addOnSuccessListener {
-//                // Model deleted.
-//            }
-//            .addOnFailureListener {
-//                // Error.
-//            }
-
-// Download the French model.
+//  Download the French model.
         val conditions = DownloadConditions.Builder()
             .requireWifi()
             .build()
@@ -72,7 +63,7 @@ class HomeViewModel : ViewModel() {
                 // Error.
             }
 
-        // Download the German model.
+//  Download the German model.
         modelManager.download(germanModel, conditions)
             .addOnSuccessListener {
                 // Model downloaded.
@@ -101,6 +92,17 @@ class HomeViewModel : ViewModel() {
             .addOnFailureListener {
                 // Error.
             }
+
+//  Download the Korean model
+        modelManager.download(koreanModel, conditions)
+            .addOnSuccessListener {
+                // Model downloaded.
+//                Toast.makeText(this, "Jap Model downloaded", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                // Error.
+            }
+
     }
 
 

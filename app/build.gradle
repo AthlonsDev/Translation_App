@@ -99,4 +99,7 @@ dependencies {
     implementation 'com.google.mlkit:text-recognition-korean:16.0.0'
 
     implementation 'com.google.mlkit:language-id:17.0.4'
+
+//    entity extraction
+    implementation 'com.google.mlkit:entity-extraction:16.0.0-beta4'
 }
