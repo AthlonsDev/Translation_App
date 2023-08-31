@@ -1,6 +1,7 @@
 package com.example.translation_app.ui.home
 
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -20,6 +21,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.translation_app.CameraActivity
@@ -27,15 +31,27 @@ import com.example.translation_app.Constants
 import com.example.translation_app.EntityExtraction
 import com.example.translation_app.GalleryActivity
 import com.example.translation_app.R
+import com.example.translation_app.SettingsFragment
+import com.example.translation_app.dataStore
 import com.example.translation_app.databinding.FragmentHomeBinding
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.Locale
 import java.util.Objects
+import java.util.concurrent.Flow
+import java.util.prefs.Preferences
+import kotlin.coroutines.coroutineContext
 
 
+// At the top level of your kotlin file:
+//val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings").getValue(this, SettingsFragment.SPEECH_LANGUAGE_1)
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
@@ -63,34 +79,8 @@ class HomeFragment : Fragment() {
         binding.inputText.movementMethod = ScrollingMovementMethod()
         binding.outputText.movementMethod = ScrollingMovementMethod()
 
-        // get reference to the string array that we just created
-        val languages = resources.getStringArray(R.array.Languages)
-        // create an array adapter and pass the required parameter
-        // in our case pass the context, drop down layout , and array.
-        val arrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, languages)
-        // get reference to the autocomplete text view
-        val autocompleteTV = binding.dropdownMenu
-        // set adapter to the autocomplete tv to the arrayAdapter
-        autocompleteTV.setAdapter(arrayAdapter)
+        readData()
 
-//        convert the selected item from autocompleteTextView to a locale
-        autocompleteTV.setOnItemClickListener { parent, view, position, id ->
-            val selectedItem = parent.getItemAtPosition(position).toString()
-            targetLanguage = when (selectedItem) {
-                "English" -> Locale.ENGLISH
-                "Spanish" -> Locale("es")
-                "French" -> Locale("fr")
-                "German" -> Locale("de")
-                "Italian" -> Locale("it")
-                "Japanese" -> Locale("ja")
-                "Korean" -> Locale("ko")
-                "Portuguese" -> Locale("pt")
-                "Russian" -> Locale("ru")
-                "Chinese" -> Locale("zh")
-                else -> Locale.ENGLISH
-            }
-            Toast.makeText(requireContext(), "Selected: $selectedItem", Toast.LENGTH_LONG).show()
-        }
 
         homeViewModel.manageLanguageModels()
 
@@ -138,7 +128,21 @@ class HomeFragment : Fragment() {
         return root
     }
 
+    fun readData() = runBlocking {
+        launch {
+            readUserPreferences()
+        }
+    }
 
+    suspend fun readUserPreferences() {
+        with(CoroutineScope(coroutineContext)) {
+            val dataStoreKey = stringPreferencesKey("speech_language_1")
+            val preferences = context?.dataStore?.data?.first()
+            val speechLanguageInput = preferences?.get(dataStoreKey)
+            Toast.makeText(context, speechLanguageInput, Toast.LENGTH_SHORT).show()
+            binding.textView.text = speechLanguageInput.toString()
+        }
+    }
 
     fun RecSpeech() {
 

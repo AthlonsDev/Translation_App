@@ -1,0 +1,31 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <PreferenceCategory android:title="Speech">
+
+            <ListPreference
+                android:defaultValue="1"
+                android:entries="@array/Languages"
+                android:entryValues="@array/Languages"
+                android:key="speech_language_1"
+                android:title="Input Language" />
+            <ListPreference
+                android:defaultValue="1"
+                android:entries="@array/Languages"
+                android:entryValues="@array/Languages"
+                android:key="speech_language_2"
+                android:title="Output Language" />
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="Camera">
+
+            <ListPreference
+                android:defaultValue="1"
+                android:entries="@array/Languages"
+                android:entryValues="@array/Languages"
+                android:key="cam_language"
+                android:title="Target Language" />
+        </PreferenceCategory>
+
+
+</PreferenceScreen>
