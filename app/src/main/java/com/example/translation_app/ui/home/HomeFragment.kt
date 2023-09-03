@@ -63,7 +63,8 @@ class HomeFragment : Fragment() {
 
     var speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
     private var tts: TextToSpeech? = null
-    var targetLanguage = Locale.ENGLISH
+    lateinit var inputLanguage: Locale
+    lateinit var targetLanguage: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -87,7 +88,7 @@ class HomeFragment : Fragment() {
         // Set up the text to speech
         tts = TextToSpeech(requireContext()) { status ->
             if (status != TextToSpeech.ERROR) {
-                tts!!.language = targetLanguage
+                tts!!.language = inputLanguage
             }
         }
 
@@ -136,11 +137,15 @@ class HomeFragment : Fragment() {
 
     suspend fun readUserPreferences() {
         with(CoroutineScope(coroutineContext)) {
-            val dataStoreKey = stringPreferencesKey("speech_language_1")
+            val datainputeKey = stringPreferencesKey("speech_language_1")
+            val dataoutputKey = stringPreferencesKey("speech_language_2")
             val preferences = context?.dataStore?.data?.first()
-            val speechLanguageInput = preferences?.get(dataStoreKey)
-            Toast.makeText(context, speechLanguageInput, Toast.LENGTH_SHORT).show()
-            binding.textView.text = speechLanguageInput.toString()
+            val speechLanguageInput = preferences?.get(datainputeKey)
+            val speechLanguageOutput = preferences?.get(dataoutputKey)
+            inputLanguage = Locale(speechLanguageInput.toString())
+            targetLanguage = speechLanguageOutput.toString()
+            binding.textView.text = "Translating from - ${speechLanguageInput.toString()}"
+            binding.textView2.text = "Translating to - ${speechLanguageOutput.toString()}"
         }
     }
 
@@ -148,7 +153,7 @@ class HomeFragment : Fragment() {
 
         speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "it-IT")
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, inputLanguage)
         speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak to Translate")
 
         onBeginningOfSpeech()
@@ -196,10 +201,10 @@ class HomeFragment : Fragment() {
 
     fun initTranslator(input: String, homeViewModel: HomeViewModel) {
 
-        val tl = targetLanguage.toString()
+        val tl = targetLanguage.toString().uppercase()
         val options = TranslatorOptions.Builder()
             .setSourceLanguage(TranslateLanguage.fromLanguageTag(homeViewModel.identifiedLanguage).toString())
-            .setTargetLanguage(TranslateLanguage.ENGLISH)
+            .setTargetLanguage(TranslateLanguage.fromLanguageTag(tl).toString())
             .build()
         val englishGermanTranslator = Translation.getClient(options)
 

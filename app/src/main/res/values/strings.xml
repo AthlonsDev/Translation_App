@@ -7,11 +7,15 @@
 
     <string-array name="Languages">
         <item>English</item>
-        <item>Spanish</item>
-        <item>French</item>
-        <item>Italian</item>
-        <item>German</item>
-        <item>Japanese</item>
+        <item>Español</item>
+        <item>Français</item>
+        <item>Italiano</item>
+        <item>Deutsch</item>
+        <item>日本語</item>
+        <item>中文</item>
+        <item>한국어</item>
+        <item>русский</item>
+        <item>العربية</item>
     </string-array>
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

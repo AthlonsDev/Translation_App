@@ -79,7 +79,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         cameraSettings?.setOnPreferenceChangeListener { preference, newValue ->
             val newLang = newValue as String
             val newLocale = Locale(newLang)
-            val newLangCode = TranslateLanguage.fromLanguageTag(newLocale.toLanguageTag())
             val newLangName = newLocale.getDisplayName(newLocale)
             preference.title = "Input Language - ($newLangName)"
             main(newLangName, cameraLanguage)

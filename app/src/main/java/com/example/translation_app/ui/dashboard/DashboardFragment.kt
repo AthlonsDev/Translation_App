@@ -28,6 +28,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
@@ -35,10 +36,15 @@ import com.example.translation_app.CameraActivity
 import com.example.translation_app.Constants
 import com.example.translation_app.R
 import com.example.translation_app.TextRecognition
+import com.example.translation_app.dataStore
 import com.example.translation_app.databinding.ActivityCameraBinding
 import com.example.translation_app.databinding.FragmentDashboardBinding
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.common.InputImage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileDescriptor
 import java.io.IOException
@@ -46,6 +52,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.coroutines.coroutineContext
 
 
 class DashboardFragment : Fragment() {
@@ -66,7 +73,7 @@ class DashboardFragment : Fragment() {
     private val pickImage = 100
     private var imageUri: Uri? = null
     var bmp: Bitmap? = null
-    var targetLanguage = "ENGLISH"
+    lateinit var targetLanguage: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -114,6 +121,7 @@ class DashboardFragment : Fragment() {
 
 //        binding.previewImage.setImageBitmap(bmp)
 
+        readData()
 
         return root
     }
@@ -200,11 +208,10 @@ class DashboardFragment : Fragment() {
             val tr = TextRecognition()
             var inputText = ""
             tr.initTextRec(bitmap) { text ->
-
                 inputText = text.toString()
                 binding.inputText.text = text.toString()
                 tr.identifyLanguage(inputText) {
-                    tr.initTranslator(inputText, it) { translatedText ->
+                    tr.initTranslator(inputText, it, targetLanguage) { translatedText ->
                         binding.outputText.text = translatedText
                         startCamera(requireContext(), requireActivity(), binding.preview)
                     }
@@ -247,5 +254,27 @@ class DashboardFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+
+
+    fun readData() = runBlocking {
+        launch {
+            readUserPreferences()
+        }
+    }
+
+    suspend fun readUserPreferences() {
+        with(CoroutineScope(coroutineContext)) {
+            val dataoutputKey = stringPreferencesKey("camera_language")
+            val preferences = context?.dataStore?.data?.first()
+            val cameraOutput = preferences?.get(dataoutputKey)
+            targetLanguage = cameraOutput.toString()
+            binding.textView4.text = "Translating from - ${cameraOutput.toString()}"
+            val textRecognition = TextRecognition()
+            textRecognition.identifyLanguage(targetLanguage) {
+                targetLanguage = it
+            }
+        }
     }
 }

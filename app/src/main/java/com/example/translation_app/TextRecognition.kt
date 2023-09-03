@@ -3,6 +3,8 @@ package com.example.translation_app
 import android.app.Activity
 import android.graphics.Bitmap
 import android.location.GnssAntennaInfo.Listener
+import android.util.Log
+import android.widget.Toast
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
@@ -11,6 +13,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import java.util.Locale
 
 class TextRecognition: Activity() {
 
@@ -74,14 +77,21 @@ class TextRecognition: Activity() {
                 // ...
                 param("error: ${it.message}")
             }
+
     }
 
-    fun initTranslator(input: String, identifiedLanguage: String, param: (String) -> Unit) {
+    fun initTranslator(input: String, identifiedLanguage: String, targetLanguage: String, param: (String) -> Unit) {
 
-        // Create an English-German translator:
+        // get current language code
+        targetLanguage.uppercase()
+        val newLocale = Locale(targetLanguage)
+        val targetLanguageCode = TranslateLanguage.fromLanguageTag(newLocale.toLanguageTag())
+
+        Log.d("LanguageCode", targetLanguageCode.toString())
+        Log.d("LanguageCode", identifiedLanguage.toString())
         val options = TranslatorOptions.Builder()
             .setSourceLanguage(TranslateLanguage.fromLanguageTag(identifiedLanguage).toString())
-            .setTargetLanguage(TranslateLanguage.FRENCH)
+            .setTargetLanguage(TranslateLanguage.fromLanguageTag(targetLanguageCode.toString()).toString())
             .build()
         val translator = Translation.getClient(options)
         var output = ""
