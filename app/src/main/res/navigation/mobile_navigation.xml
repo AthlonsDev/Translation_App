@@ -17,8 +17,13 @@
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
+
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.example.translation_app.SettingsFragment"
         android:label="@string/title_notifications" />
+    <fragment
+        android:id="@+id/navigation_text"
+        android:name="com.example.translation_app.ui.text.TextFragment"
+        android:label="@string/title_text" />
 </navigation>

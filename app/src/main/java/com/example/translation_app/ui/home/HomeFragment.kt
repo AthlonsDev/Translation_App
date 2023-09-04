@@ -32,6 +32,7 @@ import com.example.translation_app.EntityExtraction
 import com.example.translation_app.GalleryActivity
 import com.example.translation_app.R
 import com.example.translation_app.SettingsFragment
+import com.example.translation_app.Translator
 import com.example.translation_app.dataStore
 import com.example.translation_app.databinding.FragmentHomeBinding
 import com.google.mlkit.nl.languageid.LanguageIdentification
@@ -77,6 +78,9 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        val translator = Translator()
+
+
         binding.inputText.movementMethod = ScrollingMovementMethod()
         binding.outputText.movementMethod = ScrollingMovementMethod()
 
@@ -99,9 +103,14 @@ class HomeFragment : Fragment() {
         val button: TextView = binding.translateButton
         button.setOnClickListener {
             val inputString = binding.inputText.text.toString()
-            identifyLanguage(inputString, homeViewModel)
+            translator.identifyLanguage(inputString) { result ->
+                inputLanguage = Locale(result)
+                translator.initTranslator(inputString, inputLanguage.toString(), targetLanguage) { result ->
+                        binding.outputText.text = result
+                        tts!!.speak(result, TextToSpeech.QUEUE_FLUSH, null, null)
+                }
+            }
         }
-//
         homeViewModel.manageLanguageModels()
 
         val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
@@ -144,6 +153,10 @@ class HomeFragment : Fragment() {
             val speechLanguageOutput = preferences?.get(dataoutputKey)
             inputLanguage = Locale(speechLanguageInput.toString())
             targetLanguage = speechLanguageOutput.toString()
+            val translator = Translator()
+            translator.identifyLanguage(targetLanguage) { result ->
+                targetLanguage = result
+            }
             binding.textView.text = "Translating from - ${speechLanguageInput.toString()}"
             binding.textView2.text = "Translating to - ${speechLanguageOutput.toString()}"
         }
@@ -178,49 +191,6 @@ class HomeFragment : Fragment() {
                 Constants.REQUEST_CODE_SPEECH_INPUT
             )
         }
-    }
-
-    fun identifyLanguage(text: String, homeViewModel: HomeViewModel) {
-        val languageIdentifier = LanguageIdentification.getClient()
-        languageIdentifier.identifyLanguage(text)
-            .addOnSuccessListener { languageCode ->
-                if (languageCode == "und") {
-
-                } else {
-                    // The languageCode
-                    homeViewModel.identifiedLanguage = languageCode
-                    initTranslator(text, homeViewModel)
-                }
-            }
-            .addOnFailureListener {
-                // Model couldn’t be loaded or other internal error.
-                // ...
-            }
-    }
-
-
-    fun initTranslator(input: String, homeViewModel: HomeViewModel) {
-
-        val tl = targetLanguage.toString().uppercase()
-        val options = TranslatorOptions.Builder()
-            .setSourceLanguage(TranslateLanguage.fromLanguageTag(homeViewModel.identifiedLanguage).toString())
-            .setTargetLanguage(TranslateLanguage.fromLanguageTag(tl).toString())
-            .build()
-        val englishGermanTranslator = Translation.getClient(options)
-
-        englishGermanTranslator.translate(input)
-            .addOnSuccessListener { translatedText ->
-                // Translation successful.
-                binding.outputText.setText(translatedText)
-
-                // Speak the translated text
-                tts!!.speak(translatedText, TextToSpeech.QUEUE_FLUSH, null, "")
-            }
-            .addOnFailureListener { exception ->
-                // Error.
-                // ...
-                binding.outputText.setText(exception.toString())
-            }
     }
 
     override fun onDestroyView() {
