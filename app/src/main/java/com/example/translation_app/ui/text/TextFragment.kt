@@ -22,7 +22,6 @@ class TextFragment: Fragment() {
 
     private var _binding: FragmentTextBinding? = null
     private lateinit var targetLanguage: String
-
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -49,8 +48,6 @@ class TextFragment: Fragment() {
 
         }
 
-
-
         return root
     }
 
@@ -62,7 +59,7 @@ class TextFragment: Fragment() {
 
     suspend fun readUserPreferences() {
         with(CoroutineScope(coroutineContext)) {
-            val dataoutputKey = stringPreferencesKey("speech_language_2")
+            val dataoutputKey = stringPreferencesKey("text_language")
             val preferences = context?.dataStore?.data?.first()
             val textLanguageOutput = preferences?.get(dataoutputKey)
             targetLanguage = textLanguageOutput.toString()

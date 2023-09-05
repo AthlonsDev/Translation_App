@@ -32,33 +32,36 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val speechLanguageInput = stringPreferencesKey("speech_language_1")
     private val speechLanguageOutput = stringPreferencesKey("speech_language_2")
     private val cameraLanguage = stringPreferencesKey("camera_language")
+    private val textLanguage = stringPreferencesKey("text_language")
 
-    lateinit var speechInput: String
-    lateinit var speechOutput: String
-    lateinit var cameraOutput: String
-
+    private var speechInput: String = ""
+    private var speechOutput: String = ""
+    private var cameraOutput: String = ""
+    private var textOutput: String = ""
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         val speechInSettings = findPreference<Preference>("speech_language_1")
         val speechOutSettings = findPreference<Preference>("speech_language_2")
         val cameraSettings = findPreference<Preference>("cam_language")
+        val textSettings = findPreference<Preference>("text_language")
 
 
         readData(speechLanguageInput)
         readData(speechLanguageOutput)
         readData(cameraLanguage)
 
-        speechInSettings?.title = "Input Language - (${speechInput})"
-        speechOutSettings?.title = "Output Language - ($speechOutput)"
-        cameraSettings?.title = "Camera Language - ($cameraOutput)"
+        speechInSettings?.title = "Source Language - (${speechInput})"
+        speechOutSettings?.title = "Target Language - ($speechOutput)"
+        cameraSettings?.title = "Target Language - ($cameraOutput)"
+        textSettings?.title = "Target Language - ($textOutput)"
 
         speechInSettings?.setOnPreferenceChangeListener { preference, newValue ->
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangCode = TranslateLanguage.fromLanguageTag(newLocale.toLanguageTag())
             val newLangName = newLocale.getDisplayName(newLocale)
-            preference.title = "Input Language - ($newLangName)"
+            preference.title = "Source Language - ($newLangName)"
 //            preference.summary = newLangName
 //            Constants.SPEECH_LANGUAGE_1 = newLangCode
 //            save to datastore
@@ -71,7 +74,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLocale = Locale(newLang)
             val newLangCode = TranslateLanguage.fromLanguageTag(newLocale.toLanguageTag())
             val newLangName = newLocale.getDisplayName(newLocale)
-            preference.title = "Input Language - ($newLangName)"
+            preference.title = "Target Language - ($newLangName)"
             main(newLangName, speechLanguageOutput)
             true
         }
@@ -80,13 +83,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            preference.title = "Input Language - ($newLangName)"
+            preference.title = "Target Language - ($newLangName)"
             main(newLangName, cameraLanguage)
             true
         }
 
-
-
+        textSettings?.setOnPreferenceChangeListener { preference, newValue ->
+            val newLang = newValue as String
+            val newLocale = Locale(newLang)
+            val newLangName = newLocale.getDisplayName(newLocale)
+            preference.title = "Target Language - ($newLangName)"
+            main(newLangName, textLanguage)
+            true
+        }
     }
 
     private fun main(data: String, key: Preferences.Key<String>) = runBlocking {
@@ -95,7 +104,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    fun readData(key: Preferences.Key<String>) = runBlocking {
+    private fun readData(key: Preferences.Key<String>) = runBlocking {
         launch {
             readUserPreferences(key)
         }
@@ -123,7 +132,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
             if (key == cameraLanguage) {
                 cameraOutput = value.toString()
-                Toast.makeText(context, cameraOutput, Toast.LENGTH_SHORT).show()
+            }
+            if (key == textLanguage) {
+                textOutput = value.toString()
             }
 
         }

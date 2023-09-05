@@ -26,6 +26,15 @@
                 android:key="cam_language"
                 android:title="Target Language" />
         </PreferenceCategory>
+    <PreferenceCategory android:title="Text">
+
+    </PreferenceCategory>
+    <ListPreference
+        android:defaultValue="1"
+        android:entries="@array/Languages"
+        android:entryValues="@array/Languages"
+        android:key="text_language"
+        android:title="List preference" />
 
 
 </PreferenceScreen>
