@@ -163,19 +163,26 @@ class HomeFragment : Fragment() {
     }
 
     fun RecSpeech() {
+//        inputLanguage of speech needs to be translated to english
+        val translator = Translator()
+        translator.identifyLanguage(inputLanguage.toString()) { result ->
 
-        speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, inputLanguage)
-        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak to Translate")
+            speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            speechRecognizerIntent.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            );
+            speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, result.toString())
+            speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak to Translate")
 
-        onBeginningOfSpeech()
-        //get result of speech
-        try {
-            startActivityForResult(speechRecognizerIntent, Constants.REQUEST_CODE_SPEECH_INPUT)
-        } catch (e: Exception) {
-            // on below line we are displaying error message in toast
-            Toast.makeText(requireContext(), " " + e.message, Toast.LENGTH_SHORT).show()
+            onBeginningOfSpeech()
+            //get result of speech
+            try {
+                startActivityForResult(speechRecognizerIntent, Constants.REQUEST_CODE_SPEECH_INPUT)
+            } catch (e: Exception) {
+                // on below line we are displaying error message in toast
+                Toast.makeText(requireContext(), " " + e.message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

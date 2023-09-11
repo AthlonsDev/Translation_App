@@ -7,24 +7,26 @@
                 android:defaultValue="1"
                 android:entries="@array/Languages"
                 android:entryValues="@array/Languages"
-                android:key="speech_language_1"
-                android:title="Input Language" />
+                android:key="speech_language_1" />
             <ListPreference
                 android:defaultValue="1"
                 android:entries="@array/Languages"
                 android:entryValues="@array/Languages"
-                android:key="speech_language_2"
-                android:title="Output Language" />
+                android:key="speech_language_2" />
         </PreferenceCategory>
 
         <PreferenceCategory android:title="Camera">
 
             <ListPreference
                 android:defaultValue="1"
+                android:entries="@array/Alphabet"
+                android:entryValues="@array/Alphabet"
+                android:key="alphabet_language_1" />
+            <ListPreference
+                android:defaultValue="1"
                 android:entries="@array/Languages"
                 android:entryValues="@array/Languages"
-                android:key="cam_language"
-                android:title="Target Language" />
+                android:key="cam_language" />
         </PreferenceCategory>
     <PreferenceCategory android:title="Text">
 
@@ -33,8 +35,14 @@
         android:defaultValue="1"
         android:entries="@array/Languages"
         android:entryValues="@array/Languages"
-        android:key="text_language"
-        android:title="List preference" />
+        android:key="text_language" />
+    <Preference
+        android:defaultValue="Default value"
+        android:key="button"
+        android:selectAllOnFocus="true"
+        android:title="                 Save Settings"
+        app:iconSpaceReserved="true" />
 
 
 </PreferenceScreen>
+

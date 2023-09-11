@@ -12,6 +12,10 @@ import com.google.mlkit.nl.translate.TranslatorOptions
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
+import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions
+import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.util.Locale
 import java.util.Objects
@@ -23,21 +27,25 @@ class TextRecognition {
     var listener: Listener? = null
 
 
-    fun initTextRec(bitmap: Bitmap, param: (String) -> Unit) {
-        // When using Latin script library
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    fun initTextRec(bitmap: Bitmap, alphabet: String, param: (String) -> Unit) {
+        var recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        when (alphabet) {
+            "Latin" -> {
 
-//// When using Chinese script library
-//        val recognizer = TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
-//
-//// When using Devanagari script library
-//        val recognizer = TextRecognition.getClient(DevanagariTextRecognizerOptions.Builder().build())
-//
-//// When using Japanese script library
-//        val recognizer = TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
-//
-//// When using Korean script library
-//        val recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+            }
+            "Chinese" -> {
+                recognizer = TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
+            }
+            "Devanagari" -> {
+                recognizer = TextRecognition.getClient(DevanagariTextRecognizerOptions.Builder().build())
+            }
+            "Japanese" -> {
+                recognizer = TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
+            }
+            "Korean" -> {
+                recognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+            }
+        }
 
 
         val image = InputImage.fromBitmap(bitmap, 0)

@@ -19,6 +19,14 @@
         <item>العربية</item>
     </string-array>
 
+    <string-array name="Alphabet">
+        <item>Latin</item>
+        <item>Devanagari</item>
+        <item>Chinese</item>
+        <item>Japanese</item>
+        <item>Korean</item>
+    </string-array>
+
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>

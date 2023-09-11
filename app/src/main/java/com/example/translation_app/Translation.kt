@@ -35,9 +35,9 @@ class Translator {
             .setSourceLanguage(TranslateLanguage.fromLanguageTag(sl).toString())
             .setTargetLanguage(TranslateLanguage.fromLanguageTag(tl).toString())
             .build()
-        val englishGermanTranslator = Translation.getClient(options)
+        val translator = Translation.getClient(options)
 
-        englishGermanTranslator.translate(input)
+        translator.translate(input)
             .addOnSuccessListener { translatedText ->
                 // Translation successful.
                 param(translatedText)

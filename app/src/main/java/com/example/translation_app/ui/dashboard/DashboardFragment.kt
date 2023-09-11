@@ -73,6 +73,7 @@ class DashboardFragment : Fragment() {
     private val pickImage = 100
     private var imageUri: Uri? = null
     var bmp: Bitmap? = null
+    lateinit var alphabet: String
     lateinit var targetLanguage: String
 
     override fun onCreateView(
@@ -207,7 +208,7 @@ class DashboardFragment : Fragment() {
 //            binding.previewImage.setImageBitmap(bitmap)
             val tr = TextRecognition()
             var inputText = ""
-            tr.initTextRec(bitmap) { text ->
+            tr.initTextRec(bitmap,alphabet) { text ->
                 inputText = text.toString()
                 binding.inputText.text = text.toString()
                 tr.identifyLanguage(inputText) {
@@ -267,9 +268,12 @@ class DashboardFragment : Fragment() {
     suspend fun readUserPreferences() {
         with(CoroutineScope(coroutineContext)) {
             val dataoutputKey = stringPreferencesKey("camera_language")
+            val datainputKey = stringPreferencesKey("alphabet_language")
             val preferences = context?.dataStore?.data?.first()
             val cameraOutput = preferences?.get(dataoutputKey)
+            val alphabetKey = preferences?.get(datainputKey)
             targetLanguage = cameraOutput.toString()
+            alphabet = alphabetKey.toString()
             binding.textView4.text = "Translating from - ${cameraOutput.toString()}"
             val textRecognition = TextRecognition()
             textRecognition.identifyLanguage(targetLanguage) {

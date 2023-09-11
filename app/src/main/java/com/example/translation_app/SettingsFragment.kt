@@ -1,6 +1,7 @@
 package com.example.translation_app
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.Toast
 import androidx.datastore.core.DataStore
@@ -28,43 +29,71 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore("user_pref
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-
     private val speechLanguageInput = stringPreferencesKey("speech_language_1")
     private val speechLanguageOutput = stringPreferencesKey("speech_language_2")
+    private val alphabetInput = stringPreferencesKey("alphabet_language_1")
     private val cameraLanguage = stringPreferencesKey("camera_language")
     private val textLanguage = stringPreferencesKey("text_language")
 
-    private var speechInput: String = ""
-    private var speechOutput: String = ""
-    private var cameraOutput: String = ""
-    private var textOutput: String = ""
+    private var speechInput: String = "Not Set"
+    private var speechOutput: String = "Not Set"
+    private var alphabet: String = "Not Set"
+    private var cameraOutput: String = "Not Set"
+    private var textOutput: String = "Not Set"
+
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
+
+        updateLanguage()
+
         val speechInSettings = findPreference<Preference>("speech_language_1")
         val speechOutSettings = findPreference<Preference>("speech_language_2")
+        val alphabetSettings = findPreference<Preference>("alphabet_language_1")
         val cameraSettings = findPreference<Preference>("cam_language")
         val textSettings = findPreference<Preference>("text_language")
-
+        val saveButton = findPreference<Preference>("button")
 
         readData(speechLanguageInput)
         readData(speechLanguageOutput)
+        readData(alphabetInput)
         readData(cameraLanguage)
+        readData(textLanguage)
 
-        speechInSettings?.title = "Source Language - (${speechInput})"
-        speechOutSettings?.title = "Target Language - ($speechOutput)"
-        cameraSettings?.title = "Target Language - ($cameraOutput)"
-        textSettings?.title = "Target Language - ($textOutput)"
+        var speechInputText = "Voice Language"
+        var speechOutputText = "Target Language"
+        var alphabetText = "Alphabet Type"
+        var cameraText = "Camera Language"
+        var textText = "Text Language"
+
+        val tr = Translator()
+        val locale = Locale.ITALIAN.toString()
+        tr.initTranslator(speechInputText, "en", locale) {
+            speechInSettings?.title = "$it - $speechInput"
+        }
+        tr.initTranslator(speechOutputText, "en", locale) {
+            speechOutSettings?.title = "$it - $speechOutput"
+        }
+        tr.initTranslator(cameraText, "en", locale) {
+            cameraSettings?.title = "$it - $cameraOutput"
+        }
+        tr.initTranslator(alphabetText, "en", locale) {
+            alphabetSettings?.title = "$it - $alphabet"
+        }
+        tr.initTranslator(textText, "en", locale) {
+            textSettings?.title = "$it - $textOutput"
+        }
+
+        speechOutSettings?.title = "$speechOutputText - $speechOutput"
+        alphabetSettings?.title = "$alphabetText - $alphabet"
+        cameraSettings?.title = "$cameraText - $cameraOutput"
+        textSettings?.title = "$textText - $textOutput"
 
         speechInSettings?.setOnPreferenceChangeListener { preference, newValue ->
             val newLang = newValue as String
             val newLocale = Locale(newLang)
-            val newLangCode = TranslateLanguage.fromLanguageTag(newLocale.toLanguageTag())
             val newLangName = newLocale.getDisplayName(newLocale)
-            preference.title = "Source Language - ($newLangName)"
-//            preference.summary = newLangName
-//            Constants.SPEECH_LANGUAGE_1 = newLangCode
-//            save to datastore
+            preference.title = "Source Language - $newLangName"
             main(newLangName, speechLanguageInput)
             true
         }
@@ -72,10 +101,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
         speechOutSettings?.setOnPreferenceChangeListener { preference, newValue ->
             val newLang = newValue as String
             val newLocale = Locale(newLang)
-            val newLangCode = TranslateLanguage.fromLanguageTag(newLocale.toLanguageTag())
             val newLangName = newLocale.getDisplayName(newLocale)
-            preference.title = "Target Language - ($newLangName)"
+            preference.title = "Target Language - $newLangName"
             main(newLangName, speechLanguageOutput)
+            true
+        }
+
+        alphabetSettings?.setOnPreferenceChangeListener { preference, newValue ->
+            val newLang = newValue as String
+            val newLocale = Locale(newLang)
+            val newLangName = newLocale.getDisplayName(newLocale)
+            preference.title = "Alphabet Language - $newLangName"
+            main(newLangName, alphabetInput)
             true
         }
 
@@ -83,7 +120,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            preference.title = "Target Language - ($newLangName)"
+            preference.title = "Target Language - $newLangName"
             main(newLangName, cameraLanguage)
             true
         }
@@ -92,8 +129,22 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            preference.title = "Target Language - ($newLangName)"
+
+            preference.title = "Target Language - $newLangName"
             main(newLangName, textLanguage)
+            true
+        }
+
+
+
+        if(speechInput != null && speechOutput != null && cameraOutput != null && textOutput != null && alphabet != null) {
+            saveButton?.isVisible = false
+        }
+
+
+        saveButton?.setOnPreferenceClickListener {
+            val setAct = SettingsActivity()
+            setAct.checkData()
             true
         }
     }
@@ -130,6 +181,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             if (key == speechLanguageOutput) {
                 speechOutput = value.toString()
             }
+            if (key == alphabetInput) {
+                alphabet = value.toString()
+            }
             if (key == cameraLanguage) {
                 cameraOutput = value.toString()
             }
@@ -140,5 +194,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+
+    fun updateLanguage() {
+        val languageToLoad = "it" // your language fr etc
+
+        val locale = Locale(languageToLoad)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.locale = locale
+        requireContext().resources.updateConfiguration(
+            config,
+            requireContext().resources.displayMetrics
+        )
+    }
 
 }
