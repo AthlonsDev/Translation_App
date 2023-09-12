@@ -99,7 +99,7 @@ class DashboardFragment : Fragment() {
             takePhoto()
         }
 
-        binding.inputText.movementMethod = ScrollingMovementMethod()
+//        binding.inputText.movementMethod = ScrollingMovementMethod()
         binding.outputText.movementMethod = ScrollingMovementMethod()
 
 //        Camera Permissions
@@ -210,7 +210,7 @@ class DashboardFragment : Fragment() {
             var inputText = ""
             tr.initTextRec(bitmap,alphabet) { text ->
                 inputText = text.toString()
-                binding.inputText.text = text.toString()
+//                binding.inputText.text = text.toString()
                 tr.identifyLanguage(inputText) {
                     tr.initTranslator(inputText, it, targetLanguage) { translatedText ->
                         binding.outputText.text = translatedText

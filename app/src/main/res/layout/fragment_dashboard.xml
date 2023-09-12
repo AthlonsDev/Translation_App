@@ -25,24 +25,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"></androidx.camera.view.PreviewView>
 
-    <TextView
-        android:id="@+id/inputText"
-        android:layout_width="410dp"
-        android:layout_height="74dp"
-        android:layout_marginTop="20dp"
-        android:scrollbars="vertical"
-        android:text="Waiting for Text from Camera"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/preview" />
-
-    <Button
+    <ImageButton
         android:id="@+id/cameraBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:drawableTop="@android:drawable/ic_menu_camera"
-        android:text="button"
+        android:layout_marginTop="25dp"
+        android:text="Take Picture"
+        android:src="@android:drawable/ic_menu_camera"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/output_text" />
@@ -51,9 +40,13 @@
         android:id="@+id/output_text"
         android:layout_width="0dp"
         android:layout_height="68dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
         android:scrollbars="vertical"
         android:text="Waiting for Text to Translate"
+        android:textAlignment="center"
+        android:background="@drawable/text_view_border"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.523"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,8 +56,9 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/inputText" />
+        app:layout_constraintTop_toBottomOf="@+id/preview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,46 +1,55 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-        <PreferenceCategory android:title="Speech">
+    <PreferenceCategory android:title="@string/Speech">
 
-            <ListPreference
-                android:defaultValue="1"
-                android:entries="@array/Languages"
-                android:entryValues="@array/Languages"
-                android:key="speech_language_1" />
-            <ListPreference
-                android:defaultValue="1"
-                android:entries="@array/Languages"
-                android:entryValues="@array/Languages"
-                android:key="speech_language_2" />
-        </PreferenceCategory>
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/Languages"
+            android:entryValues="@array/Languages"
+            android:key="@string/speech_language_1"
+            app:title="@string/speech_language_1" />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/Languages"
+            android:entryValues="@array/Languages"
+            android:key="@string/speech_language_2"
+            app:title="@string/speech_language_2" />
+    </PreferenceCategory>
 
-        <PreferenceCategory android:title="Camera">
+    <PreferenceCategory
+        android:title="@string/Camera"
+        app:key="@string/Camera">
 
-            <ListPreference
-                android:defaultValue="1"
-                android:entries="@array/Alphabet"
-                android:entryValues="@array/Alphabet"
-                android:key="alphabet_language_1" />
-            <ListPreference
-                android:defaultValue="1"
-                android:entries="@array/Languages"
-                android:entryValues="@array/Languages"
-                android:key="cam_language" />
-        </PreferenceCategory>
-    <PreferenceCategory android:title="Text">
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/Alphabet"
+            android:entryValues="@array/Alphabet"
+            android:key="@string/alphabet_language_1"
+            app:title="@string/alphabet_language_1" />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/Languages"
+            android:entryValues="@array/Languages"
+            android:key="@string/cam_language"
+            app:title="@string/cam_language" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/Text"
+        app:key="@string/Camera">
 
     </PreferenceCategory>
     <ListPreference
         android:defaultValue="1"
         android:entries="@array/Languages"
         android:entryValues="@array/Languages"
-        android:key="text_language" />
+        android:key="@string/text_language"
+        app:title="@string/text_language" />
     <Preference
         android:defaultValue="Default value"
-        android:key="button"
+        android:key="@string/save_pref_btn"
         android:selectAllOnFocus="true"
-        android:title="                 Save Settings"
+        android:title="@string/save_pref_btn"
         app:iconSpaceReserved="true" />
 
 

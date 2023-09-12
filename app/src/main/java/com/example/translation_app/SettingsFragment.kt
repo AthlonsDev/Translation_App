@@ -45,14 +45,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-        updateLanguage()
 
-        val speechInSettings = findPreference<Preference>("speech_language_1")
-        val speechOutSettings = findPreference<Preference>("speech_language_2")
-        val alphabetSettings = findPreference<Preference>("alphabet_language_1")
-        val cameraSettings = findPreference<Preference>("cam_language")
-        val textSettings = findPreference<Preference>("text_language")
-        val saveButton = findPreference<Preference>("button")
+        val speechInSettings = findPreference<Preference>(getString(R.string.speech_language_1))
+        val speechOutSettings = findPreference<Preference>(getString(R.string.speech_language_2))
+        val alphabetSettings = findPreference<Preference>(getString(R.string.alphabet_language_1))
+        val cameraSettings = findPreference<Preference>(getString(R.string.cam_language))
+        val textSettings = findPreference<Preference>(getString(R.string.text_language))
+        val saveButton = findPreference<Preference>(getString(R.string.save_pref_btn))
 
         readData(speechLanguageInput)
         readData(speechLanguageOutput)
@@ -60,30 +59,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
         readData(cameraLanguage)
         readData(textLanguage)
 
-        var speechInputText = "Voice Language"
-        var speechOutputText = "Target Language"
-        var alphabetText = "Alphabet Type"
-        var cameraText = "Camera Language"
-        var textText = "Text Language"
+        var speechInputText = getString(R.string.speech_language_1)
+        var speechOutputText = getString(R.string.speech_language_2)
+        var alphabetText = getString(R.string.alphabet_language_1)
+        var cameraText = getText(R.string.cam_language)
+        var textText = getText(R.string.text_language)
 
-        val tr = Translator()
-        val locale = Locale.ITALIAN.toString()
-        tr.initTranslator(speechInputText, "en", locale) {
-            speechInSettings?.title = "$it - $speechInput"
-        }
-        tr.initTranslator(speechOutputText, "en", locale) {
-            speechOutSettings?.title = "$it - $speechOutput"
-        }
-        tr.initTranslator(cameraText, "en", locale) {
-            cameraSettings?.title = "$it - $cameraOutput"
-        }
-        tr.initTranslator(alphabetText, "en", locale) {
-            alphabetSettings?.title = "$it - $alphabet"
-        }
-        tr.initTranslator(textText, "en", locale) {
-            textSettings?.title = "$it - $textOutput"
-        }
 
+        Toast.makeText(context, "$speechInputText", Toast.LENGTH_LONG).show()
+        speechInSettings?.title = "$speechInputText - $speechInput"
         speechOutSettings?.title = "$speechOutputText - $speechOutput"
         alphabetSettings?.title = "$alphabetText - $alphabet"
         cameraSettings?.title = "$cameraText - $cameraOutput"

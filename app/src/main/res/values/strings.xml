@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Translation_App</string>
-    <string name="title_home">Speech</string>
     <string name="title_dashboard">Camera</string>
     <string name="title_text">Text</string>
     <string name="title_notifications">Settings</string>
@@ -29,17 +28,29 @@
 
 
     <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <string name="messages_header" translatable="false">Messages</string>
+    <string name="sync_header" translatable="false">Sync</string>
 
     <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
+    <string name="signature_title" translatable="false">Your signature</string>
+    <string name="reply_title" translatable="false">Default reply action</string>
 
     <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    <string name="sync_title" translatable="false">Sync email periodically</string>
+    <string name="attachment_title" translatable="false">Download incoming attachments</string>
+    <string name="attachment_summary_on" translatable="false">Automatically download attachments for incoming emails
     </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="attachment_summary_off" translatable="false">Only download attachments when manually requested</string>
+    <string name="title_home">Speech</string>
+
+    <string name="Speech" translatable="true">Speech</string>
+    <string name="Camera">Camera</string>
+    <string name="Text">Text</string>
+    <string name="speech_language_1">Voice Input Language</string>
+    <string name="speech_language_2">Voice Output Language</string>
+    <string name="alphabet_language_1">Alphabet Type</string>
+    <string name="cam_language">Camera Language</string>
+    <string name="text_language">Text Language</string>
+    <string name="save_pref_btn">Save Settings</string>
+
 </resources>

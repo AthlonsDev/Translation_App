@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Translation_App</string>
+    <string name="title_dashboard">Caméra</string>
+    <string name="title_text">Texte</string>
+    <string name="title_notifications">Paramètres</string>
+    <string name="title_home">Discours</string>
+    <string name="Speech">Discours</string>
+    <string name="Camera">Caméra</string>
+    <string name="Text">Texte</string>
+    <string name="speech_language_1">Langue de saisie vocale</string>
+    <string name="speech_language_2">Langue de sortie vocale</string>
+    <string name="alphabet_language_1">Type d\'Alphabet</string>
+    <string name="cam_language">Langue de la caméra</string>
+    <string name="text_language">Langue de la caméra</string>
+    <string name="save_pref_btn">Enregistrer les paramètres</string>
+
+</resources>
