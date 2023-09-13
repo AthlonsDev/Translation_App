@@ -14,5 +14,7 @@
     <string name="cam_language">Langue de la caméra</string>
     <string name="text_language">Langue de la caméra</string>
     <string name="save_pref_btn">Enregistrer les paramètres</string>
+    <string name="camera_label">"Traduire vers: "</string>
+    <string name="input_edit_text">Saisir le texte à traduire</string>
 
 </resources>

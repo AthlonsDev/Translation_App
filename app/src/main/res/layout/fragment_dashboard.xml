@@ -38,26 +38,29 @@
 
     <TextView
         android:id="@+id/output_text"
-        android:layout_width="0dp"
-        android:layout_height="68dp"
+        android:layout_width="381dp"
+        android:layout_height="112dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
+        android:background="@drawable/border"
+        android:padding="10dp"
         android:scrollbars="vertical"
         android:text="Waiting for Text to Translate"
-        android:textAlignment="center"
-        android:background="@drawable/text_view_border"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.523"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintTop_toBottomOf="@+id/camera_label" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/camera_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="TextView"
+        android:text="@string/camera_label"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/preview" />
 

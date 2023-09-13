@@ -14,5 +14,7 @@
     <string name="cam_language">Lingua della Fotocamera</string>
     <string name="text_language">Lingua del Testo</string>
     <string name="save_pref_btn">Salva Impostazioni</string>
+    <string name="camera_label">"Traduce In: "</string>
+    <string name="input_edit_text">Inserire Testo da Tradurre</string>
 
 </resources>

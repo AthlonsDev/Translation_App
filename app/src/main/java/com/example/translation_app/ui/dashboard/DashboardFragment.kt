@@ -3,21 +3,16 @@ package com.example.translation_app.ui.dashboard
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.getIntent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -32,15 +27,12 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import com.example.translation_app.CameraActivity
 import com.example.translation_app.Constants
 import com.example.translation_app.R
 import com.example.translation_app.TextRecognition
 import com.example.translation_app.dataStore
-import com.example.translation_app.databinding.ActivityCameraBinding
 import com.example.translation_app.databinding.FragmentDashboardBinding
 import com.google.common.util.concurrent.ListenableFuture
-import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -123,6 +115,8 @@ class DashboardFragment : Fragment() {
 //        binding.previewImage.setImageBitmap(bmp)
 
         readData()
+
+        binding.outputText.visibility = View.INVISIBLE
 
         return root
     }
@@ -213,6 +207,7 @@ class DashboardFragment : Fragment() {
 //                binding.inputText.text = text.toString()
                 tr.identifyLanguage(inputText) {
                     tr.initTranslator(inputText, it, targetLanguage) { translatedText ->
+                        binding.outputText.visibility = View.VISIBLE
                         binding.outputText.text = translatedText
                         startCamera(requireContext(), requireActivity(), binding.preview)
                     }
@@ -274,7 +269,8 @@ class DashboardFragment : Fragment() {
             val alphabetKey = preferences?.get(datainputKey)
             targetLanguage = cameraOutput.toString()
             alphabet = alphabetKey.toString()
-            binding.textView4.text = "Translating from - ${cameraOutput.toString()}"
+            var cameraLang = getString(R.string.camera_label)
+            binding.cameraLabel.text = "$cameraLang ${cameraOutput.toString()}"
             val textRecognition = TextRecognition()
             textRecognition.identifyLanguage(targetLanguage) {
                 targetLanguage = it

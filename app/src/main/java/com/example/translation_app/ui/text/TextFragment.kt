@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.translation_app.R
 import com.example.translation_app.Translator
 import com.example.translation_app.dataStore
 import com.example.translation_app.databinding.FragmentTextBinding
@@ -38,10 +39,11 @@ class TextFragment: Fragment() {
 
         readData()
 
+
         val translator = Translator()
         binding.buttonTranslate.setOnClickListener {
-            translator.identifyLanguage(binding.inputText.text.toString()) { result ->
-                translator.initTranslator(binding.inputText.text.toString(), result, targetLanguage) { result ->
+            translator.identifyLanguage(binding.inputEditText.text.toString()) { result ->
+                translator.initTranslator(binding.inputEditText.text.toString(), result, targetLanguage) { result ->
                     binding.outputText.text = result
                 }
             }
@@ -67,7 +69,8 @@ class TextFragment: Fragment() {
             translator.identifyLanguage(targetLanguage) { result ->
                 targetLanguage = result
             }
-            binding.textView6.text = "Translating to - ${textLanguageOutput.toString()}"
+            val textLang = getString(R.string.camera_label)
+            binding.textLabel.text = "$textLang - ${textLanguageOutput.toString()}"
         }
     }
 

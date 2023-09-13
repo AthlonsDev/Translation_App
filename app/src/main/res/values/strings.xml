@@ -52,5 +52,7 @@
     <string name="cam_language">Camera Language</string>
     <string name="text_language">Text Language</string>
     <string name="save_pref_btn">Save Settings</string>
+    <string name="camera_label">Translating To:</string>
+    <string name="input_edit_text">Enter Text to Translate</string>
 
 </resources>
