@@ -4,17 +4,26 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Point
+import android.graphics.Rect
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
@@ -33,6 +42,8 @@ import com.example.translation_app.TextRecognition
 import com.example.translation_app.dataStore
 import com.example.translation_app.databinding.FragmentDashboardBinding
 import com.google.common.util.concurrent.ListenableFuture
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -104,7 +115,6 @@ class DashboardFragment : Fragment() {
 //            outputDirectory = getOutputDirectory()
             cameraExecutor = Executors.newSingleThreadExecutor()
             startCamera(requireContext(), requireActivity(), binding.preview)
-            Toast.makeText(requireContext(), "All permissions granted", Toast.LENGTH_SHORT).show()
         } else {
             ActivityCompat.requestPermissions(
                 requireActivity(), Constants.REQUIRED_PERMISSIONS,
@@ -112,11 +122,17 @@ class DashboardFragment : Fragment() {
             )
         }
 
-//        binding.previewImage.setImageBitmap(bmp)
+        //        listening for data from the camera
+        cameraProviderFuture.addListener({
+            val cameraProvider = cameraProviderFuture.get()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                startLiveCamera(cameraProvider)
+            }
+        }, ContextCompat.getMainExecutor(requireContext()))
 
         readData()
 
-        binding.outputText.visibility = View.INVISIBLE
+//        binding.outputText.visibility = View.INVISIBLE
 
         return root
     }
@@ -128,6 +144,53 @@ class DashboardFragment : Fragment() {
             ) == PackageManager.PERMISSION_GRANTED
         }
 
+
+    private fun startLiveCamera(cameraProvider: ProcessCameraProvider) {
+
+        val preview : Preview = Preview.Builder().build()
+        preview.setSurfaceProvider(binding.preview.surfaceProvider)
+
+        val cameraSelector : CameraSelector = CameraSelector.Builder()
+            .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+            .build()
+
+        val point = Point()
+//        val size = display?.getRealSize(point)
+        val imageAnalysis = ImageAnalysis.Builder()
+            .setTargetResolution(Size(point.x, point.y))
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+
+        imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(requireContext())) { imageProxy ->
+            val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+
+            @SuppressLint("UnsafeOptInUsageError")
+            val image = imageProxy.image
+            if (image != null) {
+                val inputImage = InputImage.fromMediaImage(image, rotationDegrees)
+                var recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                    recognizer.process(inputImage)
+                        .addOnSuccessListener { text ->
+                          val recognition = TextRecognition()
+                            recognition.initTextRec(inputImage, alphabet) {inputText ->
+                                imageProxy.close()
+                                recognition.identifyLanguage(inputText) {
+                                    recognition.initTranslator(inputText, it, targetLanguage) { translatedText ->
+//                                        binding.outputText.visibility = View.VISIBLE
+                                        binding.outputText.text = translatedText
+                                    }
+                                }
+                            }
+                        }
+                        .addOnFailureListener { e -> // Task failed with an exception
+                            e.printStackTrace()
+                            imageProxy.close()
+                        }
+                }
+            }
+
+        cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, imageAnalysis, preview)
+    }
 
     fun startCamera(context: Context, lifecycle: LifecycleOwner, preview: PreviewView) {
 //        listening for data from the camera
@@ -190,29 +253,27 @@ class DashboardFragment : Fragment() {
                 override fun onError(exception: ImageCaptureException) {
                     // Handle exception
                     Toast.makeText(requireContext(), "Error: $exception", Toast.LENGTH_LONG)
+
                 }
             }
         )
 
     }
-
-
-
         private fun processImage(bitmap: Bitmap) {
 //            binding.previewImage.setImageBitmap(bitmap)
             val tr = TextRecognition()
             var inputText = ""
-            tr.initTextRec(bitmap,alphabet) { text ->
-                inputText = text.toString()
-//                binding.inputText.text = text.toString()
-                tr.identifyLanguage(inputText) {
-                    tr.initTranslator(inputText, it, targetLanguage) { translatedText ->
-                        binding.outputText.visibility = View.VISIBLE
-                        binding.outputText.text = translatedText
-                        startCamera(requireContext(), requireActivity(), binding.preview)
-                    }
-                }
-            }
+//            tr.initTextRec(bitmap,alphabet) { text ->
+//                inputText = text.toString()
+////                binding.inputText.text = text.toString()
+//                tr.identifyLanguage(inputText) {
+//                    tr.initTranslator(inputText, it, targetLanguage) { translatedText ->
+//                        binding.outputText.visibility = View.VISIBLE
+//                        binding.outputText.text = translatedText
+//                        startCamera(requireContext(), requireActivity(), binding.preview)
+//                    }
+//                }
+//            }
         }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -277,4 +338,29 @@ class DashboardFragment : Fragment() {
             }
         }
     }
+
+    fun drawDetectionResult(img: InputImage): Bitmap {
+        val bitmap = img.bitmapInternal
+        val tempBitmap = bitmap?.copy(Bitmap.Config.ARGB_8888, true)
+        val canvas = Canvas(tempBitmap!!)
+        val paint = Paint()
+        paint.color = Color.RED
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 4.0f
+
+//        for (obj in detectedObjects) {
+//            val box = obj.boundingBox
+//            canvas.drawRect(box, paint)
+//            val trackingId = obj.trackingId
+//            for (label in obj.labels) {
+//                val text = label.text
+//                val index = label.index
+//                val confidence = label.confidence
+//                val textToShow = "$text $confidence"
+//                canvas.drawText(textToShow, box.left.toFloat(), box.top.toFloat(), paint)
+//            }
+//        }
+        return tempBitmap
+    }
 }
+

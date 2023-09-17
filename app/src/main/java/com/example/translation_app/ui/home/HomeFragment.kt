@@ -179,11 +179,23 @@ class HomeFragment : Fragment() {
             //get result of speech
             try {
                 startActivityForResult(speechRecognizerIntent, Constants.REQUEST_CODE_SPEECH_INPUT)
+//                textToSpeechEngine.speak("Speak to Translate", TextToSpeech.QUEUE_FLUSH, null, null)
             } catch (e: Exception) {
                 // on below line we are displaying error message in toast
                 Toast.makeText(requireContext(), " " + e.message, Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private val textToSpeechEngine: TextToSpeech by lazy {
+        // Pass in context and the listener.
+        TextToSpeech(requireContext(),
+            TextToSpeech.OnInitListener { status ->
+                // set our locale only if init was success.
+                if (status == TextToSpeech.SUCCESS) {
+                    textToSpeechEngine.language = Locale.UK
+                }
+            })
     }
 
     fun onBeginningOfSpeech() {

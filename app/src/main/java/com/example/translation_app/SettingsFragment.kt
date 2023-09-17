@@ -45,13 +45,22 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-
         val speechInSettings = findPreference<Preference>(getString(R.string.speech_language_1))
         val speechOutSettings = findPreference<Preference>(getString(R.string.speech_language_2))
         val alphabetSettings = findPreference<Preference>(getString(R.string.alphabet_language_1))
         val cameraSettings = findPreference<Preference>(getString(R.string.cam_language))
         val textSettings = findPreference<Preference>(getString(R.string.text_language))
         val saveButton = findPreference<Preference>(getString(R.string.save_pref_btn))
+
+        saveButton?.setOnPreferenceClickListener {
+            val setAct = SettingsActivity()
+            setAct.checkData()
+            true
+        }
+
+        if(speechInput != "Not Set" || speechOutput != "Not Set" || cameraOutput != "Not Set" || textOutput != "Not Set" || alphabet != "Not Set") {
+            saveButton?.isVisible = false
+        }
 
         readData(speechLanguageInput)
         readData(speechLanguageOutput)
@@ -119,18 +128,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
-
-
-        if(speechInput != null && speechOutput != null && cameraOutput != null && textOutput != null && alphabet != null) {
-            saveButton?.isVisible = false
-        }
-
-
-        saveButton?.setOnPreferenceClickListener {
-            val setAct = SettingsActivity()
-            setAct.checkData()
-            true
-        }
     }
 
     private fun main(data: String, key: Preferences.Key<String>) = runBlocking {

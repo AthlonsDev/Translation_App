@@ -66,7 +66,7 @@ class CameraActivity: AppCompatActivity() {
 
         startCamera()
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
     }
 

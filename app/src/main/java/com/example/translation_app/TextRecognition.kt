@@ -1,9 +1,14 @@
 package com.example.translation_app
 
 import android.app.Activity
-import android.graphics.Bitmap
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.location.GnssAntennaInfo.Listener
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.translate.TranslateLanguage
@@ -20,18 +25,18 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.util.Locale
 import java.util.Objects
 
-class TextRecognition {
+class TextRecognition: Activity() {
 
 
     val text_from_image = ""
     var listener: Listener? = null
 
 
-    fun initTextRec(bitmap: Bitmap, alphabet: String, param: (String) -> Unit) {
+    fun initTextRec(image: InputImage, alphabet: String, param: (String) -> Unit) {
         var recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         when (alphabet) {
             "Latin" -> {
-
+                recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
             }
             "Chinese" -> {
                 recognizer = TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
@@ -48,14 +53,15 @@ class TextRecognition {
         }
 
 
-        val image = InputImage.fromBitmap(bitmap, 0)
+
         var output = "Waiting for text..."
-        val result = recognizer.process(image)
+        recognizer.process(image)
             .addOnSuccessListener { visionText ->
                 // Task completed successfully
                 // ...
                 //set param to visionText
                 param(visionText.text)
+//                processTextBlock(visionText)
             }
             .addOnFailureListener { e ->
                 // Task failed with an exception
@@ -128,10 +134,13 @@ class TextRecognition {
                 val lineText = line.text
                 val lineCornerPoints = line.cornerPoints
                 val lineFrame = line.boundingBox
-                for (element in line.elements) {
-                    val elementText = element.text
-                    val elementCornerPoints = element.cornerPoints
-                    val elementFrame = element.boundingBox
+                for (i in line.elements) {
+//                    val elementText = element.text
+//                    val elementCornerPoints = element.cornerPoints
+//                    val elementFrame = element.boundingBox
+
+                    Draw(this, (i.boundingBox!!), i.text)
+
                 }
             }
 
@@ -139,4 +148,32 @@ class TextRecognition {
         // [END mlkit_process_text_block]
     }
 
+}
+
+class Draw(context: Context?, var rect: Rect, var text: String) : View(context) {
+
+    lateinit var paint: Paint
+    lateinit var textPaint: Paint
+
+    init {
+        init()
+    }
+
+    private fun init() {
+        paint = Paint()
+        paint.color = Color.RED
+        paint.strokeWidth = 5f
+        paint.style = Paint.Style.STROKE
+
+        textPaint = Paint()
+        textPaint.color = Color.RED
+        textPaint.style = Paint.Style.FILL
+        textPaint.textSize = 50f
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        canvas.drawText(text, rect.centerX().toFloat(), rect.centerY().toFloat(), textPaint)
+        canvas.drawRect(rect.left.toFloat(), rect.top.toFloat(), rect.right.toFloat(), rect.bottom.toFloat(), paint)
+    }
 }
