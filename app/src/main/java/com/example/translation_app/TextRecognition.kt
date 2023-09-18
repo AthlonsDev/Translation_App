@@ -9,7 +9,9 @@ import android.graphics.Rect
 import android.location.GnssAntennaInfo.Listener
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.camera.core.ImageProxy
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
@@ -32,7 +34,7 @@ class TextRecognition: Activity() {
     var listener: Listener? = null
 
 
-    fun initTextRec(image: InputImage, alphabet: String, param: (String) -> Unit) {
+    fun initTextRec(image: InputImage, alphabet: String, imageProxy: ImageProxy, imageView: ImageView, param: (String) -> Unit) {
         var recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         when (alphabet) {
             "Latin" -> {
@@ -58,16 +60,39 @@ class TextRecognition: Activity() {
         recognizer.process(image)
             .addOnSuccessListener { visionText ->
                 // Task completed successfully
-                // ...
                 //set param to visionText
-                param(visionText.text)
-//                processTextBlock(visionText)
+//                param(visionText.text)
+                for (block in visionText.textBlocks) {
+                    val boundingBox = block.boundingBox // Rect of the block
+                    val cornerPoints = block.cornerPoints // List of Points of the block
+                    val text = block.text   // String of the block
+
+                    val canvas = Canvas()
+                    val paint = Paint()
+                    paint.color = Color.RED
+                    paint.style = Paint.Style.STROKE
+                    paint.strokeWidth = 4.0f
+
+
+
+                    // Draw bounding box around each block
+                    canvas.drawRect(boundingBox!!, paint) // Draw on Canvas
+                    imageView.draw(canvas)  // Draw on ImageView
+
+
+                    for (line in block.lines) {
+                        // ...
+
+                        for (element in line.elements) {
+                            // ...
+                        }
+                    }
+                }
+                imageProxy.close()
             }
             .addOnFailureListener { e ->
-                // Task failed with an exception
-                // ...
-//                Toast.makeText(this, "Failed to recognize text", Toast.LENGTH_SHORT).show()
                 param("Failed to recognize text ${e.message}")
+                imageProxy.close()
             }
 
     }
@@ -139,7 +164,6 @@ class TextRecognition: Activity() {
 //                    val elementCornerPoints = element.cornerPoints
 //                    val elementFrame = element.boundingBox
 
-                    Draw(this, (i.boundingBox!!), i.text)
 
                 }
             }
@@ -173,7 +197,7 @@ class Draw(context: Context?, var rect: Rect, var text: String) : View(context) 
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawText(text, rect.centerX().toFloat(), rect.centerY().toFloat(), textPaint)
+//        canvas.drawText(text, rect.centerX().toFloat(), rect.centerY().toFloat(), textPaint)
         canvas.drawRect(rect.left.toFloat(), rect.top.toFloat(), rect.right.toFloat(), rect.bottom.toFloat(), paint)
     }
 }

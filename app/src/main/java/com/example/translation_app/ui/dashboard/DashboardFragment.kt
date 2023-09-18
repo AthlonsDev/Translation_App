@@ -4,9 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -16,20 +14,17 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.method.ScrollingMovementMethod
+import android.util.AttributeSet
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -49,10 +44,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.File
-import java.io.FileDescriptor
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.coroutines.coroutineContext
@@ -78,6 +69,8 @@ class DashboardFragment : Fragment() {
     var bmp: Bitmap? = null
     lateinit var alphabet: String
     lateinit var targetLanguage: String
+    lateinit var translatedText: String
+    lateinit var customView: CustomView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,9 +90,7 @@ class DashboardFragment : Fragment() {
 //        }
 
         binding.cameraBtn.setOnClickListener {
-//            val intent = Intent(activity, CameraActivity::class.java)
-//            startActivity(intent)
-            takePhoto()
+            binding.outputText.text = translatedText
         }
 
 //        binding.inputText.movementMethod = ScrollingMovementMethod()
@@ -109,12 +100,10 @@ class DashboardFragment : Fragment() {
         if (allPermissionGranted(requireContext())) {
 //          start camera
             cameraExecutor = Executors.newSingleThreadExecutor()
-            outputDirectory = getOutputDirectory()
             cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
             cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 //            outputDirectory = getOutputDirectory()
             cameraExecutor = Executors.newSingleThreadExecutor()
-            startCamera(requireContext(), requireActivity(), binding.preview)
         } else {
             ActivityCompat.requestPermissions(
                 requireActivity(), Constants.REQUIRED_PERMISSIONS,
@@ -145,6 +134,31 @@ class DashboardFragment : Fragment() {
         }
 
 
+    private fun drawRectangle(rect: Rect) {
+        customView = CustomView(requireContext(), null, rect)
+        binding.preview.addView(customView)
+    }
+
+    class CustomView(context: Context?, attrs: AttributeSet?, rect: Rect) :
+        View(context, attrs)
+    {
+        private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.GREEN
+            style = Paint.Style.STROKE
+            strokeWidth = 5f
+        }
+        private val boundingBox = rect
+        override fun onDraw(canvas: Canvas) {
+            super.onDraw(canvas)
+            canvas.drawRect(boundingBox, paint)
+
+
+        }
+
+    }
+
+
+
     private fun startLiveCamera(cameraProvider: ProcessCameraProvider) {
 
         val preview : Preview = Preview.Builder().build()
@@ -169,151 +183,56 @@ class DashboardFragment : Fragment() {
             if (image != null) {
                 val inputImage = InputImage.fromMediaImage(image, rotationDegrees)
                 var recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-                    recognizer.process(inputImage)
-                        .addOnSuccessListener { text ->
-                          val recognition = TextRecognition()
-                            recognition.initTextRec(inputImage, alphabet) {inputText ->
-                                imageProxy.close()
-                                recognition.identifyLanguage(inputText) {
-                                    recognition.initTranslator(inputText, it, targetLanguage) { translatedText ->
-//                                        binding.outputText.visibility = View.VISIBLE
-                                        binding.outputText.text = translatedText
-                                    }
-                                }
+                recognizer.process(inputImage)
+                    .addOnSuccessListener {visionText ->
+                        // Task completed successfully
+                        //set param to visionText
+//                param(visionText.text)
+
+                        visionText.textBlocks.forEach {
+//                            if bigger than 3 blocks delete all blocks
+                            if (visionText.textBlocks.size > 3) {
+                                binding.preview.removeView(customView)
                             }
+//                            no small blocks
+                            if (it.boundingBox!!.width() > 100 || it.boundingBox!!.height() > 100) {
+                                binding.preview.removeView(customView)
+                            }
+                            drawRectangle(it.boundingBox!!)
                         }
-                        .addOnFailureListener { e -> // Task failed with an exception
-                            e.printStackTrace()
-                            imageProxy.close()
+                        for (block in visionText.textBlocks) {
+                            val boundingBox = block.boundingBox // Rect of the block
+                            val cornerPoints = block.cornerPoints // List of Points of the block
+                            val text = block.text   // String of the block
+
                         }
-                }
+                        imageProxy.close()
+                    }
+                    .addOnFailureListener { e ->
+//                        param("Failed to recognize text ${e.message}")
+                        imageProxy.close()
+                    }
+
             }
+                }
 
         cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, imageAnalysis, preview)
     }
-
-    fun startCamera(context: Context, lifecycle: LifecycleOwner, preview: PreviewView) {
-//        listening for data from the camera
-        cameraProviderFuture.addListener({
-            cameraProvider = cameraProviderFuture.get()
-
-//            connect preview use case to the preview on xml file
-            val preview = Preview.Builder().build().also{
-                it.setSurfaceProvider(preview.surfaceProvider)
-            }
-
-            imageCapture = ImageCapture.Builder().build()
-
-            val camerasSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-
-            try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    lifecycle, cameraSelector, preview, imageCapture
-                )
-
-            } catch (e: Exception) {
-
-            }
-        }, ContextCompat.getMainExecutor(context))
-    }
-
-        private fun getOutputDirectory(): File {
-        val mediaDir = requireActivity().externalMediaDirs.firstOrNull()?.let {
-            File(it, resources.getString(com.example.translation_app.R.string.app_name)).apply {
-                mkdirs()
-            }
-        }
-
-        return if (mediaDir != null && mediaDir.exists())
-            mediaDir else requireActivity().filesDir
-
-    }
-
-    private fun takePhoto() {
-        val imageCapture = imageCapture?:return
-        val photoFile = File(
-            outputDirectory,
-            SimpleDateFormat(Constants.FILE_NAME_FORMAT,
-                Locale.getDefault()).format(System.currentTimeMillis()) + ".jpg")
-
-        val outputOption = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-        imageCapture.takePicture(
-            ContextCompat.getMainExecutor(requireContext()), // Defines where the callbacks are run
-            object : ImageCapture.OnImageCapturedCallback() {
-                override fun onCaptureSuccess(imageProxy: ImageProxy) {
-                    @SuppressLint("UnsafeOptInUsageError")
-                    val image = imageProxy.image // Do what you want with the image
-                    //imageProxy.close() // Make sure to close the image
-                    val savedUri = Uri.fromFile(photoFile)
-                    imageProxyToBitmap(imageProxy)
-                }
-
-                override fun onError(exception: ImageCaptureException) {
-                    // Handle exception
-                    Toast.makeText(requireContext(), "Error: $exception", Toast.LENGTH_LONG)
-
-                }
-            }
-        )
-
-    }
-        private fun processImage(bitmap: Bitmap) {
-//            binding.previewImage.setImageBitmap(bitmap)
-            val tr = TextRecognition()
-            var inputText = ""
-//            tr.initTextRec(bitmap,alphabet) { text ->
-//                inputText = text.toString()
-////                binding.inputText.text = text.toString()
-//                tr.identifyLanguage(inputText) {
-//                    tr.initTranslator(inputText, it, targetLanguage) { translatedText ->
-//                        binding.outputText.visibility = View.VISIBLE
-//                        binding.outputText.text = translatedText
-//                        startCamera(requireContext(), requireActivity(), binding.preview)
-//                    }
-//                }
-//            }
-        }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode == AppCompatActivity.RESULT_OK && requestCode == pickImage) {
             imageUri = data?.data
 //            binding.previewImage.setImageURI(imageUri)
-            imageToBitmap(imageUri!!)
+//            imageToBitmap(imageUri!!)
         }
     }
 
-    fun imageToBitmap(imageUri: Uri) {
-        try {
-            val parcelFileDescriptor = requireActivity().contentResolver.openFileDescriptor(imageUri, "r")
-            val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-            val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-            parcelFileDescriptor.close()
-//                goToImageViewer(image)
-            cameraProvider.unbindAll()
-            processImage(image)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
-
-    fun imageProxyToBitmap(imageProxy: ImageProxy) {
-        @SuppressLint("UnsafeOptInUsageError")
-        val image = imageProxy.image
-        val buffer = image!!.planes[0].buffer
-        val bytes = ByteArray(buffer.capacity()).also { buffer.get(it) }
-        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, null)
-        processImage(bitmap)
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-
 
     fun readData() = runBlocking {
         launch {
