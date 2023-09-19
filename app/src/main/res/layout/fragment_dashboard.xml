@@ -20,6 +20,7 @@
         android:id="@+id/preview"
         android:layout_width="397dp"
         android:layout_height="237dp"
+        android:background="@drawable/camera_border"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

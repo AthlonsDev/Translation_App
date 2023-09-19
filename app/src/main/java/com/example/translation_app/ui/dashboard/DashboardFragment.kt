@@ -27,6 +27,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.size
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -139,20 +140,27 @@ class DashboardFragment : Fragment() {
         binding.preview.addView(customView)
     }
 
+    private fun clearCanvas() {
+        customView.clearCanvas()
+    }
+
     class CustomView(context: Context?, attrs: AttributeSet?, rect: Rect) :
         View(context, attrs)
     {
         private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.GREEN
             style = Paint.Style.STROKE
-            strokeWidth = 5f
+            strokeWidth = 6f
         }
         private val boundingBox = rect
         override fun onDraw(canvas: Canvas) {
             super.onDraw(canvas)
             canvas.drawRect(boundingBox, paint)
 
-
+        }
+        fun clearCanvas() {
+            val transparent = Paint()
+            transparent.alpha = 0
         }
 
     }
@@ -185,31 +193,26 @@ class DashboardFragment : Fragment() {
                 var recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
                 recognizer.process(inputImage)
                     .addOnSuccessListener {visionText ->
-                        // Task completed successfully
-                        //set param to visionText
-//                param(visionText.text)
 
-                        visionText.textBlocks.forEach {
-//                            if bigger than 3 blocks delete all blocks
-                            if (visionText.textBlocks.size > 3) {
-                                binding.preview.removeView(customView)
-                            }
-//                            no small blocks
-                            if (it.boundingBox!!.width() > 100 || it.boundingBox!!.height() > 100) {
-                                binding.preview.removeView(customView)
-                            }
-                            drawRectangle(it.boundingBox!!)
+                        if(visionText.text != "") {
+                            binding.preview.setBackgroundResource(R.drawable.camera_border_2)
+                        } else {
+                            binding.preview.setBackgroundResource(R.drawable.camera_border)
                         }
-                        for (block in visionText.textBlocks) {
-                            val boundingBox = block.boundingBox // Rect of the block
-                            val cornerPoints = block.cornerPoints // List of Points of the block
-                            val text = block.text   // String of the block
 
+                        val inputText = visionText.text
+                        val rec = TextRecognition()
+                        rec.identifyLanguage(targetLanguage) {
+                            rec.initTranslator(inputText, it, targetLanguage) {
+                                translatedText = it
+                            }
                         }
+
                         imageProxy.close()
                     }
                     .addOnFailureListener { e ->
 //                        param("Failed to recognize text ${e.message}")
+                        binding.preview.setBackgroundResource(R.drawable.camera_border)
                         imageProxy.close()
                     }
 
