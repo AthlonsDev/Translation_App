@@ -1,11 +1,13 @@
 package com.example.translation_app.ui.home
 
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
@@ -53,7 +55,7 @@ import kotlin.coroutines.coroutineContext
 
 // At the top level of your kotlin file:
 //val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings").getValue(this, SettingsFragment.SPEECH_LANGUAGE_1)
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), RecognitionListener {
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -67,6 +69,7 @@ class HomeFragment : Fragment() {
     lateinit var inputLanguage: Locale
     lateinit var targetLanguage: String
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -81,8 +84,8 @@ class HomeFragment : Fragment() {
         val translator = Translator()
 
 
-        binding.inputText.movementMethod = ScrollingMovementMethod()
-        binding.outputText.movementMethod = ScrollingMovementMethod()
+        binding.speechInput.movementMethod = ScrollingMovementMethod()
+        binding.speechOutput.movementMethod = ScrollingMovementMethod()
 
         readData()
 
@@ -102,11 +105,11 @@ class HomeFragment : Fragment() {
 //        }
         val button: TextView = binding.translateButton
         button.setOnClickListener {
-            val inputString = binding.inputText.text.toString()
+            val inputString = binding.speechInput.text.toString()
             translator.identifyLanguage(inputString) { result ->
                 inputLanguage = Locale(result)
                 translator.initTranslator(inputString, inputLanguage.toString(), targetLanguage) { result ->
-                        binding.outputText.text = result
+                        binding.speechOutput.text = result
                         tts!!.speak(result, TextToSpeech.QUEUE_FLUSH, null, null)
                 }
             }
@@ -128,12 +131,13 @@ class HomeFragment : Fragment() {
             v?.onTouchEvent(event) ?: true
         })
 
-        binding.inputText.text = "Waiting for input..."
-        binding.outputText.text = "Waiting for Translation..."
 
         if(ContextCompat.checkSelfPermission(requireContext(), Constants.REQUIRED_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED){
             checkPermission();
         }
+
+        binding.speechInput.text = getString(R.string.speech_input)
+        binding.speechOutput.text = getString(R.string.speech_output)
 
         return root
     }
@@ -157,12 +161,18 @@ class HomeFragment : Fragment() {
             translator.identifyLanguage(targetLanguage) { result ->
                 targetLanguage = result
             }
-            binding.textView.text = "Translating from - ${speechLanguageInput.toString()}"
-            binding.textView2.text = "Translating to - ${speechLanguageOutput.toString()}"
+            binding.textView.text = "${getString(R.string.speech_input)} - ${speechLanguageInput.toString()}"
+            binding.textView2.text = "${getString(R.string.speech_output)} - ${speechLanguageOutput.toString()}"
         }
     }
 
     fun RecSpeech() {
+
+        val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
+
+        speechRecognizer.setRecognitionListener(this)
+        speechRecognizer.startListening(speechRecognizerIntent)
+
 //        inputLanguage of speech needs to be translated to english
         val translator = Translator()
         translator.identifyLanguage(inputLanguage.toString()) { result ->
@@ -175,10 +185,11 @@ class HomeFragment : Fragment() {
             speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, result.toString())
             speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak to Translate")
 
-            onBeginningOfSpeech()
+//            onBeginningOfSpeech()
             //get result of speech
             try {
-                startActivityForResult(speechRecognizerIntent, Constants.REQUEST_CODE_SPEECH_INPUT)
+                setRecognitionListener(this)
+//                startActivityForResult(speechRecognizerIntent, Constants.REQUEST_CODE_SPEECH_INPUT)
 //                textToSpeechEngine.speak("Speak to Translate", TextToSpeech.QUEUE_FLUSH, null, null)
             } catch (e: Exception) {
                 // on below line we are displaying error message in toast
@@ -198,8 +209,52 @@ class HomeFragment : Fragment() {
             })
     }
 
-    fun onBeginningOfSpeech() {
-        binding.inputText.setText("Listening...")
+    private fun setRecognitionListener (listener: RecognitionListener) {
+       val recognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
+        recognizer.setRecognitionListener(listener)
+        recognizer.startListening(speechRecognizerIntent)
+
+
+    }
+
+    override fun onReadyForSpeech(p0: Bundle?) {
+        binding.speechInput.setText("Ready")
+        val data = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+        binding.speechOutput.setText(data?.get(0))
+    }
+
+    override fun onBeginningOfSpeech() {
+        binding.speechInput.setText("Listening...")
+    }
+
+    override fun onRmsChanged(p0: Float) {
+
+    }
+
+    override fun onBufferReceived(p0: ByteArray?) {
+
+    }
+
+    override fun onEndOfSpeech() {
+        binding.speechInput.setText("Processing...")
+    }
+
+    override fun onError(p0: Int) {
+//        binding.inputText.setText("Error $p0")
+    }
+
+    override fun onResults(p0: Bundle?) {
+        val data = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+        binding.speechInput.setText(data?.get(0))
+    }
+
+    override fun onPartialResults(p0: Bundle?) {
+        val data = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+        binding.speechInput.setText(data?.get(0))
+    }
+
+    override fun onEvent(p0: Int, p1: Bundle?) {
+        binding.speechInput.setText("Event")
     }
 
     private fun checkPermission() {
@@ -234,7 +289,7 @@ class HomeFragment : Fragment() {
 
                 // on below line we are setting data
                 // to our output text view.
-                binding.inputText.setText(
+                binding.speechInput.setText(
                     Objects.requireNonNull(res)[0]
 
                 )

@@ -11,9 +11,10 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
         android:layout_marginTop="50dp"
-        android:text="Translate From"
+        android:text="@string/translate_from"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,25 +23,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="Translated To"
+        android:text="@string/camera_label"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_text" />
+        app:layout_constraintTop_toBottomOf="@+id/speech_input" />
 
     <TextView
-        android:id="@+id/output_text"
+        android:id="@+id/speech_output"
         android:layout_width="390dp"
         android:layout_height="90dp"
         android:layout_marginTop="5dp"
+        android:background="@drawable/border"
+        android:textColor="@color/black"
+        android:textSize="18sp"
         android:scrollbars="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
     <TextView
-        android:id="@+id/input_text"
+        android:id="@+id/speech_input"
         android:layout_width="385dp"
         android:layout_height="120dp"
         android:layout_marginTop="5dp"
+        android:textColor="@color/black"
+        android:background="@drawable/border"
+        android:textSize="18sp"
         android:scrollbars="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,20 +59,18 @@
         android:id="@+id/translate_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="150dp"
+        android:layout_marginTop="20dp"
         android:text="Translate"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/output_text" />
+        app:layout_constraintTop_toBottomOf="@+id/speech_output" />
 
 
     <Button
         android:id="@+id/mic_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="20dp"
         android:text="Tap to Speak"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

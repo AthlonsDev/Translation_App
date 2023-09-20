@@ -261,28 +261,5 @@ class DashboardFragment : Fragment() {
         }
     }
 
-    fun drawDetectionResult(img: InputImage): Bitmap {
-        val bitmap = img.bitmapInternal
-        val tempBitmap = bitmap?.copy(Bitmap.Config.ARGB_8888, true)
-        val canvas = Canvas(tempBitmap!!)
-        val paint = Paint()
-        paint.color = Color.RED
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 4.0f
-
-//        for (obj in detectedObjects) {
-//            val box = obj.boundingBox
-//            canvas.drawRect(box, paint)
-//            val trackingId = obj.trackingId
-//            for (label in obj.labels) {
-//                val text = label.text
-//                val index = label.index
-//                val confidence = label.confidence
-//                val textToShow = "$text $confidence"
-//                canvas.drawText(textToShow, box.left.toFloat(), box.top.toFloat(), paint)
-//            }
-//        }
-        return tempBitmap
-    }
 }
 

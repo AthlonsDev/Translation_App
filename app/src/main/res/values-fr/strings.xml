@@ -16,5 +16,6 @@
     <string name="save_pref_btn">Enregistrer les paramètres</string>
     <string name="camera_label">"Traduire vers: "</string>
     <string name="input_edit_text">Saisir le texte à traduire</string>
+    <string name="translate_from">"Traduir a: "</string>
 
 </resources>

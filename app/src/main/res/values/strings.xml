@@ -54,5 +54,8 @@
     <string name="save_pref_btn">Save Settings</string>
     <string name="camera_label">Translating To:</string>
     <string name="input_edit_text">Enter Text to Translate</string>
+    <string name="translate_from">Translate From</string>
+    <string name="speech_input">Waiting For Speech</string>
+    <string name="speech_output">Waiting for Translation</string>
 
 </resources>

@@ -16,5 +16,8 @@
     <string name="save_pref_btn">Salva Impostazioni</string>
     <string name="camera_label">"Traduce In: "</string>
     <string name="input_edit_text">Inserire Testo da Tradurre</string>
+    <string name="translate_from">"Tradurre da: "</string>
+    <string name="speech_input">Aspettando Voce</string>
+    <string name="speech_output">Aspettando per Tradurre</string>
 
 </resources>
