@@ -52,14 +52,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val textSettings = findPreference<Preference>(getString(R.string.text_language))
         val saveButton = findPreference<Preference>(getString(R.string.save_pref_btn))
 
+        saveButton?.setIcon(androidx.appcompat.R.drawable.abc_ratingbar_indicator_material)
+
         saveButton?.setOnPreferenceClickListener {
             val setAct = SettingsActivity()
             setAct.checkData()
             true
-        }
-
-        if(speechInput != "Not Set" || speechOutput != "Not Set" || cameraOutput != "Not Set" || textOutput != "Not Set" || alphabet != "Not Set") {
-            saveButton?.isVisible = false
         }
 
         readData(speechLanguageInput)
@@ -67,6 +65,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         readData(alphabetInput)
         readData(cameraLanguage)
         readData(textLanguage)
+
+//        if(speechInput != "Not Set" || speechOutput != "Not Set" || cameraOutput != "Not Set" || textOutput != "Not Set" || alphabet != "Not Set") {
+//            saveButton?.isVisible = false
+//        }
 
         var speechInputText = getString(R.string.speech_language_1)
         var speechOutputText = getString(R.string.speech_language_2)
@@ -158,18 +160,33 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val value = preferences?.get(key)
             if (key == speechLanguageInput) {
                 speechInput = value.toString()
+                if(speechInput == null) {
+                    speechInput = "Not Set"
+                }
             }
             if (key == speechLanguageOutput) {
                 speechOutput = value.toString()
+                if (speechOutput == null) {
+                    speechOutput = "Not Set"
+                }
             }
             if (key == alphabetInput) {
                 alphabet = value.toString()
+                if (alphabet == null) {
+                    alphabet = "Not Set"
+                }
             }
             if (key == cameraLanguage) {
                 cameraOutput = value.toString()
+                if (cameraOutput == null) {
+                    cameraOutput = "Not Set"
+                }
             }
             if (key == textLanguage) {
                 textOutput = value.toString()
+                if (textOutput == null) {
+                    textOutput = "Not Set"
+                }
             }
 
         }

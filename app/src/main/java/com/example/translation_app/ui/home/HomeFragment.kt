@@ -121,15 +121,26 @@ class HomeFragment : Fragment(), RecognitionListener {
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
                     RecSpeech()
-                    binding.micButton.setText("Listening...")
+//                    binding.micButton.setText("Listening...")
+//                    binding.micButton.setBackgroundResource(R.drawable.presence_audio_online)
                 }
                 MotionEvent.ACTION_UP -> {
                     speechRecognizer.stopListening()
-                    binding.micButton.setText("Tap to Speak")
+//                    binding.micButton.setText("Tap to Speak")
                 }
             }
             v?.onTouchEvent(event) ?: true
         })
+
+
+        binding.switchButton.setOnClickListener {
+//            switch target and source languages
+            val temp = inputLanguage
+            inputLanguage = Locale(targetLanguage).getDisplayName(Locale(targetLanguage)).let { Locale(it) }
+            targetLanguage = temp.toString()
+            binding.textView.text = "${getString(R.string.speech_input)} - ${inputLanguage.getDisplayName(inputLanguage)}"
+            binding.textView2.text = "${getString(R.string.speech_output)} - ${targetLanguage}"
+        }
 
 
         if(ContextCompat.checkSelfPermission(requireContext(), Constants.REQUIRED_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED){

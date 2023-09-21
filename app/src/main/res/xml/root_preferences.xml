@@ -46,9 +46,11 @@
         android:key="@string/text_language"
         app:title="@string/text_language" />
     <Preference
+        android:background="@drawable/camera_border_2"
         android:defaultValue="Default value"
         android:key="@string/save_pref_btn"
         android:selectAllOnFocus="true"
+        android:theme="@style/PreferencesTheme"
         android:title="@string/save_pref_btn"
         app:iconSpaceReserved="true" />
 
