@@ -34,7 +34,7 @@ class TextRecognition: Activity() {
     var listener: Listener? = null
 
 
-    fun initTextRec(image: InputImage, alphabet: String, imageProxy: ImageProxy, imageView: ImageView, param: (String) -> Unit) {
+    fun initTextRec(image: InputImage, alphabet: String, param: (String) -> Unit) {
         var recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         when (alphabet) {
             "Latin" -> {
@@ -61,40 +61,8 @@ class TextRecognition: Activity() {
             .addOnSuccessListener { visionText ->
                 // Task completed successfully
                 //set param to visionText
-//                param(visionText.text)
-                for (block in visionText.textBlocks) {
-                    val boundingBox = block.boundingBox // Rect of the block
-                    val cornerPoints = block.cornerPoints // List of Points of the block
-                    val text = block.text   // String of the block
-
-                    val canvas = Canvas()
-                    val paint = Paint()
-                    paint.color = Color.RED
-                    paint.style = Paint.Style.STROKE
-                    paint.strokeWidth = 4.0f
-
-
-
-                    // Draw bounding box around each block
-                    canvas.drawRect(boundingBox!!, paint) // Draw on Canvas
-                    imageView.draw(canvas)  // Draw on ImageView
-
-
-                    for (line in block.lines) {
-                        // ...
-
-                        for (element in line.elements) {
-                            // ...
-                        }
-                    }
-                }
-                imageProxy.close()
+                param(visionText.text)
             }
-            .addOnFailureListener { e ->
-                param("Failed to recognize text ${e.message}")
-                imageProxy.close()
-            }
-
     }
 
     fun identifyLanguage(text: String, param: (String) -> Unit) {

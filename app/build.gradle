@@ -71,11 +71,11 @@ dependencies {
     implementation 'org.tensorflow:tensorflow-lite-metadata:0.1.0'
 
     // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:32.2.0"))
+//    implementation(platform("com.google.firebase:firebase-bom:32.2.0"))
 
     // Add the dependency for the Firebase ML model downloader library
     // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-ml-modeldownloader-ktx")
+//    implementation("com.google.firebase:firebase-ml-modeldownloader-ktx")
 
     // Also add the dependency for the TensorFlow Lite library and specify its version
     implementation("org.tensorflow:tensorflow-lite:2.13.0")
@@ -115,4 +115,9 @@ dependencies {
 
 //    coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+
+    //Google Ads Dependencies
+//    implementation 'com.google.android.gms:play-services-ads:22.4.0'
+//    implementation 'com.google.guava:guava:27.0.1-android'
+
 }

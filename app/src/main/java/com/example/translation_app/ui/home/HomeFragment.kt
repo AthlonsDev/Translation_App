@@ -28,7 +28,6 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.translation_app.CameraActivity
 import com.example.translation_app.Constants
 import com.example.translation_app.EntityExtraction
 import com.example.translation_app.GalleryActivity
@@ -53,6 +52,7 @@ import java.util.prefs.Preferences
 import kotlin.coroutines.coroutineContext
 
 
+
 // At the top level of your kotlin file:
 //val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings").getValue(this, SettingsFragment.SPEECH_LANGUAGE_1)
 class HomeFragment : Fragment(), RecognitionListener {
@@ -64,10 +64,12 @@ class HomeFragment : Fragment(), RecognitionListener {
     private val binding get() = _binding!!
 
 
+
     var speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
     private var tts: TextToSpeech? = null
     lateinit var inputLanguage: Locale
     lateinit var targetLanguage: String
+//    lateinit var adView: AdView
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -81,16 +83,22 @@ class HomeFragment : Fragment(), RecognitionListener {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val translator = Translator()
+//        MobileAds.initialize(requireContext()) {
+//            adView = binding.adView
+//            adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+//            val adRequest = AdRequest.Builder().build()
+//            adView.loadAd(adRequest)
+//        }
 
+
+
+        val translator = Translator()
 
         binding.speechInput.movementMethod = ScrollingMovementMethod()
         binding.speechOutput.movementMethod = ScrollingMovementMethod()
 
         readData()
 
-
-        homeViewModel.manageLanguageModels()
 
         // Set up the text to speech
         tts = TextToSpeech(requireContext()) { status ->
@@ -114,7 +122,6 @@ class HomeFragment : Fragment(), RecognitionListener {
                 }
             }
         }
-        homeViewModel.manageLanguageModels()
 
         val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
         binding.micButton.setOnTouchListener(OnTouchListener { v, event ->

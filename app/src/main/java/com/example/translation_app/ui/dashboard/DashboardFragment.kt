@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -37,6 +38,7 @@ import com.example.translation_app.R
 import com.example.translation_app.TextRecognition
 import com.example.translation_app.dataStore
 import com.example.translation_app.databinding.FragmentDashboardBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -45,6 +47,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.File
+import java.io.FileDescriptor
+import java.io.IOException
+import java.net.URL
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.coroutines.coroutineContext
@@ -78,7 +83,7 @@ class DashboardFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val dashboardViewModel =
+        val viewModel =
             ViewModelProvider(this).get(DashboardViewModel::class.java)
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
@@ -94,7 +99,31 @@ class DashboardFragment : Fragment() {
             binding.outputText.text = translatedText
         }
 
-//        binding.inputText.movementMethod = ScrollingMovementMethod()
+        binding.fab.setOnClickListener {
+            if(binding.fab2.visibility == View.VISIBLE) {
+                binding.fab2.visibility = View.INVISIBLE
+                binding.fab3.visibility = View.INVISIBLE
+                binding.fab2.isClickable = false
+                binding.fab3.isClickable = false
+                binding.previewImage.setImageBitmap(null)
+            } else {
+                binding.fab2.visibility = View.VISIBLE
+                binding.fab3.visibility = View.VISIBLE
+                binding.fab2.isClickable = true
+                binding.fab3.isClickable = true
+            }
+        }
+
+        binding.fab2.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            startActivityForResult(intent, pickImage)
+        }
+
+        binding.fab3.setOnClickListener {
+            imageFromUrl(URL("https://shop.signbox.co.uk/uploads/assets/2018%20-%20Assets/STATUTORY/Safety%20%26%20Pictogram%20Signs/Action/Action%20Prohibition/Prohibition%20FOAM-02.jpg"))
+        }
+
         binding.outputText.movementMethod = ScrollingMovementMethod()
 
 //        Camera Permissions
@@ -122,7 +151,6 @@ class DashboardFragment : Fragment() {
 
         readData()
 
-//        binding.outputText.visibility = View.INVISIBLE
 
         return root
     }
@@ -227,8 +255,63 @@ class DashboardFragment : Fragment() {
         if(resultCode == AppCompatActivity.RESULT_OK && requestCode == pickImage) {
             imageUri = data?.data
 //            binding.previewImage.setImageURI(imageUri)
-//            imageToBitmap(imageUri!!)
+            imageToBitmap(imageUri!!)
         }
+    }
+
+    fun imageFromUrl(url: URL) {
+        try {
+            val image = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+            binding.previewImage.setImageBitmap(image)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun imageToBitmap(uri: Uri) {
+        try {
+            val parcelFileDescriptor = requireContext().contentResolver.openFileDescriptor(imageUri!!, "r")
+            val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+            val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+            parcelFileDescriptor.close()
+
+            val inputImage = InputImage.fromBitmap(image, 0)
+            val textRecognition = TextRecognition()
+            binding.previewImage.setImageBitmap(image)
+            textRecognition.initTextRec(inputImage, alphabet) { text ->
+                textRecognition.identifyLanguage(text) {
+                    textRecognition.initTranslator(text, it, targetLanguage) {
+                        translatedText = it
+                        binding.outputText.text = translatedText
+                    }
+                }
+            }
+
+
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+//        val bitmap = Bitmap.createBitmap(binding.preview.width, binding.preview.height, Bitmap.Config.ARGB_8888)
+//        val canvas = Canvas(bitmap)
+//        binding.preview.draw(canvas)
+//        bmp = bitmap
+//        val inputImage = InputImage.fromBitmap(bmp!!, 0)
+//        val recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+//        recognizer.process(inputImage)
+//            .addOnSuccessListener { visionText ->
+//                val inputText = visionText.text
+//                val rec = TextRecognition()
+//                rec.identifyLanguage(targetLanguage) {
+//                    rec.initTranslator(inputText, it, targetLanguage) {
+//                        translatedText = it
+//                        binding.outputText.text = translatedText
+//                    }
+//                }
+//            }
+//            .addOnFailureListener { e ->
+//                binding.outputText.text = "Failed to recognize text ${e.message}"
+//            }
     }
 
 

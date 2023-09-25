@@ -44,14 +44,20 @@ class TextFragment: Fragment() {
 
         readData()
 
+//        textViewModel.outputText.observe(viewLifecycleOwner) {
+//            binding.outputText.text = it
+//        }
+
 
         val translator = Translator()
         binding.buttonTranslate.setOnClickListener {
-            translator.identifyLanguage(binding.inputEditText.text.toString()) { result ->
-                translator.initTranslator(binding.inputEditText.text.toString(), result, targetLanguage) { result ->
-                    binding.outputText.text = result
-                }
-            }
+//            translator.identifyLanguage(binding.inputEditText.text.toString()) { result ->
+//                translator.initTranslator(binding.inputEditText.text.toString(), result, targetLanguage) { result ->
+//                    binding.outputText.text = result
+//                }
+//            }
+
+            binding.outputText.text = "Translating..."
 
         }
 
