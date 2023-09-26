@@ -8,7 +8,6 @@
     tools:context=".ui.dashboard.DashboardFragment">
 
 
-
     <androidx.camera.view.PreviewView
         android:id="@+id/preview"
         android:layout_width="397dp"
@@ -100,5 +99,30 @@
         android:src="@android:drawable/stat_notify_more"
         app:layout_constraintBottom_toTopOf="@+id/fab2"
         app:layout_constraintEnd_toEndOf="@+id/fab2" />
+
+    <EditText
+        android:id="@+id/url_edit_text"
+        android:layout_width="266dp"
+        android:layout_height="51dp"
+        android:background="@drawable/border"
+        android:clickable="false"
+        android:ems="10"
+        android:hint="URL"
+        android:inputType="text|textUri"
+        android:textColor="@color/black"
+        android:visibility="invisible"
+        android:windowSoftInputMode="adjustPan"
+        app:layout_constraintBottom_toBottomOf="@+id/preview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/url_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/preview"
+        app:layout_constraintEnd_toEndOf="@+id/url_edit_text" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -51,14 +51,11 @@ class TextFragment: Fragment() {
 
         val translator = Translator()
         binding.buttonTranslate.setOnClickListener {
-//            translator.identifyLanguage(binding.inputEditText.text.toString()) { result ->
-//                translator.initTranslator(binding.inputEditText.text.toString(), result, targetLanguage) { result ->
-//                    binding.outputText.text = result
-//                }
-//            }
-
-            binding.outputText.text = "Translating..."
-
+            translator.identifyLanguage(binding.inputEditText.text.toString()) { result ->
+                translator.initTranslator(binding.inputEditText.text.toString(), result, targetLanguage) { result ->
+                    binding.outputText.text = result
+                }
+            }
         }
 
         return root

@@ -1,6 +1,7 @@
 package com.example.translation_app.ui.dashboard
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -20,6 +21,8 @@ import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -28,7 +31,6 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.size
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -38,10 +40,10 @@ import com.example.translation_app.R
 import com.example.translation_app.TextRecognition
 import com.example.translation_app.dataStore
 import com.example.translation_app.databinding.FragmentDashboardBinding
-import com.google.android.material.snackbar.Snackbar
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -49,7 +51,6 @@ import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileDescriptor
 import java.io.IOException
-import java.net.URL
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.coroutines.coroutineContext
@@ -72,7 +73,6 @@ class DashboardFragment : Fragment() {
     private val binding get() = _binding!!
     private val pickImage = 100
     private var imageUri: Uri? = null
-    var bmp: Bitmap? = null
     lateinit var alphabet: String
     lateinit var targetLanguage: String
     lateinit var translatedText: String
@@ -88,12 +88,6 @@ class DashboardFragment : Fragment() {
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-
-//        binding.galleryBtn.setOnClickListener {
-//            val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-//            startActivityForResult(gallery, pickImage)
-//        }
 
         binding.cameraBtn.setOnClickListener {
             binding.outputText.text = translatedText
@@ -120,8 +114,47 @@ class DashboardFragment : Fragment() {
             startActivityForResult(intent, pickImage)
         }
 
+
         binding.fab3.setOnClickListener {
-            imageFromUrl(URL("https://shop.signbox.co.uk/uploads/assets/2018%20-%20Assets/STATUTORY/Safety%20%26%20Pictogram%20Signs/Action/Action%20Prohibition/Prohibition%20FOAM-02.jpg"))
+            if (binding.urlButton.visibility == View.VISIBLE) {
+                binding.urlButton.visibility = View.INVISIBLE
+                binding.urlEditText.visibility = View.INVISIBLE
+                binding.urlButton.isClickable = false
+                binding.urlEditText.isClickable = false
+                binding.previewImage.setImageBitmap(null)
+            }
+            binding.urlEditText.visibility = View.VISIBLE
+            binding.urlEditText.isClickable = true
+            binding.urlEditText.isSelected = true
+
+            binding.urlButton.visibility = View.VISIBLE
+            binding.urlButton.isClickable = true
+            binding.urlEditText.isFocusableInTouchMode = true
+            binding.urlEditText.isFocusable = true
+
+            binding.urlEditText.requestFocus()
+
+            // open keyboard
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.urlEditText, InputMethodManager.SHOW_IMPLICIT)
+
+//            imageFromUrl("https://shop.signbox.co.uk/uploads/assets/2018%20-%20Assets/STATUTORY/Safety%20%26%20Pictogram%20Signs/Action/Action%20Prohibition/Prohibition%20FOAM-02.jpg")
+        }
+
+        binding.urlButton.setOnClickListener {
+            val url = binding.urlEditText.text.toString()
+//            imageFromUrl(url)
+            //hide button and edittext and keyboard
+            binding.urlButton.visibility = View.INVISIBLE
+            binding.urlButton.isClickable = false
+            binding.urlEditText.visibility = View.INVISIBLE
+            binding.urlEditText.isClickable = false
+            binding.urlEditText.isSelected = false
+            binding.urlEditText.clearFocus()
+
+            hideKeyboardFrom(requireContext(), binding.urlEditText)
+
+            imageFromUrl(url)
         }
 
         binding.outputText.movementMethod = ScrollingMovementMethod()
@@ -155,6 +188,20 @@ class DashboardFragment : Fragment() {
         return root
     }
 
+    fun hideKeyboardFrom(context: Context, view: View) {
+        val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+    fun hideKeyboard(activity: Activity) {
+        val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
     fun allPermissionGranted(context: Context) =
         Constants.REQUIRED_PERMISSIONS.all {
             ContextCompat.checkSelfPermission(
@@ -259,14 +306,51 @@ class DashboardFragment : Fragment() {
         }
     }
 
-    fun imageFromUrl(url: URL) {
-        try {
-            val image = BitmapFactory.decodeStream(url.openConnection().getInputStream())
-            binding.previewImage.setImageBitmap(image)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+    private var target: Target? = null
+//    fun getPosterBitmap(): Bitmap? {
+//        var posterBitmap: Bitmap? = null
+//        target = object : Target() {
+//            fun onBitmapLoaded(bitmap: Bitmap, from: LoadedFrom?) {
+//                posterBitmap = bitmap
+//            }
+//
+//            fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {}
+//            fun onPrepareLoad(placeHolderDrawable: Drawable?) {}
+//        }
+//        return posterBitmap
+//    }
+
+    fun imageFromUrl(url: String) {
+
+        Picasso.get()
+            .load(url)
+            .into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    binding.previewImage.setImageBitmap(bitmap)
+                    val inputImage = InputImage.fromBitmap(bitmap!!, 0)
+                    val textRecognition = TextRecognition()
+                    textRecognition.initTextRec(inputImage, alphabet) { text ->
+                        textRecognition.identifyLanguage(text) {
+                            textRecognition.initTranslator(text, it, targetLanguage) {
+                                translatedText = it
+                                binding.outputText.text = translatedText
+                            }
+                        }
+                    }
+                }
+                override fun onBitmapFailed(e: Exception?, errorDrawable: android.graphics.drawable.Drawable?) {
+                    Toast.makeText(requireContext(), "Failed to load image ${e.toString()}", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onPrepareLoad(placeHolderDrawable: android.graphics.drawable.Drawable?) {
+                    Toast.makeText(requireContext(), "Loading image...", Toast.LENGTH_SHORT).show()
+                }
+            })
+
+
+
     }
+
 
     private fun imageToBitmap(uri: Uri) {
         try {
@@ -345,4 +429,3 @@ class DashboardFragment : Fragment() {
     }
 
 }
-
