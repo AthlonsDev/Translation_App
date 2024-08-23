@@ -93,69 +93,7 @@ class DashboardFragment : Fragment() {
             binding.outputText.text = translatedText
         }
 
-        binding.fab.setOnClickListener {
-            if(binding.fab2.visibility == View.VISIBLE) {
-                binding.fab2.visibility = View.INVISIBLE
-                binding.fab3.visibility = View.INVISIBLE
-                binding.fab2.isClickable = false
-                binding.fab3.isClickable = false
-                binding.previewImage.setImageBitmap(null)
-            } else {
-                binding.fab2.visibility = View.VISIBLE
-                binding.fab3.visibility = View.VISIBLE
-                binding.fab2.isClickable = true
-                binding.fab3.isClickable = true
-            }
-        }
 
-        binding.fab2.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK)
-            intent.type = "image/*"
-            startActivityForResult(intent, pickImage)
-        }
-
-
-        binding.fab3.setOnClickListener {
-            if (binding.urlButton.visibility == View.VISIBLE) {
-                binding.urlButton.visibility = View.INVISIBLE
-                binding.urlEditText.visibility = View.INVISIBLE
-                binding.urlButton.isClickable = false
-                binding.urlEditText.isClickable = false
-                binding.previewImage.setImageBitmap(null)
-            }
-            binding.urlEditText.visibility = View.VISIBLE
-            binding.urlEditText.isClickable = true
-            binding.urlEditText.isSelected = true
-
-            binding.urlButton.visibility = View.VISIBLE
-            binding.urlButton.isClickable = true
-            binding.urlEditText.isFocusableInTouchMode = true
-            binding.urlEditText.isFocusable = true
-
-            binding.urlEditText.requestFocus()
-
-            // open keyboard
-            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(binding.urlEditText, InputMethodManager.SHOW_IMPLICIT)
-
-//            imageFromUrl("https://shop.signbox.co.uk/uploads/assets/2018%20-%20Assets/STATUTORY/Safety%20%26%20Pictogram%20Signs/Action/Action%20Prohibition/Prohibition%20FOAM-02.jpg")
-        }
-
-        binding.urlButton.setOnClickListener {
-            val url = binding.urlEditText.text.toString()
-//            imageFromUrl(url)
-            //hide button and edittext and keyboard
-            binding.urlButton.visibility = View.INVISIBLE
-            binding.urlButton.isClickable = false
-            binding.urlEditText.visibility = View.INVISIBLE
-            binding.urlEditText.isClickable = false
-            binding.urlEditText.isSelected = false
-            binding.urlEditText.clearFocus()
-
-            hideKeyboardFrom(requireContext(), binding.urlEditText)
-
-            imageFromUrl(url)
-        }
 
         binding.outputText.movementMethod = ScrollingMovementMethod()
 
@@ -398,6 +336,72 @@ class DashboardFragment : Fragment() {
 //            }
     }
 
+    private fun floatingButtons() {
+        binding.fab.setOnClickListener {
+            if(binding.fab2.visibility == View.VISIBLE) {
+                binding.fab2.visibility = View.INVISIBLE
+                binding.fab3.visibility = View.INVISIBLE
+                binding.fab2.isClickable = false
+                binding.fab3.isClickable = false
+                binding.previewImage.setImageBitmap(null)
+            } else {
+                binding.fab2.visibility = View.VISIBLE
+                binding.fab3.visibility = View.VISIBLE
+                binding.fab2.isClickable = true
+                binding.fab3.isClickable = true
+                binding.fab.background = resources.getDrawable(com.google.android.material.R.drawable.ic_clear_black_24)
+            }
+        }
+
+        binding.fab2.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            startActivityForResult(intent, pickImage)
+        }
+
+
+        binding.fab3.setOnClickListener {
+            if (binding.urlButton.visibility == View.VISIBLE) {
+                binding.urlButton.visibility = View.INVISIBLE
+                binding.urlEditText.visibility = View.INVISIBLE
+                binding.urlButton.isClickable = false
+                binding.urlEditText.isClickable = false
+                binding.previewImage.setImageBitmap(null)
+            }
+            binding.urlEditText.visibility = View.VISIBLE
+            binding.urlEditText.isClickable = true
+            binding.urlEditText.isSelected = true
+
+            binding.urlButton.visibility = View.VISIBLE
+            binding.urlButton.isClickable = true
+            binding.urlEditText.isFocusableInTouchMode = true
+            binding.urlEditText.isFocusable = true
+
+            binding.urlEditText.requestFocus()
+
+            // open keyboard
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(binding.urlEditText, InputMethodManager.SHOW_IMPLICIT)
+
+//            imageFromUrl("https://shop.signbox.co.uk/uploads/assets/2018%20-%20Assets/STATUTORY/Safety%20%26%20Pictogram%20Signs/Action/Action%20Prohibition/Prohibition%20FOAM-02.jpg")
+        }
+
+        binding.urlButton.setOnClickListener {
+            val url = binding.urlEditText.text.toString()
+//            imageFromUrl(url)
+            //hide button and edittext and keyboard
+            binding.urlButton.visibility = View.INVISIBLE
+            binding.urlButton.isClickable = false
+            binding.urlEditText.visibility = View.INVISIBLE
+            binding.urlEditText.isClickable = false
+            binding.urlEditText.isSelected = false
+            binding.urlEditText.clearFocus()
+
+            hideKeyboardFrom(requireContext(), binding.urlEditText)
+
+            imageFromUrl(url)
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

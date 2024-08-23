@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.translation_app.R
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.nl.languageid.LanguageIdentification
@@ -21,9 +22,17 @@ class HomeViewModel : ViewModel() {
 
     var identifiedLanguage = ""
 
-    val text: LiveData<String> = _text
+    private val _inputText = MutableLiveData<String>().apply {
+        value = R.string.speech_input.toString()
+    }
+
+    private val _outText = MutableLiveData<String>().apply {
+        value = R.string.speech_output.toString()
+    }
 
 
+    val inputText: LiveData<String> = _inputText
+    val outText: LiveData<String> = _outText
 
 
 }

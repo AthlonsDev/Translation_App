@@ -26,62 +26,62 @@ import kotlin.coroutines.coroutineContext
 
 class TextFragment: Fragment() {
 
-    private var _binding: FragmentTextBinding? = null
-    private lateinit var targetLanguage: String
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val textViewModel =
-            ViewModelProvider(this).get(TextFragmentViewModel::class.java)
-
-        _binding = FragmentTextBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-
-        readData()
-
-//        textViewModel.outputText.observe(viewLifecycleOwner) {
-//            binding.outputText.text = it
+//    private var _binding: FragmentTextBinding? = null
+//    private lateinit var targetLanguage: String
+//    private val binding get() = _binding!!
+//
+//    override fun onCreateView(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View {
+//        val textViewModel =
+//            ViewModelProvider(this).get(TextFragmentViewModel::class.java)
+//
+//        _binding = FragmentTextBinding.inflate(inflater, container, false)
+//        val root: View = binding.root
+//
+//
+//        readData()
+//
+////        textViewModel.outputText.observe(viewLifecycleOwner) {
+////            binding.outputText.text = it
+////        }
+//
+//
+//        val translator = Translator()
+//        binding.buttonTranslate.setOnClickListener {
+//            translator.identifyLanguage(binding.inputEditText.text.toString()) { result ->
+//                translator.initTranslator(binding.inputEditText.text.toString(), result, targetLanguage) { result ->
+//                    binding.outputText.text = result
+//                }
+//            }
 //        }
-
-
-        val translator = Translator()
-        binding.buttonTranslate.setOnClickListener {
-            translator.identifyLanguage(binding.inputEditText.text.toString()) { result ->
-                translator.initTranslator(binding.inputEditText.text.toString(), result, targetLanguage) { result ->
-                    binding.outputText.text = result
-                }
-            }
-        }
-
-        return root
-    }
-
-    fun readData() = runBlocking {
-        launch {
-            readUserPreferences()
-        }
-    }
-
-    suspend fun readUserPreferences() {
-        with(CoroutineScope(coroutineContext)) {
-            val dataoutputKey = stringPreferencesKey("text_language")
-            val preferences = context?.dataStore?.data?.first()
-            val textLanguageOutput = preferences?.get(dataoutputKey)
-            targetLanguage = textLanguageOutput.toString()
-            val translator = Translator()
-            translator.identifyLanguage(targetLanguage) { result ->
-                targetLanguage = result
-            }
-            val textLang = getString(R.string.camera_label)
-            binding.textLabel.text = "$textLang - ${textLanguageOutput.toString()}"
-        }
-    }
-
+//
+//        return root
+//    }
+//
+//    fun readData() = runBlocking {
+//        launch {
+//            readUserPreferences()
+//        }
+//    }
+//
+//    suspend fun readUserPreferences() {
+//        with(CoroutineScope(coroutineContext)) {
+//            val dataoutputKey = stringPreferencesKey("text_language")
+//            val preferences = context?.dataStore?.data?.first()
+//            val textLanguageOutput = preferences?.get(dataoutputKey)
+//            targetLanguage = textLanguageOutput.toString()
+//            val translator = Translator()
+//            translator.identifyLanguage(targetLanguage) { result ->
+//                targetLanguage = result
+//            }
+//            val textLang = getString(R.string.camera_label)
+//            binding.textLabel.text = "$textLang - ${textLanguageOutput.toString()}"
+//        }
+//    }
+//
 
 }
 

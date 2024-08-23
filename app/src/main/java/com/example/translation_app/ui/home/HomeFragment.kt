@@ -2,7 +2,7 @@ package com.example.translation_app.ui.home
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
-import android.content.Context
+//import android.app.Fragment
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -17,45 +17,32 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.fragment.app.Fragment
+//import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.translation_app.CameraActivity
 import com.example.translation_app.Constants
-import com.example.translation_app.EntityExtraction
-import com.example.translation_app.GalleryActivity
 import com.example.translation_app.R
-import com.example.translation_app.SettingsFragment
 import com.example.translation_app.Translator
 import com.example.translation_app.dataStore
 import com.example.translation_app.databinding.FragmentHomeBinding
-import com.google.mlkit.nl.languageid.LanguageIdentification
-import com.google.mlkit.nl.translate.TranslateLanguage
-import com.google.mlkit.nl.translate.Translation
-import com.google.mlkit.nl.translate.TranslatorOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.Locale
 import java.util.Objects
-import java.util.concurrent.Flow
-import java.util.prefs.Preferences
 import kotlin.coroutines.coroutineContext
 
 
 
 // At the top level of your kotlin file:
 //val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings").getValue(this, SettingsFragment.SPEECH_LANGUAGE_1)
-class HomeFragment : Fragment(), RecognitionListener {
+class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -111,6 +98,14 @@ class HomeFragment : Fragment(), RecognitionListener {
 //        homeViewModel.text.observe(viewLifecycleOwner) {
 //            textView.text = it
 //        }
+        val input: TextView = binding.textView
+        homeViewModel.inputText.observe(viewLifecycleOwner) {
+            input.text = it
+        }
+        val output: TextView = binding.textView2
+        homeViewModel.outText.observe(viewLifecycleOwner) {
+            output.text = it
+        }
         val button: TextView = binding.translateButton
         button.setOnClickListener {
             val inputString = binding.speechInput.text.toString()
@@ -145,8 +140,8 @@ class HomeFragment : Fragment(), RecognitionListener {
             val temp = inputLanguage
             inputLanguage = Locale(targetLanguage).getDisplayName(Locale(targetLanguage)).let { Locale(it) }
             targetLanguage = temp.toString()
-            binding.textView.text = "${getString(R.string.speech_input)} - ${inputLanguage.getDisplayName(inputLanguage)}"
-            binding.textView2.text = "${getString(R.string.speech_output)} - ${targetLanguage}"
+            binding.textView.text = "${homeViewModel.inputText} - ${inputLanguage.getDisplayName(inputLanguage)}"
+            binding.textView2.text = "${homeViewModel.outText} - ${inputLanguage.getDisplayName(inputLanguage)}"
         }
 
 
@@ -156,6 +151,12 @@ class HomeFragment : Fragment(), RecognitionListener {
 
         binding.speechInput.text = getString(R.string.speech_input)
         binding.speechOutput.text = getString(R.string.speech_output)
+
+        val cameraButton = binding.cameraButton
+        cameraButton.setOnClickListener {
+            val intent = Intent(activity, CameraActivity::class.java)
+            startActivity(intent)
+        }
 
         return root
     }
@@ -179,8 +180,8 @@ class HomeFragment : Fragment(), RecognitionListener {
             translator.identifyLanguage(targetLanguage) { result ->
                 targetLanguage = result
             }
-            binding.textView.text = "${getString(R.string.speech_input)} - ${speechLanguageInput.toString()}"
-            binding.textView2.text = "${getString(R.string.speech_output)} - ${speechLanguageOutput.toString()}"
+//            binding.textView.text = "${getString(R.string.speech_input)} - ${speechLanguageInput.toString()}"
+//            binding.textView2.text = "${getString(R.string.speech_output)} - ${speechLanguageOutput.toString()}"
         }
     }
 

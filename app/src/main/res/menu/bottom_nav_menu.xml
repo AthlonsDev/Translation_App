@@ -12,11 +12,6 @@
         android:title="@string/title_dashboard" />
 
     <item
-        android:id="@+id/navigation_text"
-        android:icon="@android:drawable/sym_action_email"
-        android:title="@string/title_text" />
-
-    <item
         android:id="@+id/navigation_notifications"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="@string/title_notifications" />

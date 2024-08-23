@@ -8,13 +8,21 @@
 
     <androidx.camera.view.PreviewView
         android:id="@+id/preview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
-
+        android:layout_width="411dp"
+        android:layout_height="257dp"
+        android:background="@drawable/camera_border"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
     </androidx.camera.view.PreviewView>
 
+    <ImageView
+        android:id="@+id/preview_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/preview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/Photo_Button"
@@ -26,5 +34,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
+
+    <TextView
+        android:id="@+id/image_text"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="128dp"
+        android:text="TextView"
+        android:background="@drawable/border"
+        app:layout_constraintBottom_toTopOf="@+id/Photo_Button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/preview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
