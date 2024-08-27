@@ -57,7 +57,7 @@ class CameraActivity: AppCompatActivity() {
         private lateinit var cameraExecutor: ExecutorService
         private var imageUri: Uri? = null
         lateinit var alphabet: String
-        private var targetLanguage = ""
+        private var targetLanguage = "it"
         private var translatedText = ""
         lateinit var customView: CustomView
         //
@@ -139,7 +139,7 @@ class CameraActivity: AppCompatActivity() {
                 }
             }, ContextCompat.getMainExecutor(this))
         }
-        //
+
         private fun getOutputDirectory(): File {
             val mediaDir = externalMediaDirs.firstOrNull()?.let {
                 File(it, resources.getString(R.string.app_name)).apply {
@@ -151,7 +151,7 @@ class CameraActivity: AppCompatActivity() {
                 mediaDir else filesDir
 
         }
-        //
+
 
     private fun startLiveCamera(cameraProvider: ProcessCameraProvider) {
 
@@ -183,16 +183,20 @@ class CameraActivity: AppCompatActivity() {
 
                         if(visionText.text != "") {
                             binding.preview.setBackgroundResource(R.drawable.camera_border_2)
+                            val inputText = visionText.text
+                            val rec = TextRecognition()
+                            rec.identifyLanguage(inputText) {
+                                if (it == "und") {
+                                    binding.imageText.text = "Language not identified"
+                                }
+                                else {
+                                    rec.initTranslator(inputText, it, targetLanguage) {
+                                        binding.imageText.text = it
+                                    }
+                                }
+                            }
                         } else {
                             binding.preview.setBackgroundResource(R.drawable.camera_border)
-                        }
-
-                        val inputText = visionText.text
-                        val rec = TextRecognition()
-                        rec.identifyLanguage(targetLanguage) {
-                            rec.initTranslator(inputText, it, targetLanguage) {
-                                translatedText = it
-                            }
                         }
 
                         imageProxy.close()
@@ -225,6 +229,7 @@ class CameraActivity: AppCompatActivity() {
                                 binding.imageText.text = translatedText
                             }
                         }
+                        binding.imageText.text = translatedText
                     }
                 }
                 override fun onBitmapFailed(e: Exception?, errorDrawable: android.graphics.drawable.Drawable?) {

@@ -70,15 +70,9 @@ class TextRecognition: Activity() {
         var identifiedLanguage = ""
         languageIdentifier.identifyLanguage(text)
             .addOnSuccessListener { languageCode ->
-                if (languageCode == "und") {
-//                    Toast.makeText(this, "Can't identify language.", Toast.LENGTH_SHORT).show()
-                    identifiedLanguage = "Can't identify language."
-                } else {
-                    // The languageCode
 //                    identifiedLanguage = languageCode
-                    identifiedLanguage = languageCode
+                   identifiedLanguage = languageCode
                    param(identifiedLanguage)
-                }
             }
             .addOnFailureListener {
                 // Model couldn’t0 be loaded or other internal error.
