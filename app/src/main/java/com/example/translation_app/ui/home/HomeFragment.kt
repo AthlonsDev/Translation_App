@@ -21,11 +21,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.datastore.preferences.core.stringPreferencesKey
 //import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.translation_app.CameraActivity
 import com.example.translation_app.Constants
+import com.example.translation_app.GalleryActivity
 import com.example.translation_app.R
 import com.example.translation_app.Translator
 import com.example.translation_app.dataStore
@@ -152,9 +154,33 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
         binding.speechInput.text = getString(R.string.speech_input)
         binding.speechOutput.text = getString(R.string.speech_output)
 
+        val extraButton = binding.extraButton
+        extraButton.setOnClickListener {
+//            val intent = Intent(activity, CameraActivity::class.java)
+//            startActivity(intent)
+            if (binding.galleryButton.visibility == View.VISIBLE) {
+                binding.galleryButton.visibility = View.INVISIBLE
+                binding.galleryButton.isClickable = false
+                binding.cameraButton.visibility = View.INVISIBLE
+                binding.cameraButton.isClickable = false
+            }
+            else {
+                binding.galleryButton.visibility = View.VISIBLE
+                binding.galleryButton.isClickable = true
+                binding.cameraButton.visibility = View.VISIBLE
+                binding.cameraButton.isClickable = true
+            }
+        }
+
+        val galleryButton = binding.galleryButton
+        galleryButton.setOnClickListener {
+            val intent = Intent(activity, CameraActivity::class.java)
+            startActivity(intent)
+        }
+
         val cameraButton = binding.cameraButton
         cameraButton.setOnClickListener {
-            val intent = Intent(activity, CameraActivity::class.java)
+            val intent = Intent(activity, GalleryActivity::class.java)
             startActivity(intent)
         }
 

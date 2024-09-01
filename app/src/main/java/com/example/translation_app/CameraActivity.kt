@@ -46,6 +46,7 @@ import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
+
 class CameraActivity: AppCompatActivity() {
         //
         private var imageCapture: ImageCapture?= null
@@ -60,6 +61,7 @@ class CameraActivity: AppCompatActivity() {
         private var targetLanguage = "it"
         private var translatedText = ""
         lateinit var customView: CustomView
+        private val pickImage = 100
         //
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -90,6 +92,9 @@ class CameraActivity: AppCompatActivity() {
             actionbar!!.title = "Detect Text"
             actionbar.setDisplayHomeAsUpEnabled(true)
 
+            binding.PhotoButton.setOnClickListener {
+                binding.imageText.text = translatedText
+            }
 
         }
 
@@ -187,11 +192,11 @@ class CameraActivity: AppCompatActivity() {
                             val rec = TextRecognition()
                             rec.identifyLanguage(inputText) {
                                 if (it == "und") {
-                                    binding.imageText.text = "Language not identified"
+                                    translatedText = "Cannot identify language"
                                 }
                                 else {
                                     rec.initTranslator(inputText, it, targetLanguage) {
-                                        binding.imageText.text = it
+                                        translatedText = it
                                     }
                                 }
                             }
@@ -211,6 +216,15 @@ class CameraActivity: AppCompatActivity() {
         }
 
         cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, imageAnalysis, preview)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == AppCompatActivity.RESULT_OK && requestCode == pickImage) {
+            imageUri = data?.data
+//            binding.previewImage.setImageURI(imageUri)
+            imageToBitmap(imageUri!!)
+        }
     }
 
     fun imageFromUrl(url: String) {
@@ -256,6 +270,9 @@ class CameraActivity: AppCompatActivity() {
             val inputImage = InputImage.fromBitmap(image, 0)
             val textRecognition = TextRecognition()
             binding.previewImage.setImageBitmap(image)
+
+
+
             textRecognition.initTextRec(inputImage, alphabet) { text ->
                 textRecognition.identifyLanguage(text) {
                     textRecognition.initTranslator(text, it, targetLanguage) {
@@ -264,9 +281,6 @@ class CameraActivity: AppCompatActivity() {
                     }
                 }
             }
-
-
-
         } catch (e: IOException) {
             e.printStackTrace()
         }
