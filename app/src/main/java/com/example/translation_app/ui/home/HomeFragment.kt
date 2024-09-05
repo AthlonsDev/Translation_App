@@ -174,13 +174,13 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 
         val galleryButton = binding.galleryButton
         galleryButton.setOnClickListener {
-            val intent = Intent(activity, CameraActivity::class.java)
+            val intent = Intent(activity, GalleryActivity::class.java)
             startActivity(intent)
         }
 
         val cameraButton = binding.cameraButton
         cameraButton.setOnClickListener {
-            val intent = Intent(activity, GalleryActivity::class.java)
+            val intent = Intent(activity, CameraActivity::class.java)
             startActivity(intent)
         }
 

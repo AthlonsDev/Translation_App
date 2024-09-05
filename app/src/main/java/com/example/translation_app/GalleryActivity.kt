@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import com.example.translation_app.databinding.ActivityGalleryBinding
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.squareup.picasso.Picasso
 import java.io.FileDescriptor
 import java.io.IOException
 
@@ -167,6 +168,34 @@ class GalleryActivity: AppCompatActivity() {
                 e.printStackTrace()
             }
         }
+
+//    fun imageFromUrl(url: String) {
+//
+//        Picasso.get()
+//            .load(url)
+//            .into(object : com.squareup.picasso.Target {
+//                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+//                    binding.previewImage.setImageBitmap(bitmap)
+//                    val inputImage = InputImage.fromBitmap(bitmap!!, 0)
+//                    val textRecognition = TextRecognition()
+//                    textRecognition.initTextRec(inputImage, alphabet) { text ->
+//                        textRecognition.identifyLanguage(text) {
+//                            textRecognition.initTranslator(text, it, targetLanguage) {
+//                                translatedText = it
+//                                binding.outputText.text = translatedText
+//                            }
+//                        }
+//                    }
+//                }
+//                override fun onBitmapFailed(e: Exception?, errorDrawable: android.graphics.drawable.Drawable?) {
+//                    Toast.makeText(requireContext(), "Failed to load image ${e.toString()}", Toast.LENGTH_SHORT).show()
+//                }
+//
+//                override fun onPrepareLoad(placeHolderDrawable: android.graphics.drawable.Drawable?) {
+//                    Toast.makeText(requireContext(), "Loading image...", Toast.LENGTH_SHORT).show()
+//                }
+//            })
+//    }
 
     private fun drawRectangle(rect: Rect) {
         customView = CustomView(this, null, rect)
