@@ -58,6 +58,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
     private var tts: TextToSpeech? = null
     lateinit var inputLanguage: Locale
     lateinit var targetLanguage: String
+    lateinit var transcript: String
 //    lateinit var adView: AdView
 
     @SuppressLint("ClickableViewAccessibility")
@@ -83,8 +84,6 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 
         val translator = Translator()
 
-        binding.speechInput.movementMethod = ScrollingMovementMethod()
-        binding.speechOutput.movementMethod = ScrollingMovementMethod()
 
         readData()
 
@@ -100,50 +99,28 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 //        homeViewModel.text.observe(viewLifecycleOwner) {
 //            textView.text = it
 //        }
-        val input: TextView = binding.textView
-        homeViewModel.inputText.observe(viewLifecycleOwner) {
-            input.text = it
-        }
-        val output: TextView = binding.textView2
-        homeViewModel.outText.observe(viewLifecycleOwner) {
-            output.text = it
-        }
-        val button: TextView = binding.translateButton
-        button.setOnClickListener {
-            val inputString = binding.speechInput.text.toString()
-            translator.identifyLanguage(inputString) { result ->
-                inputLanguage = Locale(result)
-                translator.initTranslator(inputString, inputLanguage.toString(), targetLanguage) { result ->
-                        binding.speechOutput.text = result
-                        tts!!.speak(result, TextToSpeech.QUEUE_FLUSH, null, null)
-                }
-            }
-        }
 
         val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
-        binding.micButton.setOnTouchListener(OnTouchListener { v, event ->
+        binding.micButton.setOnTouchListener { v, event ->
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
                     RecSpeech()
-//                    binding.micButton.setText("Listening...")
-//                    binding.micButton.setBackgroundResource(R.drawable.presence_audio_online)
                 }
+
                 MotionEvent.ACTION_UP -> {
                     speechRecognizer.stopListening()
 //                    binding.micButton.setText("Tap to Speak")
                 }
             }
             v?.onTouchEvent(event) ?: true
-        })
+        }
 
+        binding.speechInButton.setOnClickListener {
+            tts!!.speak(transcript, TextToSpeech.QUEUE_FLUSH, null, null)
+        }
 
-        binding.switchButton.setOnClickListener {
-//            switch target and source languages
-            val temp = inputLanguage
-            inputLanguage = Locale(targetLanguage).getDisplayName(Locale(targetLanguage)).let { Locale(it) }
-            targetLanguage = temp.toString()
-            binding.textView.text = "${homeViewModel.inputText} - ${inputLanguage.getDisplayName(inputLanguage)}"
-            binding.textView2.text = "${homeViewModel.outText} - ${inputLanguage.getDisplayName(inputLanguage)}"
+        binding.speechOutButton.setOnClickListener {
+            translateText(transcript, targetLanguage)
         }
 
 
@@ -151,8 +128,6 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             checkPermission();
         }
 
-        binding.speechInput.text = getString(R.string.speech_input)
-        binding.speechOutput.text = getString(R.string.speech_output)
 
         val extraButton = binding.extraButton
         extraButton.setOnClickListener {
@@ -254,6 +229,17 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             })
     }
 
+    private fun translateText(text: String, targetLanguage: String) {
+        val translator = Translator()
+        translator.identifyLanguage(transcript) { result ->
+            inputLanguage = Locale(result)
+            translator.initTranslator(transcript, inputLanguage.toString(), targetLanguage) { result ->
+//                        binding.speechOutput.text = result
+                tts!!.speak(result, TextToSpeech.QUEUE_FLUSH, null, null)
+            }
+        }
+    }
+
     private fun setRecognitionListener (listener: RecognitionListener) {
        val recognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
         recognizer.setRecognitionListener(listener)
@@ -263,13 +249,12 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
     }
 
     override fun onReadyForSpeech(p0: Bundle?) {
-        binding.speechInput.setText("Ready")
         val data = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-        binding.speechOutput.setText(data?.get(0))
+        transcript = data?.get(0).toString()
     }
 
     override fun onBeginningOfSpeech() {
-        binding.speechInput.setText("Listening...")
+
     }
 
     override fun onRmsChanged(p0: Float) {
@@ -281,7 +266,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
     }
 
     override fun onEndOfSpeech() {
-        binding.speechInput.setText("Processing...")
+//        binding.speechInput.setText("Processing...")
     }
 
     override fun onError(p0: Int) {
@@ -290,16 +275,17 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 
     override fun onResults(p0: Bundle?) {
         val data = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-        binding.speechInput.setText(data?.get(0))
+        transcript = data?.get(0).toString()
+        translateText(transcript, targetLanguage)
     }
 
     override fun onPartialResults(p0: Bundle?) {
         val data = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-        binding.speechInput.setText(data?.get(0))
+        transcript = data?.get(0).toString()
     }
 
     override fun onEvent(p0: Int, p1: Bundle?) {
-        binding.speechInput.setText("Event")
+
     }
 
     private fun checkPermission() {
@@ -334,7 +320,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 
                 // on below line we are setting data
                 // to our output text view.
-                binding.speechInput.setText(
+                transcript = (
                     Objects.requireNonNull(res)[0]
 
                 )
