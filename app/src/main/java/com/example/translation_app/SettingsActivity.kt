@@ -1,14 +1,14 @@
 package com.example.translation_app
 
+import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RectShape
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.example.translation_app.databinding.ActivitySettingsBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.coroutines.coroutineContext
 
-
+//val Context.dataStore: DataStore<Preferences> by preferencesDataStore("user_prefs")
 class SettingsActivity: AppCompatActivity() {
 
     var isDataEmpty = true
@@ -34,6 +34,46 @@ class SettingsActivity: AppCompatActivity() {
 
     }
 
+    fun saveUserPref(
+        languageInput1: String,
+        languageInput2: String,
+        languageInput3: String,
+        languageInput4: String,
+        languageInput5: String,
+    ) {
+        val dataOutputKey1 = stringPreferencesKey("speech_language_1")
+        val dataOutputKey2 = stringPreferencesKey("speech_language_2")
+        val dataOutputKey3 = stringPreferencesKey("camera_language")
+        val dataOutputKey4 = stringPreferencesKey("text_language")
+        val dataOutputKey5 = stringPreferencesKey("alphabet_language_1")
+
+        runBlocking {
+            saveUserPreferences(languageInput1, dataOutputKey1)
+            saveUserPreferences(languageInput2, dataOutputKey2)
+            saveUserPreferences(languageInput3, dataOutputKey3)
+            saveUserPreferences(languageInput4, dataOutputKey4)
+            saveUserPreferences(languageInput5, dataOutputKey5)
+        }
+
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+    }
+
+    private suspend fun saveUserPreferences(value: String, key: Preferences.Key<String>) {
+        with(CoroutineScope(coroutineContext)) {
+            launch {
+                this@SettingsActivity.dataStore?.edit { preferences ->
+                    preferences[key] = value
+                }
+            }
+        }
+    }
+
+    fun checkInitData(): Boolean {
+        readData()
+        return isDataEmpty
+    }
+
     fun checkData() {
         readData()
         if (isDataEmpty) {
@@ -41,10 +81,7 @@ class SettingsActivity: AppCompatActivity() {
                 .replace(android.R.id.content, SettingsFragment())
                 .commit()
         }
-        else {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
+
     }
     private fun readData() = runBlocking {
         launch {

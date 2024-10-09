@@ -45,6 +45,11 @@
         android:entryValues="@array/Languages"
         android:key="@string/text_language"
         app:title="@string/text_language" />
+    <PreferenceCategory
+        android:title="Save Preferences"
+        app:key="@string/Camera">
+
+    </PreferenceCategory>
     <Preference
         android:background="@drawable/camera_border_2"
         android:defaultValue="Default value"

@@ -29,6 +29,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.LifecycleOwner
 import com.example.translation_app.Constants
 import com.example.translation_app.MainActivity
@@ -38,6 +39,10 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileDescriptor
 import java.io.IOException
@@ -45,6 +50,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.coroutines.coroutineContext
 
 
 class CameraActivity: AppCompatActivity() {
@@ -58,7 +64,8 @@ class CameraActivity: AppCompatActivity() {
         private lateinit var cameraExecutor: ExecutorService
         private var imageUri: Uri? = null
         lateinit var alphabet: String
-        private var targetLanguage = "it"
+        lateinit var inputLanguage: Locale
+        private var targetLanguage = ""
         private var translatedText = ""
         lateinit var customView: CustomView
         private val pickImage = 100
@@ -96,7 +103,32 @@ class CameraActivity: AppCompatActivity() {
                 binding.imageText.text = translatedText
             }
 
+            readData()
+
         }
+
+    fun readData() = runBlocking {
+        launch {
+            readUserPreferences()
+        }
+    }
+
+    suspend fun readUserPreferences() {
+        with(CoroutineScope(coroutineContext)) {
+            val datainputeKey = stringPreferencesKey("speech_language_1")
+            val dataoutputKey = stringPreferencesKey("speech_language_2")
+            val preferences = this@CameraActivity.dataStore?.data?.first()
+            val speechLanguageInput = preferences?.get(datainputeKey)
+            val speechLanguageOutput = preferences?.get(dataoutputKey)
+            inputLanguage = Locale(speechLanguageInput.toString())
+            targetLanguage = speechLanguageOutput.toString()
+            val translator = Translator()
+            translator.identifyLanguage(targetLanguage) { result ->
+                targetLanguage = result
+            }
+
+        }
+    }
 
         override fun onSupportNavigateUp(): Boolean {
             onBackPressed()
@@ -193,8 +225,11 @@ class CameraActivity: AppCompatActivity() {
                             rec.identifyLanguage(inputText) {
                                 if (it == "und") {
                                     translatedText = "Cannot identify language"
+                                    binding.preview.setBackgroundResource(R.drawable.camera_border)
                                 }
                                 else {
+                                    binding.preview.setBackgroundResource(R.drawable.camera_border_2)
+
                                     rec.initTranslator(inputText, it, targetLanguage) {
                                         translatedText = it
                                     }

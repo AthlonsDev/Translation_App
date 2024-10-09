@@ -46,6 +46,7 @@ class Translator {
                 // Error.
                 // ...
                 param("Failed to translate text ${exception.message}")
+
             }
     }
 }

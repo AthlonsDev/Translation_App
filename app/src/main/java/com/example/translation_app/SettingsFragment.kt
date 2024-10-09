@@ -1,6 +1,7 @@
 package com.example.translation_app
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.Toast
@@ -60,11 +61,22 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
+//        set ouput language to locale as default
+        val locale = Locale.getDefault()
+        val langName = locale.getDisplayName(locale)
+        speechOutput = langName
+        cameraOutput = langName
+        textOutput = langName
+        alphabet = "Latin"
+
+
         readData(speechLanguageInput)
         readData(speechLanguageOutput)
         readData(alphabetInput)
         readData(cameraLanguage)
         readData(textLanguage)
+
+
 
 //        if(speechInput != "Not Set" || speechOutput != "Not Set" || cameraOutput != "Not Set" || textOutput != "Not Set" || alphabet != "Not Set") {
 //            saveButton?.isVisible = false
@@ -132,6 +144,43 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     }
 
+    fun saveUserPref(
+        languageInput1: String,
+        languageInput2: String,
+        languageInput3: String,
+        languageInput4: String,
+        languageInput5: String,
+    ): Boolean {
+        val dataOutputKey1 = stringPreferencesKey("speech_language_1")
+        val dataOutputKey2 = stringPreferencesKey("speech_language_2")
+        val dataOutputKey3 = stringPreferencesKey("camera_language")
+        val dataOutputKey4 = stringPreferencesKey("text_language")
+        val dataOutputKey5 = stringPreferencesKey("alphabet_language_1")
+
+        runBlocking {
+            saveUserPreferences(languageInput1, dataOutputKey1)
+            saveUserPreferences(languageInput2, dataOutputKey2)
+            saveUserPreferences(languageInput3, dataOutputKey3)
+            saveUserPreferences(languageInput4, dataOutputKey4)
+            saveUserPreferences(languageInput5, dataOutputKey5)
+        }
+
+//        checkData()
+        return true
+    }
+
+    private fun checkData(): Boolean {
+        if (speechInput != "Not Set" || speechOutput != "Not Set" || cameraOutput != "Not Set" || textOutput != "Not Set" || alphabet != "Not Set") {
+            return false
+        }
+        readData(speechLanguageInput)
+        readData(speechLanguageOutput)
+        readData(alphabetInput)
+        readData(cameraLanguage)
+        readData(textLanguage)
+        return true
+    }
+
     private fun main(data: String, key: Preferences.Key<String>) = runBlocking {
         launch {
             saveUserPreferences(data, key)
@@ -140,13 +189,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun readData(key: Preferences.Key<String>) = runBlocking {
         launch {
-            readUserPreferences(key)
+//            readUserPreferences(key)
         }
     }
 
     suspend fun saveUserPreferences(value: String, key: Preferences.Key<String>) {
         with(CoroutineScope(coroutineContext)) {
             launch {
+                val context = context
                 context?.dataStore?.edit { preferences ->
                     preferences[key] = value
                 }

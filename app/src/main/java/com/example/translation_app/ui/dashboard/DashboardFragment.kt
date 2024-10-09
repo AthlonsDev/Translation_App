@@ -63,7 +63,6 @@ class DashboardFragment : Fragment() {
     private val binding get() = _binding!!
     lateinit var alphabet: String
     lateinit var targetLanguage: String
-    lateinit var translatedText: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,9 +83,8 @@ class DashboardFragment : Fragment() {
             val translator = Translator()
             val inputText = binding.inputText.text.toString()
             val outputText = binding.outputText
-            translator.identifyLanguage(inputText) {
-                val inputLanguage = it
-                translator.initTranslator(inputText, inputLanguage, targetLanguage) {
+            translator.identifyLanguage(inputText) { it1 ->
+                translator.initTranslator(inputText, it1, targetLanguage) {
                     outputText.text = it
                 }
             }

@@ -25,10 +25,12 @@ import androidx.core.view.isVisible
 import androidx.datastore.preferences.core.stringPreferencesKey
 //import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.example.translation_app.CameraActivity
 import com.example.translation_app.Constants
 import com.example.translation_app.GalleryActivity
 import com.example.translation_app.R
+import com.example.translation_app.SettingsFragment
 import com.example.translation_app.Translator
 import com.example.translation_app.dataStore
 import com.example.translation_app.databinding.FragmentHomeBinding
@@ -81,24 +83,14 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 //        }
 
 
-
         val translator = Translator()
-
-
         readData()
-
-
         // Set up the text to speech
         tts = TextToSpeech(requireContext()) { status ->
             if (status != TextToSpeech.ERROR) {
                 tts!!.language = inputLanguage
             }
         }
-
-//        val textView: TextView = binding.textHome
-//        homeViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
 
         val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
         binding.micButton.setOnTouchListener { v, event ->
@@ -186,12 +178,17 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
         }
     }
 
-    fun RecSpeech() {
+    private fun RecSpeech() {
 
         val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
 
         speechRecognizer.setRecognitionListener(this)
         speechRecognizer.startListening(speechRecognizerIntent)
+
+        if (inputLanguage.toString() == "Not Set" || inputLanguage.toString() == "null") {
+            Toast.makeText(requireContext(), "Please set input language", Toast.LENGTH_SHORT).show()
+            return
+        }
 
 //        inputLanguage of speech needs to be translated to english
         val translator = Translator()

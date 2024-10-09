@@ -1,4 +1,3 @@
 package com.example.translation_app
 
-class ItemsViewModel {
-}
+data class ItemsViewModel(val headline: String, val text: String)
