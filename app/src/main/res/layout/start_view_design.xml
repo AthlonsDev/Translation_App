@@ -29,31 +29,6 @@
         app:layout_constraintTop_toBottomOf="@+id/recycler_headline"
         app:layout_constraintVertical_bias="0.154" />
 
-    <Spinner
-        android:id="@+id/spinner_in"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:dropDownWidth="wrap_content"
-        android:entries="@array/Languages"
-        android:popupBackground="@drawable/border"
-        android:prompt="@string/translate_from"
-        android:spinnerMode="dialog"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recycler_text"></Spinner>
-
-    <Spinner
-        android:id="@+id/spinner_out"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:entries="@array/Languages"
-        android:spinnerMode="dialog"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_in" />
-
     <Button
         android:id="@+id/next"
         android:layout_width="wrap_content"
@@ -61,6 +36,6 @@
         android:background="@android:drawable/ic_media_play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner_out" />
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

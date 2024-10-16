@@ -14,7 +14,10 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreference
+import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.TranslateRemoteModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.Flow
@@ -42,6 +45,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var cameraOutput: String = "Not Set"
     private var textOutput: String = "Not Set"
 
+    var enSwitch: Preference? = null
+    var esSwitch: Preference? = null
+    var frSwitch: Preference? = null
+    var deSwitch: Preference? = null
+    var itSwitch: Preference? = null
+
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
@@ -51,15 +60,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val alphabetSettings = findPreference<Preference>(getString(R.string.alphabet_language_1))
         val cameraSettings = findPreference<Preference>(getString(R.string.cam_language))
         val textSettings = findPreference<Preference>(getString(R.string.text_language))
-        val saveButton = findPreference<Preference>(getString(R.string.save_pref_btn))
+        enSwitch = findPreference<SwitchPreference>("en_switch")
+        esSwitch = findPreference<SwitchPreference>("es_switch")
+        frSwitch = findPreference<SwitchPreference>("fr_switch")
+//        deSwitch = findPreference<SwitchPreference>("de_switch")
+        itSwitch = findPreference<SwitchPreference>("it_switch")
 
-        saveButton?.setIcon(androidx.appcompat.R.drawable.abc_ratingbar_indicator_material)
-
-        saveButton?.setOnPreferenceClickListener {
-            val setAct = SettingsActivity()
-            setAct.checkData()
-            true
-        }
 
 //        set ouput language to locale as default
         val locale = Locale.getDefault()
@@ -76,7 +82,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         readData(cameraLanguage)
         readData(textLanguage)
 
-
+//        checkModels()
 
 //        if(speechInput != "Not Set" || speechOutput != "Not Set" || cameraOutput != "Not Set" || textOutput != "Not Set" || alphabet != "Not Set") {
 //            saveButton?.isVisible = false
@@ -189,7 +195,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun readData(key: Preferences.Key<String>) = runBlocking {
         launch {
-//            readUserPreferences(key)
+            readUserPreferences(key)
         }
     }
 
@@ -207,6 +213,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     suspend fun readUserPreferences(key: Preferences.Key<String>) {
         with(CoroutineScope(coroutineContext)) {
             val preferences = context?.dataStore?.data?.first()
+            val locale = Locale.getDefault()
+            val langName = locale.getDisplayName(locale)
             val value = preferences?.get(key)
             if (key == speechLanguageInput) {
                 speechInput = value.toString()
@@ -217,29 +225,72 @@ class SettingsFragment : PreferenceFragmentCompat() {
             if (key == speechLanguageOutput) {
                 speechOutput = value.toString()
                 if (speechOutput == null) {
-                    speechOutput = "Not Set"
+                    speechOutput = langName
                 }
             }
             if (key == alphabetInput) {
                 alphabet = value.toString()
                 if (alphabet == null) {
-                    alphabet = "Not Set"
+                    alphabet = "latin"
                 }
             }
             if (key == cameraLanguage) {
                 cameraOutput = value.toString()
                 if (cameraOutput == null) {
-                    cameraOutput = "Not Set"
+                    cameraOutput = langName
                 }
             }
             if (key == textLanguage) {
                 textOutput = value.toString()
                 if (textOutput == null) {
-                    textOutput = "Not Set"
+                    textOutput = langName
                 }
             }
 
         }
+    }
+
+    private fun checkModels() {
+        val englishModel = TranslateRemoteModel.Builder(TranslateLanguage.ENGLISH).build()
+        val frenchModel = TranslateRemoteModel.Builder(TranslateLanguage.FRENCH).build()
+        val germanModel = TranslateRemoteModel.Builder(TranslateLanguage.GERMAN).build()
+        val spanishModel = TranslateRemoteModel.Builder(TranslateLanguage.SPANISH).build()
+        val chineseModel = TranslateRemoteModel.Builder(TranslateLanguage.CHINESE).build()
+        val hindiModel = TranslateRemoteModel.Builder(TranslateLanguage.HINDI).build()
+        val arabicModel = TranslateRemoteModel.Builder(TranslateLanguage.ARABIC).build()
+        val russianModel = TranslateRemoteModel.Builder(TranslateLanguage.RUSSIAN).build()
+        val japaneseModel = TranslateRemoteModel.Builder(TranslateLanguage.JAPANESE).build()
+        val koreanModel = TranslateRemoteModel.Builder(TranslateLanguage.KOREAN).build()
+        val italianModel = TranslateRemoteModel.Builder(TranslateLanguage.ITALIAN).build()
+
+        val modelManager = RemoteModelManager.getInstance()
+
+        modelManager.getDownloadedModels(TranslateRemoteModel::class.java)
+            .addOnSuccessListener { models ->
+                //
+                if (models.contains(frenchModel)) {
+                    frSwitch?.setOnPreferenceChangeListener { preference, newValue ->
+                        newValue as Boolean
+                        newValue == true    // if true, download model
+                    }
+                }
+                if (models.contains(germanModel)) {
+                    deSwitch?.setDefaultValue(true)
+                }
+                if (models.contains(italianModel)) {
+                    itSwitch?.setDefaultValue(true)
+                }
+                if (models.contains(englishModel)) {
+                    enSwitch?.setDefaultValue(true)
+                }
+                if (models.contains(spanishModel)) {
+                    esSwitch?.setDefaultValue(true)
+                }
+            }
+            .addOnFailureListener {
+                // Error.
+            }
+
     }
 
 

@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.mlkit.nl.translate.TranslateLanguage
+import com.google.mlkit.nl.translate.TranslateRemoteModel
 
 class StartAdapter(private val itemList: List<ItemsViewModel>): RecyclerView.Adapter<StartViewHolder>()
 {
@@ -37,38 +39,11 @@ class StartAdapter(private val itemList: List<ItemsViewModel>): RecyclerView.Ada
         val index = holder.adapterPosition
 
 
-
-        holder.input.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (holder.input.selectedItem.toString() != null) {
-//                    input = holder.input.selectedItem.toString()
-                    inputClicklistener?.onItemSelected(parent, view, position, index.toLong())
-
-                }
-
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                input = ""
-            }
-        }
-        holder.output.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (holder.input.selectedItem.toString() != null) {
-//                    input = holder.input.selectedItem.toString()
-                    outputClicklistener?.onItemSelected(parent, view, position, index.toLong())
-                }
-
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                output = ""
-            }
-        }
-
         holder.button.setOnClickListener(View.OnClickListener {
             onButtonClicklistener?.onClick(index, itemsViewHolder)
         })
+
+
 
 
     }
