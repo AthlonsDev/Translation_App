@@ -2,6 +2,7 @@ package com.example.translation_app
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
@@ -31,6 +32,8 @@ class StartActivity: AppCompatActivity() {
         binding = ActivityStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.myToolbar)
+
         val listView = binding.recyclerView
 
         listView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -40,7 +43,6 @@ class StartActivity: AppCompatActivity() {
         listView.adapter = adapter
 
 //        get input and output language from adapter
-
         adapter?.onInputItemSelectedListener(object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
@@ -113,6 +115,27 @@ class StartActivity: AppCompatActivity() {
             }
         }
 
+    }
+
+    override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.toolbar, menu)
+        return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+//
+
+        R.id.models -> {
+            val intent = Intent(this, ModelActivity::class.java)
+            startActivity(intent)
+            true
+        }
+
+        else -> {
+            // The user's action isn't recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
     }
 
     private fun saveData() {
