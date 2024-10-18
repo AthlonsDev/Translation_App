@@ -2,18 +2,18 @@ package com.example.translation_app
 
 import android.annotation.TargetApi
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.LocaleList
 import android.view.MenuItem
-import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.translation_app.Models.ModelActivity
 import com.example.translation_app.databinding.ActivityMainBinding
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
@@ -68,6 +68,8 @@ class MainActivity : AppCompatActivity() {
 
         manageLanguageModels()
 
+        setSupportActionBar(binding.myToolbar)
+
         val navView: BottomNavigationView = binding.navView
 //        val toolbar: androidx.appcompat.widget.Toolbar = binding.toolbar
 
@@ -79,12 +81,31 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
             )
         )
-
-//        setSupportActionBar(toolbar)
-
+        setSupportActionBar(findViewById(R.id.my_toolbar))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+    }
+
+    override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.toolbar, menu)
+        return true
+    }
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+//
+
+        R.id.models -> {
+            val intent = Intent(this, ModelActivity::class.java)
+            startActivity(intent)
+            true
+        }
+
+        else -> {
+            // The user's action isn't recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
     }
 
 

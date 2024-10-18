@@ -11,21 +11,18 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
-import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.OnTouchListener
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.datastore.preferences.core.stringPreferencesKey
 //import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.example.translation_app.CameraActivity
 import com.example.translation_app.Constants
 import com.example.translation_app.GalleryActivity
@@ -81,6 +78,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 //            val adRequest = AdRequest.Builder().build()
 //            adView.loadAd(adRequest)
 //        }
+
 
 
         val translator = Translator()
@@ -153,6 +151,14 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 
         return root
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.toolbar, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+
+    }
+
+
 
     fun readData() = runBlocking {
         launch {

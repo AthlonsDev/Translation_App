@@ -1,4 +1,4 @@
-package com.example.translation_app
+package com.example.translation_app.start
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
+import com.example.translation_app.MainActivity
+import com.example.translation_app.Models.ModelActivity
+import com.example.translation_app.Models.ModelsViewModel
+import com.example.translation_app.R
+import com.example.translation_app.SettingsFragment
 import com.example.translation_app.databinding.ActivityStartBinding
 import java.util.stream.IntStream.range
 
@@ -41,6 +46,8 @@ class StartActivity: AppCompatActivity() {
         helper.attachToRecyclerView(listView)
         adapter = StartAdapter(data)
         listView.adapter = adapter
+
+        data.add(ItemsViewModel("Translator Can Listen to a Voice and Translate it Back to You", "Select you language that you want to translate to and from"))
 
 //        get input and output language from adapter
         adapter?.onInputItemSelectedListener(object : AdapterView.OnItemSelectedListener {

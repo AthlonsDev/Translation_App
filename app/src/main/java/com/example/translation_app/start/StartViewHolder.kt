@@ -1,17 +1,14 @@
-package com.example.translation_app
+package com.example.translation_app.start
 
-import android.os.Build
 import android.view.View
 import android.widget.Button
-import android.widget.Spinner
-import android.widget.Switch
 import android.widget.TextView
-import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.translation_app.R
 
 class StartViewHolder(private val itemView: View): ViewHolder(itemView) {
 
-    val headline = itemView.findViewById<TextView>(R.id.recycler_headline)
+    val headline = itemView.findViewById<TextView>(R.id.text_mod)
     private val text = itemView.findViewById<TextView>(R.id.recycler_text)
     var pos: Int = 0
     val button = itemView.findViewById<Button>(R.id.next)

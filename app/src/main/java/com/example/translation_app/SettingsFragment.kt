@@ -45,11 +45,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private var cameraOutput: String = "Not Set"
     private var textOutput: String = "Not Set"
 
-    var enSwitch: Preference? = null
-    var esSwitch: Preference? = null
-    var frSwitch: Preference? = null
-    var deSwitch: Preference? = null
-    var itSwitch: Preference? = null
 
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -60,11 +55,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val alphabetSettings = findPreference<Preference>(getString(R.string.alphabet_language_1))
         val cameraSettings = findPreference<Preference>(getString(R.string.cam_language))
         val textSettings = findPreference<Preference>(getString(R.string.text_language))
-        enSwitch = findPreference<SwitchPreference>("en_switch")
-        esSwitch = findPreference<SwitchPreference>("es_switch")
-        frSwitch = findPreference<SwitchPreference>("fr_switch")
-//        deSwitch = findPreference<SwitchPreference>("de_switch")
-        itSwitch = findPreference<SwitchPreference>("it_switch")
+
 
 
 //        set ouput language to locale as default
@@ -249,50 +240,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         }
     }
-
-    private fun checkModels() {
-        val englishModel = TranslateRemoteModel.Builder(TranslateLanguage.ENGLISH).build()
-        val frenchModel = TranslateRemoteModel.Builder(TranslateLanguage.FRENCH).build()
-        val germanModel = TranslateRemoteModel.Builder(TranslateLanguage.GERMAN).build()
-        val spanishModel = TranslateRemoteModel.Builder(TranslateLanguage.SPANISH).build()
-        val chineseModel = TranslateRemoteModel.Builder(TranslateLanguage.CHINESE).build()
-        val hindiModel = TranslateRemoteModel.Builder(TranslateLanguage.HINDI).build()
-        val arabicModel = TranslateRemoteModel.Builder(TranslateLanguage.ARABIC).build()
-        val russianModel = TranslateRemoteModel.Builder(TranslateLanguage.RUSSIAN).build()
-        val japaneseModel = TranslateRemoteModel.Builder(TranslateLanguage.JAPANESE).build()
-        val koreanModel = TranslateRemoteModel.Builder(TranslateLanguage.KOREAN).build()
-        val italianModel = TranslateRemoteModel.Builder(TranslateLanguage.ITALIAN).build()
-
-        val modelManager = RemoteModelManager.getInstance()
-
-        modelManager.getDownloadedModels(TranslateRemoteModel::class.java)
-            .addOnSuccessListener { models ->
-                //
-                if (models.contains(frenchModel)) {
-                    frSwitch?.setOnPreferenceChangeListener { preference, newValue ->
-                        newValue as Boolean
-                        newValue == true    // if true, download model
-                    }
-                }
-                if (models.contains(germanModel)) {
-                    deSwitch?.setDefaultValue(true)
-                }
-                if (models.contains(italianModel)) {
-                    itSwitch?.setDefaultValue(true)
-                }
-                if (models.contains(englishModel)) {
-                    enSwitch?.setDefaultValue(true)
-                }
-                if (models.contains(spanishModel)) {
-                    esSwitch?.setDefaultValue(true)
-                }
-            }
-            .addOnFailureListener {
-                // Error.
-            }
-
-    }
-
 
     fun updateLanguage() {
         val languageToLoad = "it" // your language fr etc

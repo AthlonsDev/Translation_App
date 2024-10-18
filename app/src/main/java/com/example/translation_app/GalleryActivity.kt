@@ -41,9 +41,11 @@ class GalleryActivity: AppCompatActivity() {
             binding = ActivityGalleryBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
-            val actionbar = supportActionBar
-            actionbar!!.title = "Gallery"
-            actionbar.setDisplayHomeAsUpEnabled(true)
+            val actionbar = binding.myToolbar
+            actionbar!!.title = "Detect Text"
+            setSupportActionBar(actionbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
 
             binding.button.setOnClickListener {
                 val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)

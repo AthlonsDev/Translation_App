@@ -94,10 +94,10 @@ class CameraActivity: AppCompatActivity() {
 
             startLiveCamera(cameraProviderFuture.get())
 
-//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            val actionbar = supportActionBar
+            val actionbar = binding.myToolbar
             actionbar!!.title = "Detect Text"
-            actionbar.setDisplayHomeAsUpEnabled(true)
+            setSupportActionBar(actionbar)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
             binding.PhotoButton.setOnClickListener {
                 binding.imageText.text = translatedText

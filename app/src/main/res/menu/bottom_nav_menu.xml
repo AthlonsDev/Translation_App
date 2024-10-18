@@ -11,6 +11,11 @@
         android:icon="@android:drawable/ic_menu_edit"
         android:title="@string/title_text" />
 
+<!--    <item-->
+<!--        android:id="@+id/navigation_models"-->
+<!--        android:icon="@android:drawable/ic_menu_edit"-->
+<!--        android:title="Models" />-->
+
     <item
         android:id="@+id/navigation_notifications"
         android:icon="@android:drawable/ic_menu_preferences"

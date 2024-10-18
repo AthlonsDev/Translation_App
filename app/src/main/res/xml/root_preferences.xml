@@ -45,35 +45,6 @@
         android:entryValues="@array/Languages"
         android:key="@string/text_language"
         app:title="@string/text_language" />
-    <PreferenceCategory android:title="Models">
-
-    </PreferenceCategory>
-    <SwitchPreferenceCompat
-        android:defaultValue="false"
-        android:key="en_model"
-        app:defaultValue="true"
-        android:title="English" />
-    <SwitchPreferenceCompat
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:defaultValue="false"
-        android:key="es_model"
-        android:title="Spanish" />
-    <SwitchPreferenceCompat
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:defaultValue="false"
-        android:key="fr_model"
-        android:title="French" />
-    <SwitchPreferenceCompat
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:defaultValue="false"
-        android:key="it_model"
-        android:title="Italian" />
-    <PreferenceCategory android:title="Preference category">
-
-    </PreferenceCategory>
 
 
 </PreferenceScreen>

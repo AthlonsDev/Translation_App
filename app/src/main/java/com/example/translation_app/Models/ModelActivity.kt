@@ -1,10 +1,13 @@
-package com.example.translation_app
+package com.example.translation_app.Models
 
+import android.graphics.Color
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.translation_app.R
 import com.example.translation_app.databinding.ActivityModelBinding
+import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.TranslateRemoteModel
@@ -12,6 +15,9 @@ import com.google.mlkit.nl.translate.TranslateRemoteModel
 class ModelActivity: AppCompatActivity() {
 
     private lateinit var binding: ActivityModelBinding
+    private var data = ArrayList<ModelsViewModel>()
+    private var adapter: ModelsAdapter? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +31,89 @@ class ModelActivity: AppCompatActivity() {
         setSupportActionBar(actionbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val listView = binding.recMod
+        listView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        adapter = ModelsAdapter(data)
+        listView.adapter = adapter
+        adapter = ModelsAdapter(data)
+
         checkModels()
+
+        addRec()
+
+        binding.esButton.setOnClickListener {
+            val spanishModel = TranslateRemoteModel.Builder(TranslateLanguage.SPANISH).build()
+            val modelManager = RemoteModelManager.getInstance()
+            val conditions = DownloadConditions.Builder()
+                .requireWifi()
+                .build()
+            val dTime: Long = System.currentTimeMillis()
+            binding.progressBar.isIndeterminate = true
+            binding.progressBar.visibility = android.view.View.VISIBLE
+            binding.progressBar.progress = 50
+
+            if (binding.esButton.text == "Download") {
+                modelManager.download(spanishModel, conditions)
+                    .addOnSuccessListener {
+//                        get time taken to download model in seconds
+                        val eTime: Long = (System.currentTimeMillis() - dTime) / 1000
+                        binding.progressBar.progress = 100
+                        binding.progressBar.visibility = android.view.View.GONE
+                        Toast.makeText(this, "Model downloaded in $eTime", Toast.LENGTH_SHORT).show()
+                        binding.esButton.background.setTint(Color.BLACK)
+                        binding.esButton.text = "Delete"
+                    }
+                    .addOnFailureListener {
+                        // Error.
+                    }
+                binding.esButton.text = "Downloading..."
+            }
+            else {
+                binding.esButton.isEnabled = true
+                binding.esButton.background.setTint(Color.RED)
+                modelManager.deleteDownloadedModel(spanishModel)
+                    .addOnSuccessListener {
+                        binding.esButton.isEnabled = false
+                        binding.esButton.text = "Download"
+                        binding.esButton.background.setTint(Color.BLACK)
+                    }
+                    .addOnFailureListener {
+                        // Error.
+                    }
+            }
+
+        }
+
+
+        adapter?.onClickListener(object : ModelsAdapter.OnClickListener {
+            override fun onClick(pos: Int, item: ModelsViewModel) {
+                when (pos) {
+                    0 -> {
+                        val englishModel =
+                            TranslateRemoteModel.Builder(TranslateLanguage.ENGLISH).build()
+                        val modelManager = RemoteModelManager.getInstance()
+                        val conditions = DownloadConditions.Builder()
+                            .requireWifi()
+                            .build()
+                        val dTime: Long = System.currentTimeMillis()
+                        binding.progressBar.isIndeterminate = true
+                        binding.progressBar.visibility = android.view.View.VISIBLE
+                        binding.progressBar.progress = 50
+
+                        if (binding.enButton.text == "Download") {
+                            modelManager.download(englishModel, conditions)
+                                .addOnSuccessListener {
+                                }
+                                .addOnFailureListener {
+                                    // Error.
+                                }
+                            binding.enButton.text = "Downloading..."
+                        }
+
+                    }
+                }
+            }
+        })
 
 
     }
@@ -79,8 +167,9 @@ class ModelActivity: AppCompatActivity() {
                 }
 
                 if (models.contains(spanishModel)) {
-                    binding.esButton.isEnabled = false
-                    binding.esButton.text = "Downloaded"
+                    binding.esButton.text = "Delete"
+                    binding.esButton.isEnabled = true
+                    binding.esButton.background.setTint(Color.RED)
                 }
 
                 if (models.contains(italianModel)) {
@@ -93,5 +182,38 @@ class ModelActivity: AppCompatActivity() {
                 // Error.
             }
 
+    }
+
+    private fun addRec() {
+        val englishModel = TranslateRemoteModel.Builder(TranslateLanguage.ENGLISH).build()
+        val frenchModel = TranslateRemoteModel.Builder(TranslateLanguage.FRENCH).build()
+        val germanModel = TranslateRemoteModel.Builder(TranslateLanguage.GERMAN).build()
+        val spanishModel = TranslateRemoteModel.Builder(TranslateLanguage.SPANISH).build()
+        val chineseModel = TranslateRemoteModel.Builder(TranslateLanguage.CHINESE).build()
+        val hindiModel = TranslateRemoteModel.Builder(TranslateLanguage.HINDI).build()
+        val arabicModel = TranslateRemoteModel.Builder(TranslateLanguage.ARABIC).build()
+        val russianModel = TranslateRemoteModel.Builder(TranslateLanguage.RUSSIAN).build()
+        val japaneseModel = TranslateRemoteModel.Builder(TranslateLanguage.JAPANESE).build()
+        val koreanModel = TranslateRemoteModel.Builder(TranslateLanguage.KOREAN).build()
+        val italianModel = TranslateRemoteModel.Builder(TranslateLanguage.ITALIAN).build()
+
+
+
+        for (i in 0..10) {
+            when (i) {
+                0 -> data.add(ModelsViewModel("English"))
+                1 -> data.add(ModelsViewModel("French"))
+                2 -> data.add(ModelsViewModel("German"))
+                3 -> data.add(ModelsViewModel("Spanish"))
+                4 -> data.add(ModelsViewModel("Chinese"))
+                5 -> data.add(ModelsViewModel("Hindi"))
+                6 -> data.add(ModelsViewModel("Arabic"))
+                7 -> data.add(ModelsViewModel("Russian"))
+                8 -> data.add(ModelsViewModel("Japanese"))
+                9 -> data.add(ModelsViewModel("Korean"))
+                10 -> data.add(ModelsViewModel("Italian"))
+            }
+            adapter?.notifyDataSetChanged()
+        }
     }
 }

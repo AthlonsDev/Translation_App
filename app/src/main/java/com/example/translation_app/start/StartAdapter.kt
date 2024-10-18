@@ -1,14 +1,12 @@
-package com.example.translation_app
+package com.example.translation_app.start
 
-import android.content.DialogInterface
-import android.content.DialogInterface.OnClickListener
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.mlkit.nl.translate.TranslateLanguage
-import com.google.mlkit.nl.translate.TranslateRemoteModel
+import com.example.translation_app.Models.ModelsViewModel
+import com.example.translation_app.R
 
 class StartAdapter(private val itemList: List<ItemsViewModel>): RecyclerView.Adapter<StartViewHolder>()
 {
@@ -23,8 +21,6 @@ class StartAdapter(private val itemList: List<ItemsViewModel>): RecyclerView.Ada
     private var inputClicklistener: AdapterView.OnItemSelectedListener? = null
     private var outputClicklistener: AdapterView.OnItemSelectedListener? = null
     private var onButtonClicklistener: OnClickListener? = null
-    var input = ""
-    var output = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StartViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -38,14 +34,9 @@ class StartAdapter(private val itemList: List<ItemsViewModel>): RecyclerView.Ada
         holder.bind(itemsViewHolder)
         val index = holder.adapterPosition
 
-
         holder.button.setOnClickListener(View.OnClickListener {
             onButtonClicklistener?.onClick(index, itemsViewHolder)
         })
-
-
-
-
     }
 
     fun onInputItemSelectedListener(listener: AdapterView.OnItemSelectedListener) {

@@ -20,7 +20,7 @@
         android:theme="@style/Theme.Translation_App"
         tools:targetApi="31">
         <activity
-            android:name=".StartActivity"
+            android:name=".start.StartActivity"
             android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
@@ -40,6 +40,11 @@
             android:name=".CameraActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name=".Models.ModelActivity"
+            android:exported="true">
+        </activity>
+
 
         <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
 
