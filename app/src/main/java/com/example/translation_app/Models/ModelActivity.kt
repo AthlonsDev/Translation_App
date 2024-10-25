@@ -49,56 +49,51 @@ class ModelActivity: AppCompatActivity() {
                 when (pos) {
                     0 -> {
                         val englishModel = TranslateRemoteModel.Builder(TranslateLanguage.ENGLISH).build()
-//                        manageModels(englishModel, text)
-
-                        adapter?.notifyDataSetChanged()
+                        manageModels(englishModel, text)
+                    }
+                    1 -> {
+                        val frenchModel = TranslateRemoteModel.Builder(TranslateLanguage.FRENCH).build()
+                        manageModels(frenchModel, text)
+                    }
+                    2 -> {
+                        val germanModel = TranslateRemoteModel.Builder(TranslateLanguage.GERMAN).build()
+                        manageModels(germanModel, text)
+                    }
+                    3 -> {
+                        val spanishModel = TranslateRemoteModel.Builder(TranslateLanguage.SPANISH).build()
+                        manageModels(spanishModel, text)
+                    }
+                    4 -> {
+                        val chineseModel = TranslateRemoteModel.Builder(TranslateLanguage.CHINESE).build()
+                        manageModels(chineseModel, text)
+                    }
+                    5 -> {
+                        val hindiModel = TranslateRemoteModel.Builder(TranslateLanguage.HINDI).build()
+                        manageModels(hindiModel, text)
+                    }
+                    6 -> {
+                        val arabicModel = TranslateRemoteModel.Builder(TranslateLanguage.ARABIC).build()
+                        manageModels(arabicModel, text)
+                    }
+                    7 -> {
+                        val russianModel = TranslateRemoteModel.Builder(TranslateLanguage.RUSSIAN).build()
+                        manageModels(russianModel, text)
+                    }
+                    8 -> {
+                        val japaneseModel = TranslateRemoteModel.Builder(TranslateLanguage.JAPANESE).build()
+                        manageModels(japaneseModel, text)
+                    }
+                    9 -> {
+                        val koreanModel = TranslateRemoteModel.Builder(TranslateLanguage.KOREAN).build()
+                        manageModels(koreanModel, text)
+                    }
+                    10 -> {
+                        val italianModel = TranslateRemoteModel.Builder(TranslateLanguage.ITALIAN).build()
+                        manageModels(italianModel, text)
                     }
                 }
             }
         })
-
-//        binding.esButton.setOnClickListener {
-//            val spanishModel = TranslateRemoteModel.Builder(TranslateLanguage.SPANISH).build()
-//            val modelManager = RemoteModelManager.getInstance()
-//            val conditions = DownloadConditions.Builder()
-//                .requireWifi()
-//                .build()
-//            val dTime: Long = System.currentTimeMillis()
-//            binding.progressBar.isIndeterminate = true
-//            binding.progressBar.visibility = android.view.View.VISIBLE
-//            binding.progressBar.progress = 50
-//
-//            if (binding.esButton.text == "Download") {
-//                modelManager.download(spanishModel, conditions)
-//                    .addOnSuccessListener {
-////                        get time taken to download model in seconds
-//                        val eTime: Long = (System.currentTimeMillis() - dTime) / 1000
-//                        binding.progressBar.progress = 100
-//                        binding.progressBar.visibility = android.view.View.GONE
-//                        Toast.makeText(this, "Model downloaded in $eTime", Toast.LENGTH_SHORT).show()
-//                        binding.esButton.background.setTint(Color.BLACK)
-//                        binding.esButton.text = "Delete"
-//                    }
-//                    .addOnFailureListener {
-//                        // Error.
-//                    }
-//                binding.esButton.text = "Downloading..."
-//            }
-//            else {
-//                binding.esButton.isEnabled = true
-//                binding.esButton.background.setTint(Color.RED)
-//                modelManager.deleteDownloadedModel(spanishModel)
-//                    .addOnSuccessListener {
-//                        binding.esButton.isEnabled = false
-//                        binding.esButton.text = "Download"
-//                        binding.esButton.background.setTint(Color.BLACK)
-//                    }
-//                    .addOnFailureListener {
-//                        // Error.
-//                    }
-//            }
-//
-//        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -127,15 +122,17 @@ class ModelActivity: AppCompatActivity() {
             modelManager.deleteDownloadedModel(model)
                 .addOnSuccessListener {
                     // Model deleted.
-
+                    adapter?.condition = "model deleted"
                 }
                 .addOnFailureListener {
                     // Error.
                 }
         } else {
+            adapter?.condition = "model downloading"
             modelManager.download(model, conditions)
                 .addOnSuccessListener {
                     // Model downloaded.
+                    adapter?.condition = "model downloaded"
                 }
                 .addOnFailureListener {
                     // Error.
@@ -162,31 +159,55 @@ class ModelActivity: AppCompatActivity() {
 
         modelManager.getDownloadedModels(TranslateRemoteModel::class.java)
             .addOnSuccessListener { models ->
-//                if (models.contains(englishModel)) {
-//                    binding.enButton.isEnabled = false
-//                    binding.enButton.text = "Downloaded"
-//                }
-//
-//                if (models.contains(frenchModel)) {
-//                    binding.frButton.isEnabled = false
-//                    binding.frButton.text = "Downloaded"
-//                }
-//
-//                if (models.contains(germanModel)) {
-//                    binding.deButton.isEnabled = false
-//                    binding.deButton.text = "Downloaded"
-//                }
-//
-//                if (models.contains(spanishModel)) {
-//                    binding.esButton.text = "Delete"
-//                    binding.esButton.isEnabled = true
-//                    binding.esButton.background.setTint(Color.RED)
-//                }
-//
-//                if (models.contains(italianModel)) {
-//                    binding.itButton.isEnabled = false
-//                    binding.itButton.text = "Downloaded"
-//                }
+                for (model in models) {
+                    Toast.makeText(this, "Model: ${model.language}", Toast.LENGTH_SHORT).show()
+                    when (model) {
+                        englishModel -> {
+                            adapter?.condition = "model downloaded"
+                            adapter?.notifyItemChanged(0)
+                        }
+                        frenchModel -> {
+                            adapter?.condition = "model downloaded"
+                            adapter?.notifyItemChanged(1)
+                        }
+                        germanModel -> {
+                            adapter?.condition = "model downloaded"
+                            adapter?.notifyItemChanged(2)
+                        }
+                        spanishModel -> {
+                            adapter?.condition = "model downloaded"
+                            adapter?.notifyItemChanged(3)
+                        }
+                        chineseModel -> {
+                            adapter?.condition = "model downloaded"
+                            adapter?.notifyItemChanged(4)
+                        }
+                        hindiModel -> {
+                            adapter?.condition = "model downloaded"
+                            adapter?.notifyItemChanged(5)
+                        }
+                        arabicModel -> {
+                            adapter?.condition = "model downloaded"
+                            adapter?.notifyItemChanged(6)
+                        }
+                        russianModel -> {
+                            adapter?.condition = "model downloaded"
+                            adapter?.notifyItemChanged(7)
+                        }
+                        japaneseModel -> {
+                            adapter?.condition = "model downloaded"
+                            adapter?.notifyItemChanged(8)
+                        }
+                        koreanModel -> {
+                            adapter?.condition = "model downloaded"
+                            adapter?.notifyItemChanged(9)
+                        }
+                        italianModel -> {
+                            adapter?.condition = "model downloaded"
+                            adapter?.notifyItemChanged(10)
+                        }
+                    }
+                }
 
             }
             .addOnFailureListener {
@@ -196,20 +217,6 @@ class ModelActivity: AppCompatActivity() {
     }
 
         private fun addRec() {
-            val englishModel = TranslateRemoteModel.Builder(TranslateLanguage.ENGLISH).build()
-            val frenchModel = TranslateRemoteModel.Builder(TranslateLanguage.FRENCH).build()
-            val germanModel = TranslateRemoteModel.Builder(TranslateLanguage.GERMAN).build()
-            val spanishModel = TranslateRemoteModel.Builder(TranslateLanguage.SPANISH).build()
-            val chineseModel = TranslateRemoteModel.Builder(TranslateLanguage.CHINESE).build()
-            val hindiModel = TranslateRemoteModel.Builder(TranslateLanguage.HINDI).build()
-            val arabicModel = TranslateRemoteModel.Builder(TranslateLanguage.ARABIC).build()
-            val russianModel = TranslateRemoteModel.Builder(TranslateLanguage.RUSSIAN).build()
-            val japaneseModel = TranslateRemoteModel.Builder(TranslateLanguage.JAPANESE).build()
-            val koreanModel = TranslateRemoteModel.Builder(TranslateLanguage.KOREAN).build()
-            val italianModel = TranslateRemoteModel.Builder(TranslateLanguage.ITALIAN).build()
-
-
-
             for (i in 0..10) {
                 when (i) {
                     0 -> data.add(ModelsViewModel("English"))

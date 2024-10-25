@@ -3,6 +3,8 @@ package com.example.translation_app.Models
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.translation_app.Models.ModelsViewHolder
 import com.example.translation_app.R
@@ -15,10 +17,15 @@ class ModelsAdapter(private val itemList: List<ModelsViewModel>): RecyclerView.A
         fun onClicks(pos: Int, text: CharSequence, item: ModelsViewModel)
     }
 
+    interface OnTextChangeListener {
+        fun onTextChanged(text: CharSequence)
+    }
+
 
 
     private var onButtonClicklistener: OnClickListener? = null
-    private var text: CharSequence? = null
+    private var onTextChangeListener: OnTextChangeListener? = null
+    var condition = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ModelsViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -29,12 +36,31 @@ class ModelsAdapter(private val itemList: List<ModelsViewModel>): RecyclerView.A
     override fun onBindViewHolder(holder: ModelsViewHolder, position: Int) {
         val modelsViewHolder = itemList[position]
         holder.bind(modelsViewHolder)
-        val index = holder.adapterPosition
+        var index = holder.adapterPosition
         var text = holder.model_button.text
+        val button = holder.model_button
+
+        if (condition == "model downloaded") {
+            button.text = "Remove"
+        } else {
+            button.text = "Download"
+        }
+
 
         holder.model_button.setOnClickListener(View.OnClickListener {
             onButtonClicklistener?.onClicks(index, text, modelsViewHolder)
+            if (condition == "model downloaded") {
+                button.text = "Remove"
+                holder.progress_bar.visibility = View.INVISIBLE
+            } else if (condition == "model downloading") {
+                button.text = "Downloading..."
+                holder.progress_bar.visibility = View.VISIBLE
+            } else {
+                button.text = "Download"
+                holder.progress_bar.visibility = View.INVISIBLE
+            }
         })
+
 
     }
 
@@ -42,6 +68,10 @@ class ModelsAdapter(private val itemList: List<ModelsViewModel>): RecyclerView.A
         this.onButtonClicklistener = listener
     }
 
+    fun onTextChangeListener(listener: OnTextChangeListener?) {
+        this.onTextChangeListener = listener
+
+    }
 
     override fun getItemCount(): Int {
         return itemList.size

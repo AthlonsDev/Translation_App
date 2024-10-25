@@ -47,7 +47,7 @@ class StartActivity: AppCompatActivity() {
         adapter = StartAdapter(data)
         listView.adapter = adapter
 
-        data.add(ItemsViewModel("Translator Can Listen to a Voice and Translate it Back to You", "Select you language that you want to translate to and from"))
+//        data.add(ItemsViewModel("Translator Can Listen to a Voice and Translate it Back to You", "Select you language that you want to translate to and from" , R.drawable.start_speech))
 
 //        get input and output language from adapter
         adapter?.onInputItemSelectedListener(object : AdapterView.OnItemSelectedListener {
@@ -116,9 +116,9 @@ class StartActivity: AppCompatActivity() {
 
         range(0, 3).forEach { i ->
             when (i) {
-                0 -> data.add(ItemsViewModel("Translator Can Listen to a Voice and Translate it Back to You", "Select you language that you want to translate to and from"))
-                1 -> data.add(ItemsViewModel("Translator Can Detect Text from the Camera or Image", "Select the language you want to translate to and from"))
-                2 -> data.add(ItemsViewModel("Translator Can Translate text from Any Language", "Please select the language you want to translate to and from"))
+                0 -> data.add(ItemsViewModel("Translator Can Listen to a Voice and Translate it Back to You", "Select you language that you want to translate to and from", R.drawable.start_speech))
+                1 -> data.add(ItemsViewModel("Translator Can Detect Text from the Camera or Image", "Select the language you want to translate to and from" , R.drawable.start_camera))
+                2 -> data.add(ItemsViewModel("Translator Can Translate text from Any Language", "Please select the language you want to translate to and from" , R.drawable.start_text))
             }
         }
 

@@ -37,6 +37,19 @@ class StartAdapter(private val itemList: List<ItemsViewModel>): RecyclerView.Ada
         holder.button.setOnClickListener(View.OnClickListener {
             onButtonClicklistener?.onClick(index, itemsViewHolder)
         })
+//        val image = R.drawable.start_speech
+//        holder.image.setImageResource(image)
+        when (position) {
+            0 -> {
+                holder.image.setImageResource(R.drawable.start_speech)
+            }
+            1 -> {
+                holder.image.setImageResource(R.drawable.start_camera)
+            }
+            2 -> {
+                holder.image.setImageResource(R.drawable.start_text)
+            }
+        }
     }
 
     fun onInputItemSelectedListener(listener: AdapterView.OnItemSelectedListener) {
