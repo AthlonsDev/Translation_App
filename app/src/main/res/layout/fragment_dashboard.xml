@@ -8,6 +8,7 @@
     tools:context=".ui.dashboard.DashboardFragment">
 
 
+
     <TextView
         android:id="@+id/output_text"
         android:layout_width="0dp"
@@ -59,5 +60,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

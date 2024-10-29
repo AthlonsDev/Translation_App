@@ -22,8 +22,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        app:backgroundTint="#03A9F4"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView4"
+        app:backgroundTint="#006CA2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:src="@android:drawable/ic_menu_add" />
 
@@ -35,7 +35,7 @@
         android:clickable="false"
         android:src="@android:drawable/ic_menu_gallery"
         android:visibility="invisible"
-        app:backgroundTint="#03A9F4"
+        app:backgroundTint="#006CA3"
         app:layout_constraintBottom_toTopOf="@+id/camera_button"
         app:layout_constraintEnd_toEndOf="@+id/extra_button" />
 
@@ -47,33 +47,9 @@
         android:clickable="false"
         android:src="@android:drawable/ic_menu_camera"
         android:visibility="invisible"
-        app:backgroundTint="#03A9F4"
+        app:backgroundTint="#006CA3"
         app:layout_constraintBottom_toTopOf="@+id/extra_button"
         app:layout_constraintEnd_toEndOf="@+id/extra_button" />
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:src="@drawable/speech_in"
-        app:layout_constraintBottom_toTopOf="@id/imageView4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="8dp"
-        android:src="@drawable/speech_out"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/mic_button"
@@ -81,38 +57,25 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:src="@android:drawable/ic_btn_speak_now"
-        app:backgroundTint="#FFFFFF"
-        app:layout_constraintBottom_toTopOf="@+id/imageView4"
+        app:backgroundTint="#006CA2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/speech_in_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:rotation="-90"
-        android:rotationX="0"
-        android:src="@android:drawable/ic_lock_silent_mode_off"
-        app:backgroundTint="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView3"
-        app:layout_constraintEnd_toEndOf="@+id/imageView3"
-        app:layout_constraintStart_toStartOf="@+id/imageView3"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/speech_out_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:rotation="90"
-        android:src="@android:drawable/ic_lock_silent_mode_off"
-        app:backgroundTint="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView4"
-        app:layout_constraintEnd_toEndOf="@+id/imageView4"
-        app:layout_constraintStart_toStartOf="@+id/imageView4"
-        app:layout_constraintTop_toTopOf="@+id/imageView4" />
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:backgroundTint="#006CA3"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/speech_design" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

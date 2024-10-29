@@ -100,18 +100,19 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
                 MotionEvent.ACTION_UP -> {
                     speechRecognizer.stopListening()
 //                    binding.micButton.setText("Tap to Speak")
+                    translateText(transcript, targetLanguage)
                 }
             }
             v?.onTouchEvent(event) ?: true
         }
 
-        binding.speechInButton.setOnClickListener {
-            tts!!.speak(transcript, TextToSpeech.QUEUE_FLUSH, null, null)
-        }
-
-        binding.speechOutButton.setOnClickListener {
-            translateText(transcript, targetLanguage)
-        }
+//        binding.speechInButton.setOnClickListener {
+//            tts!!.speak(transcript, TextToSpeech.QUEUE_FLUSH, null, null)
+//        }
+//
+//        binding.speechOutButton.setOnClickListener {
+//            translateText(transcript, targetLanguage)
+//        }
 
 
         if(ContextCompat.checkSelfPermission(requireContext(), Constants.REQUIRED_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED){
@@ -212,6 +213,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             //get result of speech
             try {
                 setRecognitionListener(this)
+
 //                startActivityForResult(speechRecognizerIntent, Constants.REQUEST_CODE_SPEECH_INPUT)
 //                textToSpeechEngine.speak("Speak to Translate", TextToSpeech.QUEUE_FLUSH, null, null)
             } catch (e: Exception) {
