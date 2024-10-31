@@ -31,9 +31,11 @@
 
     <Button
         android:id="@+id/next"
+        style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/ic_media_play"
+        android:layout_height="0dp"
+        android:textSize="0sp"
+        android:background="@drawable/baseline_arrow_forward_ios_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
