@@ -37,18 +37,18 @@ class ModelsAdapter(private val itemList: List<ModelsViewModel>): RecyclerView.A
         val modelsViewHolder = itemList[position]
         holder.bind(modelsViewHolder)
         var index = holder.adapterPosition
-        var text = holder.model_button.text
         val button = holder.model_button
 
         if (condition == "model downloaded") {
             button.text = "Remove"
         } else {
             button.text = "Download"
+            holder.progress_bar.visibility = View.INVISIBLE
         }
 
 
         holder.model_button.setOnClickListener(View.OnClickListener {
-            onButtonClicklistener?.onClicks(index, text, modelsViewHolder)
+            onButtonClicklistener?.onClicks(index, button.text, modelsViewHolder)
             if (condition == "model downloaded") {
                 button.text = "Remove"
                 holder.progress_bar.visibility = View.INVISIBLE

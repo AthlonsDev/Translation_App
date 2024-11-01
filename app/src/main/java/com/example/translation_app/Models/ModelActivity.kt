@@ -49,47 +49,47 @@ class ModelActivity: AppCompatActivity() {
                 when (pos) {
                     0 -> {
                         val englishModel = TranslateRemoteModel.Builder(TranslateLanguage.ENGLISH).build()
-                        manageModels(englishModel, text)
+                        manageModels(englishModel, text, pos)
                     }
                     1 -> {
                         val frenchModel = TranslateRemoteModel.Builder(TranslateLanguage.FRENCH).build()
-                        manageModels(frenchModel, text)
+                        manageModels(frenchModel, text, pos)
                     }
                     2 -> {
                         val germanModel = TranslateRemoteModel.Builder(TranslateLanguage.GERMAN).build()
-                        manageModels(germanModel, text)
+                        manageModels(germanModel, text, pos)
                     }
                     3 -> {
                         val spanishModel = TranslateRemoteModel.Builder(TranslateLanguage.SPANISH).build()
-                        manageModels(spanishModel, text)
+                        manageModels(spanishModel, text, pos)
                     }
                     4 -> {
                         val chineseModel = TranslateRemoteModel.Builder(TranslateLanguage.CHINESE).build()
-                        manageModels(chineseModel, text)
+                        manageModels(chineseModel, text, pos)
                     }
                     5 -> {
                         val hindiModel = TranslateRemoteModel.Builder(TranslateLanguage.HINDI).build()
-                        manageModels(hindiModel, text)
+                        manageModels(hindiModel, text, pos)
                     }
                     6 -> {
                         val arabicModel = TranslateRemoteModel.Builder(TranslateLanguage.ARABIC).build()
-                        manageModels(arabicModel, text)
+                        manageModels(arabicModel, text, pos)
                     }
                     7 -> {
                         val russianModel = TranslateRemoteModel.Builder(TranslateLanguage.RUSSIAN).build()
-                        manageModels(russianModel, text)
+                        manageModels(russianModel, text, pos)
                     }
                     8 -> {
                         val japaneseModel = TranslateRemoteModel.Builder(TranslateLanguage.JAPANESE).build()
-                        manageModels(japaneseModel, text)
+                        manageModels(japaneseModel, text, pos)
                     }
                     9 -> {
                         val koreanModel = TranslateRemoteModel.Builder(TranslateLanguage.KOREAN).build()
-                        manageModels(koreanModel, text)
+                        manageModels(koreanModel, text, pos)
                     }
                     10 -> {
                         val italianModel = TranslateRemoteModel.Builder(TranslateLanguage.ITALIAN).build()
-                        manageModels(italianModel, text)
+                        manageModels(italianModel, text, pos)
                     }
                 }
             }
@@ -112,27 +112,30 @@ class ModelActivity: AppCompatActivity() {
         }
     }
 
-    private fun manageModels(model: TranslateRemoteModel, text: CharSequence) {
+    private fun manageModels(model: TranslateRemoteModel, text: CharSequence, index: Int) {
         val modelManager = RemoteModelManager.getInstance()
         val conditions = DownloadConditions.Builder()
             .requireWifi()
             .build()
 
-        if (text == "Download") {
+        if (text == "Remove") {
             modelManager.deleteDownloadedModel(model)
                 .addOnSuccessListener {
                     // Model deleted.
-                    adapter?.condition = "model deleted"
+                    adapter?.condition = "Download"
+                    adapter?.notifyItemChanged(index)
                 }
                 .addOnFailureListener {
-                    // Error.
+                    Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                 }
         } else {
             adapter?.condition = "model downloading"
+//            adapter?.notifyDataSetChanged()
             modelManager.download(model, conditions)
                 .addOnSuccessListener {
                     // Model downloaded.
                     adapter?.condition = "model downloaded"
+                    adapter?.notifyItemChanged(index)
                 }
                 .addOnFailureListener {
                     // Error.
