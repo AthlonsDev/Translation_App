@@ -67,6 +67,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         alphabet = "Latin"
 
 
+
         readData(speechLanguageInput)
         readData(speechLanguageOutput)
         readData(alphabetInput)

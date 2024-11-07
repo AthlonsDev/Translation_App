@@ -63,7 +63,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="42dp"
         android:background="@drawable/border"
         android:hint="Waiting for Text to Translate"
         android:padding="10dp"
