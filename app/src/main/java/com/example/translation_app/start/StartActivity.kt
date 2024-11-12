@@ -1,21 +1,22 @@
 package com.example.translation_app.start
 
+//import android.R
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
-import android.widget.AdapterView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import com.example.translation_app.MainActivity
 import com.example.translation_app.Models.ModelActivity
-import com.example.translation_app.Models.ModelsViewModel
 import com.example.translation_app.R
 import com.example.translation_app.SettingsFragment
 import com.example.translation_app.databinding.ActivityStartBinding
 import java.util.stream.IntStream.range
+
 
 class StartActivity: AppCompatActivity() {
 
@@ -32,7 +33,7 @@ class StartActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_start)
+        setContentView(com.example.translation_app.R.layout.activity_start)
 
         binding = ActivityStartBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -47,54 +48,9 @@ class StartActivity: AppCompatActivity() {
         adapter = StartAdapter(data)
         listView.adapter = adapter
 
+        checkData()
+
 //        data.add(ItemsViewModel("Translator Can Listen to a Voice and Translate it Back to You", "Select you language that you want to translate to and from" , R.drawable.start_speech))
-
-//        get input and output language from adapter
-        adapter?.onInputItemSelectedListener(object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-
-                val input = parent?.getItemAtPosition(position).toString()
-                Toast.makeText(applicationContext, "Input: $input", Toast.LENGTH_SHORT).show()
-                when(id) {
-                    0L -> {
-                        input_speech = input
-                    }
-                    1L -> {
-                        input_camera = input
-                    }
-                    2L -> {
-                        input_text = input
-                    }
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                Toast.makeText(applicationContext, "Nothing Selected", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        adapter?.onOutputItemSelectedListener(object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val output = parent?.getItemAtPosition(position).toString()
-                Toast.makeText(applicationContext, "Output: $output", Toast.LENGTH_SHORT).show()
-                when(id) {
-                    0L -> {
-                        output_speech = output
-                    }
-                    1L -> {
-                        output_camera = output
-                    }
-                    2L -> {
-                        output_text = output
-                    }
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                Toast.makeText(applicationContext, "Nothing Selected", Toast.LENGTH_SHORT).show()
-            }
-        })
-
         adapter?.onClickListener(object : StartAdapter.OnClickListener {
             override fun onClick(pos: Int, item: ItemsViewModel) {
                 when(pos) {
@@ -116,9 +72,9 @@ class StartActivity: AppCompatActivity() {
 
         range(0, 3).forEach { i ->
             when (i) {
-                0 -> data.add(ItemsViewModel("Translator Can Listen to a Voice and Translate it Back to You", "Select you language that you want to translate to and from", R.drawable.start_speech))
-                1 -> data.add(ItemsViewModel("Translator Can Detect Text from the Camera or Image", "Select the language you want to translate to and from" , R.drawable.start_camera))
-                2 -> data.add(ItemsViewModel("Translator Can Translate text from Any Language", "Please select the language you want to translate to and from" , R.drawable.start_text))
+                0 -> data.add(ItemsViewModel("Translate Voice to Voice", "Get Input Voice \nTranslate it \nListen to Translated Version", com.example.translation_app.R.drawable.start_speech))
+                1 -> data.add(ItemsViewModel("Capture Text from Image", "Use Camera or Select an Image \nDetect Text \nGet a Translation" , com.example.translation_app.R.drawable.start_camera))
+                2 -> data.add(ItemsViewModel("Text translate", "Enter Text \nTranslate it" , com.example.translation_app.R.drawable.start_text))
             }
         }
 
@@ -126,13 +82,13 @@ class StartActivity: AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
         val inflater = menuInflater
-        inflater.inflate(R.menu.toolbar, menu)
+        inflater.inflate(com.example.translation_app.R.menu.start_toolbar, menu)
         return true
     }
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
 //
 
-        R.id.models -> {
+        com.example.translation_app.R.id.models -> {
             val intent = Intent(this, ModelActivity::class.java)
             startActivity(intent)
             true
@@ -148,12 +104,21 @@ class StartActivity: AppCompatActivity() {
     private fun saveData() {
         val setAct = SettingsFragment()
         if (setAct.saveUserPref(input_speech, output_speech, input_camera, output_camera, input_text)) {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this,ModelActivity::class.java)
             startActivity(intent)
         } else {
             Toast.makeText(applicationContext, "Please select all languages", Toast.LENGTH_SHORT).show()
         }
 
+    }
+
+    private fun checkData() {
+        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
+        val previouslyStarted = prefs.getBoolean(getString(com.example.translation_app.R.string.prev_started), false)
+        if (previouslyStarted) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
     }
 
 }

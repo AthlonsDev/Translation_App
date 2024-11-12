@@ -1,13 +1,19 @@
 package com.example.translation_app.Models
 
+import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.preference.PreferenceManager
+import com.example.translation_app.MainActivity
 import com.example.translation_app.R
 import com.example.translation_app.databinding.ActivityModelBinding
 import com.example.translation_app.start.ItemsViewModel
+import com.example.translation_app.start.StartActivity
 import com.example.translation_app.start.StartAdapter
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.common.model.RemoteModelManager
@@ -43,6 +49,19 @@ class ModelActivity: AppCompatActivity() {
 
 //        data.add(ModelsViewModel("English"))
         addRec()
+
+        checkData()
+
+        binding.finishButton.setOnClickListener {
+            val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
+            val previouslyStarted = prefs.getBoolean(getString(com.example.translation_app.R.string.prev_started), false)
+            if (!previouslyStarted) {
+                val edit = prefs.edit()
+                edit.putBoolean(getString(com.example.translation_app.R.string.prev_started), java.lang.Boolean.TRUE)
+                edit.commit()
+                startApp()
+            }
+        }
 
         adapter?.onClickListener(object : ModelsAdapter.OnClickListener {
             override fun onClicks(pos: Int, text: CharSequence, item: ModelsViewModel) {
@@ -163,7 +182,6 @@ class ModelActivity: AppCompatActivity() {
         modelManager.getDownloadedModels(TranslateRemoteModel::class.java)
             .addOnSuccessListener { models ->
                 for (model in models) {
-                    Toast.makeText(this, "Model: ${model.language}", Toast.LENGTH_SHORT).show()
                     when (model) {
                         englishModel -> {
                             adapter?.condition = "model downloaded"
@@ -237,4 +255,18 @@ class ModelActivity: AppCompatActivity() {
                 adapter?.notifyDataSetChanged()
             }
         }
+
+    private fun checkData() {
+        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
+        val previouslyStarted = prefs.getBoolean(getString(com.example.translation_app.R.string.prev_started), false)
+        if (previouslyStarted) {
+            binding.finishButton.isEnabled = false
+            binding.finishButton.isVisible = false
+        }
     }
+
+    private fun startApp() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+    }
+}

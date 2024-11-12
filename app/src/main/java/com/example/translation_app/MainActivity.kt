@@ -100,6 +100,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             true
         }
+        R.id.camera -> {
+            val intent = Intent(this, CameraActivity::class.java)
+            startActivity(intent)
+            true
+        }
+        R.id.gallery -> {
+            val intent = Intent(this, GalleryActivity::class.java)
+            startActivity(intent)
+            true
+        }
 
         else -> {
             // The user's action isn't recognized.

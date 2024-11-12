@@ -57,5 +57,6 @@
     <string name="translate_from">Translate From</string>
     <string name="speech_input">Waiting For Speech</string>
     <string name="speech_output">Waiting for Translation</string>
+    <string name="prev_started">Preview Started</string>
 
 </resources>
