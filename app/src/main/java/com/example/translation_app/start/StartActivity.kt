@@ -48,8 +48,6 @@ class StartActivity: AppCompatActivity() {
         adapter = StartAdapter(data)
         listView.adapter = adapter
 
-        checkData()
-
 //        data.add(ItemsViewModel("Translator Can Listen to a Voice and Translate it Back to You", "Select you language that you want to translate to and from" , R.drawable.start_speech))
         adapter?.onClickListener(object : StartAdapter.OnClickListener {
             override fun onClick(pos: Int, item: ItemsViewModel) {
@@ -112,13 +110,7 @@ class StartActivity: AppCompatActivity() {
 
     }
 
-    private fun checkData() {
-        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
-        val previouslyStarted = prefs.getBoolean(getString(com.example.translation_app.R.string.prev_started), false)
-        if (previouslyStarted) {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
-    }
+
+
 
 }

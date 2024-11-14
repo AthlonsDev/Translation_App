@@ -59,12 +59,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
 //        set ouput language to locale as default
-        val locale = Locale.getDefault()
-        val langName = locale.getDisplayName(locale)
-        speechOutput = langName
-        cameraOutput = langName
-        textOutput = langName
-        alphabet = "Latin"
+//        val locale = Locale.getDefault()
+//        val langName = locale.getDisplayName(locale)
+//        speechOutput = langName
+//        cameraOutput = langName
+//        textOutput = langName
+//        alphabet = "Latin"
+
 
 
 
@@ -209,32 +210,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val langName = locale.getDisplayName(locale)
             val value = preferences?.get(key)
             if (key == speechLanguageInput) {
-                speechInput = value.toString()
-                if(speechInput == null) {
-                    speechInput = "Not Set"
+                if(value == null) {
+                    speechInput = "To Set"
                 }
             }
             if (key == speechLanguageOutput) {
-                speechOutput = value.toString()
-                if (speechOutput == null) {
+                if (value == null) {
                     speechOutput = langName
                 }
             }
             if (key == alphabetInput) {
-                alphabet = value.toString()
-                if (alphabet == null) {
+                if (value == "latin") {
                     alphabet = "latin"
                 }
             }
             if (key == cameraLanguage) {
-                cameraOutput = value.toString()
-                if (cameraOutput == null) {
+                if (value == null) {
                     cameraOutput = langName
                 }
             }
             if (key == textLanguage) {
-                textOutput = value.toString()
-                if (textOutput == null) {
+                if (value == null) {
                     textOutput = langName
                 }
             }
