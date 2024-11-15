@@ -119,37 +119,6 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             checkPermission();
         }
 
-
-        val extraButton = binding.extraButton
-        extraButton.setOnClickListener {
-//            val intent = Intent(activity, CameraActivity::class.java)
-//            startActivity(intent)
-            if (binding.galleryButton.visibility == View.VISIBLE) {
-                binding.galleryButton.visibility = View.INVISIBLE
-                binding.galleryButton.isClickable = false
-                binding.cameraButton.visibility = View.INVISIBLE
-                binding.cameraButton.isClickable = false
-            }
-            else {
-                binding.galleryButton.visibility = View.VISIBLE
-                binding.galleryButton.isClickable = true
-                binding.cameraButton.visibility = View.VISIBLE
-                binding.cameraButton.isClickable = true
-            }
-        }
-
-        val galleryButton = binding.galleryButton
-        galleryButton.setOnClickListener {
-            val intent = Intent(activity, GalleryActivity::class.java)
-            startActivity(intent)
-        }
-
-        val cameraButton = binding.cameraButton
-        cameraButton.setOnClickListener {
-            val intent = Intent(activity, CameraActivity::class.java)
-            startActivity(intent)
-        }
-
         return root
     }
 

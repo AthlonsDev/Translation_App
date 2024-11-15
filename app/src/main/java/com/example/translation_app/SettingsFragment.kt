@@ -39,7 +39,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val cameraLanguage = stringPreferencesKey("camera_language")
     private val textLanguage = stringPreferencesKey("text_language")
 
-    private var speechInput: String = "Not Set"
+    private var speechInput
+    : String = "Not Set"
     private var speechOutput: String = "Not Set"
     private var alphabet: String = "Not Set"
     private var cameraOutput: String = "Not Set"
@@ -56,8 +57,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val cameraSettings = findPreference<Preference>(getString(R.string.cam_language))
         val textSettings = findPreference<Preference>(getString(R.string.text_language))
 
-
-
 //        set ouput language to locale as default
 //        val locale = Locale.getDefault()
 //        val langName = locale.getDisplayName(locale)
@@ -66,20 +65,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
 //        textOutput = langName
 //        alphabet = "Latin"
 
-
-
-
         readData(speechLanguageInput)
         readData(speechLanguageOutput)
         readData(alphabetInput)
         readData(cameraLanguage)
         readData(textLanguage)
-
-//        checkModels()
-
-//        if(speechInput != "Not Set" || speechOutput != "Not Set" || cameraOutput != "Not Set" || textOutput != "Not Set" || alphabet != "Not Set") {
-//            saveButton?.isVisible = false
-//        }
 
         var speechInputText = getString(R.string.speech_language_1)
         var speechOutputText = getString(R.string.speech_language_2)
@@ -88,7 +78,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         var textText = getText(R.string.text_language)
 
 
-        Toast.makeText(context, "$speechInputText", Toast.LENGTH_LONG).show()
         speechInSettings?.title = "$speechInputText - $speechInput"
         speechOutSettings?.title = "$speechOutputText - $speechOutput"
         alphabetSettings?.title = "$alphabetText - $alphabet"
@@ -213,25 +202,38 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 if(value == null) {
                     speechInput = "To Set"
                 }
+                else {
+                    speechInput = value
+                }
             }
             if (key == speechLanguageOutput) {
                 if (value == null) {
                     speechOutput = langName
+                }
+                else {
+                    speechOutput = value
                 }
             }
             if (key == alphabetInput) {
                 if (value == "latin") {
                     alphabet = "latin"
                 }
+
             }
             if (key == cameraLanguage) {
                 if (value == null) {
                     cameraOutput = langName
                 }
+                else {
+                    cameraOutput = value
+                }
             }
             if (key == textLanguage) {
                 if (value == null) {
                     textOutput = langName
+                }
+                else {
+                    textOutput = value
                 }
             }
 
