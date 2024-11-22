@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/models"
-        android:icon="@android:drawable/ic_menu_more"
+        android:icon="@android:drawable/stat_sys_download"
         android:title="Models"
         app:showAsAction="ifRoom" />
 

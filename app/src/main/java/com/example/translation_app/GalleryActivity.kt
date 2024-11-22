@@ -2,6 +2,7 @@ package com.example.translation_app
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -19,12 +20,21 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.preference.PreferenceManager
+import com.example.translation_app.Models.ModelActivity
 import com.example.translation_app.databinding.ActivityGalleryBinding
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.FileDescriptor
 import java.io.IOException
+import java.util.Locale
+import kotlin.coroutines.coroutineContext
 
 class GalleryActivity: AppCompatActivity() {
 
@@ -32,7 +42,7 @@ class GalleryActivity: AppCompatActivity() {
         private var imageUri: Uri? = null
         private lateinit var binding: ActivityGalleryBinding
         lateinit var alphabet: String
-        var targetLanguage: String = "it"
+        var targetLanguage: String = ""
         lateinit var customView: CustomView
 //
         override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +71,17 @@ class GalleryActivity: AppCompatActivity() {
                     Constants.REQUEST_CODE_PERMISSIONS
                 )
             }
+
+//            readData()
+            checkData()
+
+        }
+
+        private fun checkData() {
+            val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
+            val language = prefs.getString(getString(com.example.translation_app.R.string.cam_language), "")
+            targetLanguage = language.toString()
+
         }
 
         override fun onSupportNavigateUp(): Boolean {
@@ -68,13 +89,23 @@ class GalleryActivity: AppCompatActivity() {
             return true
         }
 
-        override fun onOptionsItemSelected(item: MenuItem): Boolean {
-            return super.onOptionsItemSelected(item)
-            when (item.itemId) {
-                android.R.id.home -> {
-                    onBackPressed()
-                    return true
-                }
+        override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
+            val inflater = menuInflater
+            inflater.inflate(com.example.translation_app.R.menu.start_toolbar, menu)
+            return true
+        }
+
+        override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+            com.example.translation_app.R.id.models -> {
+                val intent = Intent(this, ModelActivity::class.java)
+                startActivity(intent)
+                true
+            }
+
+            else -> {
+                // The user's action isn't recognized.
+                // Invoke the superclass to handle it.
+                super.onOptionsItemSelected(item)
             }
         }
 

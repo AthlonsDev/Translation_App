@@ -3,6 +3,7 @@ package com.example.translation_app
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -31,8 +32,10 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.LifecycleOwner
+import androidx.preference.PreferenceManager
 import com.example.translation_app.Constants
 import com.example.translation_app.MainActivity
+import com.example.translation_app.Models.ModelActivity
 import com.example.translation_app.R
 import com.example.translation_app.databinding.ActivityCameraBinding
 import com.google.common.util.concurrent.ListenableFuture
@@ -103,45 +106,40 @@ class CameraActivity: AppCompatActivity() {
                 binding.imageText.text = translatedText
             }
 
-            readData()
+            checkData()
 
         }
 
-    fun readData() = runBlocking {
-        launch {
-            readUserPreferences()
-        }
+
+    private fun checkData() {
+        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
+        val language = prefs.getString(getString(com.example.translation_app.R.string.cam_language), "")
+        targetLanguage = language.toString()
+
     }
 
-    suspend fun readUserPreferences() {
-        with(CoroutineScope(coroutineContext)) {
-            val datainputeKey = stringPreferencesKey("speech_language_1")
-            val dataoutputKey = stringPreferencesKey("speech_language_2")
-            val preferences = this@CameraActivity.dataStore?.data?.first()
-            val speechLanguageInput = preferences?.get(datainputeKey)
-            val speechLanguageOutput = preferences?.get(dataoutputKey)
-            inputLanguage = Locale(speechLanguageInput.toString())
-            targetLanguage = speechLanguageOutput.toString()
-            val translator = Translator()
-            translator.identifyLanguage(targetLanguage) { result ->
-                targetLanguage = result
-            }
-
-        }
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
-        override fun onSupportNavigateUp(): Boolean {
-            onBackPressed()
-            return true
+    override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(com.example.translation_app.R.menu.start_toolbar, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        com.example.translation_app.R.id.models -> {
+            val intent = Intent(this, ModelActivity::class.java)
+            startActivity(intent)
+            true
         }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return super.onOptionsItemSelected(item)
-        when (item.itemId) {
-            android.R.id.home -> {
-                onBackPressed()
-                return true
-            }
+        else -> {
+            // The user's action isn't recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
         }
     }
         private  fun allPermissionGranted() =

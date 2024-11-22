@@ -71,14 +71,14 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clickable="true"
         android:backgroundTint="@color/teal_200"
+        android:clickable="true"
         app:layout_constraintBottom_toTopOf="@+id/gallery_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/preview"
-        app:srcCompat="@drawable/baseline_translate_24" />
+        app:srcCompat="@android:drawable/ic_menu_upload" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/my_toolbar"
