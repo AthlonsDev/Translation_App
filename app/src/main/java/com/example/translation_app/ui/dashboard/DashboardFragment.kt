@@ -124,15 +124,11 @@ class DashboardFragment : Fragment() {
 
     suspend fun readUserPreferences() {
         with(CoroutineScope(coroutineContext)) {
-            val dataoutputKey = stringPreferencesKey("camera_language")
-            val datainputKey = stringPreferencesKey("alphabet_language")
+            val dataoutputKey = stringPreferencesKey("text_language")
             val preferences = context?.dataStore?.data?.first()
-            val cameraOutput = preferences?.get(dataoutputKey)
-            val alphabetKey = preferences?.get(datainputKey)
-            targetLanguage = cameraOutput.toString()
-            alphabet = alphabetKey.toString()
+            val textOutput = preferences?.get(dataoutputKey)
+            targetLanguage = textOutput.toString()
             var cameraLang = getString(R.string.camera_label)
-//            binding.cameraLabel.text = "$cameraLang ${cameraOutput.toString()}"
             val textRecognition = TextRecognition()
             textRecognition.identifyLanguage(targetLanguage) {
                 targetLanguage = it

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Translation_App</string>
+    <string name="app_name">Translate It!</string>
     <string name="title_dashboard">Camera</string>
     <string name="title_text">Text</string>
     <string name="title_notifications">Settings</string>

@@ -25,6 +25,7 @@ import androidx.preference.PreferenceManager
 import com.example.translation_app.Models.ModelActivity
 import com.example.translation_app.databinding.ActivityGalleryBinding
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
@@ -62,12 +63,9 @@ class GalleryActivity: AppCompatActivity() {
                 startActivityForResult(gallery, pickImage)
             }
 
-            if (allPermissionGranted()) {
-                Toast.makeText(this, "Permission Granted",
-                    Toast.LENGTH_SHORT).show()
-                } else {
+            if (!allPermissionGranted()) {
                 ActivityCompat.requestPermissions(
-                this, Constants.REQUIRED_PERMISSIONS,
+            this, Constants.REQUIRED_PERMISSIONS,
                     Constants.REQUEST_CODE_PERMISSIONS
                 )
             }
@@ -81,6 +79,10 @@ class GalleryActivity: AppCompatActivity() {
             val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
             val language = prefs.getString(getString(com.example.translation_app.R.string.cam_language), "")
             targetLanguage = language.toString()
+            val textRecognition = TextRecognition()
+            textRecognition.identifyLanguage(targetLanguage) {
+                targetLanguage = it
+            }
 
         }
 
@@ -134,7 +136,15 @@ class GalleryActivity: AppCompatActivity() {
                 parcelFileDescriptor.close()
 
                 if (image != null) {
-                    val inputImage = InputImage.fromBitmap(image, 0)
+                    val inputImage = InputImage.fromBitmap(image, 0);
+
+//                    val textRecognition = TextRecognition()
+//                    val text = textRecognition.recognizeText(inputImage) {
+//                        if (it != null) {
+//                            processTextBlock(it)
+//                        }
+//                    }
+
                     var recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(
                         TextRecognizerOptions.DEFAULT_OPTIONS)
                         recognizer.process(inputImage)
@@ -162,7 +172,8 @@ class GalleryActivity: AppCompatActivity() {
                         }
                         .addOnFailureListener { e ->
 //                        param("Failed to recognize text ${e.message}")
-                            Toast.makeText(this, "Failed to recognize text ${e.message}", Toast.LENGTH_SHORT).show()
+//                            Toast.makeText(this, "Failed to recognize text ${e.message}", Toast.LENGTH_SHORT).show
+                            binding.galleryText.text = "Failed to recognize text ${e.message}"
                         }
 
                 }
@@ -229,6 +240,36 @@ class GalleryActivity: AppCompatActivity() {
 //                }
 //            })
 //    }
+
+    private fun processTextBlock(result: Text) {
+        // [START mlkit_process_text_block]
+        val resultText = result.text
+        for (block in result.textBlocks) {
+            val blockText = block.text
+            val blockCornerPoints = block.cornerPoints
+            val blockFrame = block.boundingBox
+            for (line in block.lines) {
+                val lineText = line.text
+                val lineCornerPoints = line.cornerPoints
+                val lineFrame = line.boundingBox
+                for (i in line.elements) {
+                    val elementText = i.text
+                    val elementCornerPoints = i.cornerPoints
+                    val elementFrame = i.boundingBox
+
+                    // draw the text block on the image
+                    val rect = elementFrame?.let { Rect(it.left, elementFrame.top, elementFrame.right, elementFrame.bottom) }
+                    if (rect != null) {
+                        drawRectangle(rect)
+                    }
+
+
+                }
+            }
+
+        }
+
+    }
 
     private fun drawRectangle(rect: Rect) {
         customView = CustomView(this, null, rect)

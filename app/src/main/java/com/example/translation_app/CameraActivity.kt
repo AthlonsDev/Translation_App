@@ -40,6 +40,7 @@ import com.example.translation_app.R
 import com.example.translation_app.databinding.ActivityCameraBinding
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
@@ -67,7 +68,6 @@ class CameraActivity: AppCompatActivity() {
         private lateinit var cameraExecutor: ExecutorService
         private var imageUri: Uri? = null
         lateinit var alphabet: String
-        lateinit var inputLanguage: Locale
         private var targetLanguage = ""
         private var translatedText = ""
         lateinit var customView: CustomView
@@ -85,10 +85,9 @@ class CameraActivity: AppCompatActivity() {
             cameraProviderFuture = ProcessCameraProvider.getInstance(this)
             cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-            if (allPermissionGranted()) {
-                Toast.makeText(this, "Permission Granted",
-                    Toast.LENGTH_SHORT).show()
-            } else {
+            binding.imageText.movementMethod = android.text.method.ScrollingMovementMethod()
+
+            if (!allPermissionGranted()) {
                 ActivityCompat.requestPermissions(
                     this, Constants.REQUIRED_PERMISSIONS,
                     Constants.REQUEST_CODE_PERMISSIONS
@@ -111,10 +110,16 @@ class CameraActivity: AppCompatActivity() {
         }
 
 
+
+
     private fun checkData() {
         val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
         val language = prefs.getString(getString(com.example.translation_app.R.string.cam_language), "")
         targetLanguage = language.toString()
+        val textRecognition = TextRecognition()
+        textRecognition.identifyLanguage(targetLanguage) {
+            targetLanguage = it
+        }
 
     }
 
@@ -198,9 +203,8 @@ class CameraActivity: AppCompatActivity() {
             .build()
 
         val point = Point()
-//        val size = display?.getRealSize(point)
         val imageAnalysis = ImageAnalysis.Builder()
-            .setTargetResolution(Size(point.x, point.y))
+            .setTargetResolution(Size(binding.preview.x.toInt(), binding.preview.y.toInt()))
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .build()
 
@@ -215,8 +219,8 @@ class CameraActivity: AppCompatActivity() {
                     TextRecognizerOptions.DEFAULT_OPTIONS)
                 recognizer.process(inputImage)
                     .addOnSuccessListener {visionText ->
-
                         if(visionText.text != "") {
+//                            processTextBlock(visionText)
                             binding.preview.setBackgroundResource(R.drawable.camera_border_2)
                             val inputText = visionText.text
                             val rec = TextRecognition()
@@ -249,6 +253,36 @@ class CameraActivity: AppCompatActivity() {
         }
 
         cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, imageAnalysis, preview)
+    }
+
+    private fun processTextBlock(result: Text) {
+        // [START mlkit_process_text_block]
+        val resultText = result.text
+        for (block in result.textBlocks) {
+            val blockText = block.text
+            val blockCornerPoints = block.cornerPoints
+            val blockFrame = block.boundingBox
+
+            val rect = blockFrame?.let { Rect(it.left, blockFrame.top, blockFrame.right, blockFrame.bottom) }
+            if (rect != null) {
+                drawRectangle(rect)
+            }
+            for (line in block.lines) {
+                val lineText = line.text
+                val lineCornerPoints = line.cornerPoints
+                val lineFrame = line.boundingBox
+                for (i in line.elements) {
+                    val elementText = i.text
+                    val elementCornerPoints = i.cornerPoints
+                    val elementFrame = i.boundingBox
+                    // draw the text block on the image
+//                    val rect = elementFrame?.let { Rect(it.left, elementFrame.top, elementFrame.right, elementFrame.bottom) }
+//                    if (rect != null) {
+//                        drawRectangle(rect)
+//                    }
+                }
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -317,26 +351,6 @@ class CameraActivity: AppCompatActivity() {
         } catch (e: IOException) {
             e.printStackTrace()
         }
-//        val bitmap = Bitmap.createBitmap(binding.preview.width, binding.preview.height, Bitmap.Config.ARGB_8888)
-//        val canvas = Canvas(bitmap)
-//        binding.preview.draw(canvas)
-//        bmp = bitmap
-//        val inputImage = InputImage.fromBitmap(bmp!!, 0)
-//        val recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-//        recognizer.process(inputImage)
-//            .addOnSuccessListener { visionText ->
-//                val inputText = visionText.text
-//                val rec = TextRecognition()
-//                rec.identifyLanguage(targetLanguage) {
-//                    rec.initTranslator(inputText, it, targetLanguage) {
-//                        translatedText = it
-//                        binding.outputText.text = translatedText
-//                    }
-//                }
-//            }
-//            .addOnFailureListener { e ->
-//                binding.outputText.text = "Failed to recognize text ${e.message}"
-//            }
     }
 
     private fun drawRectangle(rect: Rect) {
@@ -368,13 +382,10 @@ class CameraActivity: AppCompatActivity() {
         }
 
     }
-
-
-
-        override fun onDestroy() {
-            super.onDestroy()
-            cameraExecutor.shutdown()
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutor.shutdown()
+    }
 //
 
 

@@ -6,12 +6,11 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.RectF
 import android.location.GnssAntennaInfo.Listener
+import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
-import android.widget.Toast
-import androidx.camera.core.ImageProxy
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
@@ -25,13 +24,13 @@ import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.util.Locale
-import java.util.Objects
 
 class TextRecognition: Activity() {
 
 
     val text_from_image = ""
     var listener: Listener? = null
+    lateinit var bb: BoundingBox
 
 
     fun initTextRec(image: InputImage, alphabet: String, param: (String) -> Unit) {
@@ -89,11 +88,9 @@ class TextRecognition: Activity() {
         val newLocale = Locale(targetLanguage)
         val targetLanguageCode = TranslateLanguage.fromLanguageTag(newLocale.toLanguageTag())
 
-        Log.d("LanguageCode", targetLanguageCode.toString())
-        Log.d("LanguageCode", identifiedLanguage.toString())
         val options = TranslatorOptions.Builder()
             .setSourceLanguage(TranslateLanguage.fromLanguageTag(identifiedLanguage).toString())
-            .setTargetLanguage(TranslateLanguage.fromLanguageTag(targetLanguageCode.toString()).toString())
+            .setTargetLanguage(TranslateLanguage.fromLanguageTag(targetLanguage)!!)
             .build()
         val translator = Translation.getClient(options)
         var output = ""
@@ -110,29 +107,76 @@ class TextRecognition: Activity() {
             }
     }
 
-    fun processTextBlock(result: Text) {
-        // [START mlkit_process_text_block]
-        val resultText = result.text
-        for (block in result.textBlocks) {
-            val blockText = block.text
-            val blockCornerPoints = block.cornerPoints
-            val blockFrame = block.boundingBox
-            for (line in block.lines) {
-                val lineText = line.text
-                val lineCornerPoints = line.cornerPoints
-                val lineFrame = line.boundingBox
-                for (i in line.elements) {
-//                    val elementText = element.text
-//                    val elementCornerPoints = element.cornerPoints
-//                    val elementFrame = element.boundingBox
 
 
+    fun recognizeText(image: InputImage, param: (Text?) -> Unit) {
+
+        // [START get_detector_default]
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        // [END get_detector_default]
+        var _text: Text? = null
+
+        // [START run_detector]
+        val result = recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                // Task completed successfully
+                // [START_EXCLUDE]
+                // [START get_text]
+                for (block in visionText.textBlocks) {
+                    val boundingBox = block.boundingBox
+                    val cornerPoints = block.cornerPoints
+                    val text = block.text
+
+                    _text = visionText
+                    for (line in block.lines) {
+                        for (element in line.elements) {
+                            // ...
+                        }
+                    }
                 }
+                param(_text)
             }
+            .addOnFailureListener { e ->
+                // Task failed with an exception
+                // ...
+            }
+    }
+
+    private fun processText(text: Text): String {
+        return text.toString()
+    }
+
+
+    private fun drawRectangle(rect: Rect) {
+
+        bb = BoundingBox(this, null, rect)
+//    binding.preview.addView(customView)
+    }
+
+    private fun clearCanvas() {
+        bb.clearCanvas()
+    }
+
+}
+
+class BoundingBox(context: Context?, attrs: AttributeSet?, rect: Rect) :
+    View(context, attrs)
+    {
+        private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.GREEN
+            style = Paint.Style.STROKE
+            strokeWidth = 1f
+        }
+        private val boundingBox = rect
+        override fun onDraw(canvas: Canvas) {
+            super.onDraw(canvas)
+            canvas.drawRect(boundingBox, paint)
 
         }
-        // [END mlkit_process_text_block]
-    }
+        fun clearCanvas() {
+            val transparent = Paint()
+            transparent.alpha = 0
+        }
 
 }
 
@@ -159,7 +203,7 @@ class Draw(context: Context?, var rect: Rect, var text: String) : View(context) 
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-//        canvas.drawText(text, rect.centerX().toFloat(), rect.centerY().toFloat(), textPaint)
+        canvas.drawText(text, rect.centerX().toFloat(), rect.centerY().toFloat(), textPaint)
         canvas.drawRect(rect.left.toFloat(), rect.top.toFloat(), rect.right.toFloat(), rect.bottom.toFloat(), paint)
     }
 }
