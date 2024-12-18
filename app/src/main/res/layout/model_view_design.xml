@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="28dp"
         android:text="TextView"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,6 +36,6 @@
         app:layout_constraintEnd_toStartOf="@+id/button_mod"
         app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toEndOf="@+id/text_mod"
-        app:layout_constraintTop_toTopOf="@+id/text_mod" />
+        app:layout_constraintTop_toTopOf="@+id/button_mod" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

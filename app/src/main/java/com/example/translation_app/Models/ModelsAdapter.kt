@@ -54,6 +54,7 @@ class ModelsAdapter(private val itemList: List<ModelsViewModel>): RecyclerView.A
                 holder.progress_bar.visibility = View.INVISIBLE
             } else if (condition == "model downloading") {
                 button.text = "Downloading..."
+                button.isClickable = false
                 holder.progress_bar.visibility = View.VISIBLE
             } else {
                 button.text = "Download"

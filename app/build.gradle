@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.example.translation_app'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.translation_app"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -116,9 +116,13 @@ dependencies {
 //    coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
+//    google ads
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
+
+
     //Google Ads Dependencies
 //    implementation 'com.google.android.gms:play-services-ads:22.4.0'
-//    implementation 'com.google.guava:guava:27.0.1-android'
+    implementation 'com.google.guava:guava:31.0.1-android'
 
 //    Picasso Dependency
     implementation 'com.squareup.picasso:picasso:2.71828'

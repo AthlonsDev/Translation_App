@@ -45,7 +45,7 @@ class Translator {
             .addOnFailureListener { exception ->
                 // Error.
                 // ...
-                param("Failed to translate text ${exception.message}")
+                param("Failed to translate text, check that the model for the language is downloaded and try again.")
 
             }
     }
