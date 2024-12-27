@@ -14,11 +14,19 @@
         <!-- Customize your theme here. -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-
+        <item name="alertDialogTheme">@style/AppTheme.Dialog</item>
     </style>
 
     <style name="PreferencesTheme">
         <item name="android:windowBackground">@android:drawable/alert_dark_frame</item>
         <item name="android:background">#009707</item>
+    </style>
+
+    <style name="AppTheme.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:background">#FFFFFF</item>
+        <item name="colorPrimary">#000000</item>
+        <item name="colorPrimaryDark">#8DB2D3</item>
+        <item name="colorAccent">#61A3D7</item>
     </style>
 </resources>

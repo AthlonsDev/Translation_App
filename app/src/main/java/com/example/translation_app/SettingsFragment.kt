@@ -1,31 +1,21 @@
 package com.example.translation_app
 
 import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.Toast
 import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
-import com.google.mlkit.common.model.RemoteModelManager
-import com.google.mlkit.nl.translate.TranslateLanguage
-import com.google.mlkit.nl.translate.TranslateRemoteModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.Locale
-import java.util.stream.IntStream.range
 import kotlin.coroutines.coroutineContext
 
 
@@ -71,15 +61,52 @@ class SettingsFragment : PreferenceFragmentCompat() {
         readData(cameraLanguage)
         readData(textLanguage)
 
+
+
+
+
         var speechInputText = getString(R.string.speech_language_1)
         var speechOutputText = getString(R.string.speech_language_2)
         var alphabetText = getString(R.string.alphabet_language_1)
         var cameraText = getText(R.string.cam_language)
         var textText = getText(R.string.text_language)
 
+        getFlag(speechInput) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
 
-        speechInSettings?.title = "$speechInputText - $speechInput"
-        speechOutSettings?.title = "$speechOutputText - $speechOutput"
+        for (i in 0..5) {
+            when (i) {
+                0 -> {
+                    getFlag(speechInput) {
+                        speechInSettings?.title = "$speechInputText - $speechInput - $it"
+                    }
+                }
+                1 -> {
+                    getFlag(speechOutput) {
+                        speechOutSettings?.title = "$speechInputText - $speechOutput - $it"
+                    }
+                }
+                2 -> {
+                    getFlag(alphabet) {
+
+                    }
+                }
+                3 -> {
+                    getFlag(cameraOutput) {
+                        cameraSettings?.title = "$cameraText - $cameraOutput - $it"
+                    }
+                }
+                4 -> {
+                    getFlag(textOutput) {
+                        textSettings?.title = "$textText - $textOutput - $it"
+                    }
+                }
+            }
+        }
+
+//        speechInSettings?.title = "$speechInputText - $speechInput"
+//        speechOutSettings?.title = "$speechOutputText - $speechOutput"
         alphabetSettings?.title = "$alphabetText - $alphabet"
         cameraSettings?.title = "$cameraText - $cameraOutput"
         textSettings?.title = "$textText - $textOutput"
@@ -88,7 +115,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            preference.title = "Source Language - $newLangName"
+            getFlag(newLang) {
+                preference.title = "Source Language - $newLangName - $it"
+            }
             main(newLangName, speechLanguageInput)
             true
         }
@@ -97,7 +126,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            preference.title = "Target Language - $newLangName"
+            getFlag(newLang) {
+                preference.title = "Target Language - $newLangName - $it"
+            }
             main(newLangName, speechLanguageOutput)
             true
         }
@@ -115,7 +146,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            preference.title = "Target Language - $newLangName"
+            getFlag(newLang) {
+                preference.title = "Target Language - $newLangName - $it"
+            }
             main(newLangName, cameraLanguage)
             true
         }
@@ -124,8 +157,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-
-            preference.title = "Target Language - $newLangName"
+            getFlag(newLang) {
+                preference.title = "Target Language - $newLangName - $it"
+            }
             main(newLangName, textLanguage)
             true
         }
@@ -155,6 +189,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 //        checkData()
         return true
+    }
+
+    private fun getFlag(lang: String, param: (String) -> Unit) {
+        val translator = Translator()
+        translator.identifyLanguage(lang) {
+
+            val cCode = it.uppercase()
+            val firstLetter = Character.codePointAt(cCode, 0) - 0x41 + 0x1F1E6
+            val secondLetter = Character.codePointAt(cCode, 1) - 0x41 + 0x1F1E6
+
+            param(String(Character.toChars(firstLetter)) + String(Character.toChars(secondLetter)))
+
+        }
+
     }
 
     private fun checkData(): Boolean {

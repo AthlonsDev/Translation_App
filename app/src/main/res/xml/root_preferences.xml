@@ -10,6 +10,7 @@
             android:key="@string/speech_language_1"
             app:title="@string/speech_language_1" />
         <ListPreference
+            android:negativeButtonText="Cancel"
             android:defaultValue="1"
             android:entries="@array/Languages"
             android:entryValues="@array/Languages"

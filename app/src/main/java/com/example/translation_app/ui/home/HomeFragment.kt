@@ -136,9 +136,10 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             val speechLanguageInput = preferences?.get(datainputeKey)
             val speechLanguageOutput = preferences?.get(dataoutputKey)
             inputLanguage = Locale(speechLanguageInput)
-            val locale = Locale.getDefault()
-            val langName = locale.getDisplayName(locale)
-            targetLanguage = langName
+            targetLanguage = speechLanguageOutput.toString()
+//            val locale = Locale.getDefault()
+//            val langName = locale.getDisplayName(locale)
+//            targetLanguage = langName
             val translator = Translator()
             translator.identifyLanguage(targetLanguage) { result ->
                 targetLanguage = result
@@ -251,7 +252,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
         val data = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         transcript = data?.get(0).toString()
         Toast.makeText(requireContext(), transcript, Toast.LENGTH_SHORT).show()
-//        translateText(transcript, targetLanguage, inputLanguage)
+        translateText(transcript, targetLanguage, inputLanguage)
         binding.speechText.text = transcript
     }
 
