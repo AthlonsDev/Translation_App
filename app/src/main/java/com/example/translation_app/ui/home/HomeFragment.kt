@@ -75,13 +75,26 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 
         val translator = Translator()
         readData()
+        for (i in 0..1) {
+            when (i) {
+                0 -> {
+                    setFlag(inputLanguage.toString()) {
+                        binding.speechFlagIn.text = it
+                    }
+                }
+                1 -> {
+                    setFlag(targetLanguage) {
+                        binding.speechFlagOut.text = it
+                    }
+                }
+            }
+        }
         // Set up the text to speech
         tts = TextToSpeech(requireContext()) { status ->
             if (status != TextToSpeech.ERROR) {
                 tts!!.language = inputLanguage
             }
         }
-
 
         transcript = ""
         val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
@@ -97,15 +110,6 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             }
             v?.onTouchEvent(event) ?: true
         }
-
-//        binding.speechInButton.setOnClickListener {
-//            tts!!.speak(transcript, TextToSpeech.QUEUE_FLUSH, null, null)
-//        }
-//
-//        binding.speechOutButton.setOnClickListener {
-//            translateText(transcript, targetLanguage)
-//        }
-
 
         if(ContextCompat.checkSelfPermission(requireContext(), Constants.REQUIRED_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED){
             checkPermission();
@@ -136,6 +140,9 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             val speechLanguageInput = preferences?.get(datainputeKey)
             val speechLanguageOutput = preferences?.get(dataoutputKey)
             inputLanguage = Locale(speechLanguageInput)
+            val input = Locale("Japanese")
+            val getIso = input.displayVariant
+//            Toast.makeText(requireContext(), getIso, Toast.LENGTH_SHORT).show()
             targetLanguage = speechLanguageOutput.toString()
 //            val locale = Locale.getDefault()
 //            val langName = locale.getDisplayName(locale)
@@ -146,6 +153,96 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             }
 //            binding.textView.text = "${getString(R.string.speech_input)} - ${speechLanguageInput.toString()}"
 //            binding.textView2.text = "${getString(R.string.speech_output)} - ${speechLanguageOutput.toString()}"
+        }
+    }
+
+    private fun setFlag(lang: String, param: (String) -> Unit) {
+        val translator = Translator()
+        val iso = Locale.getISOCountries()
+        var country = ""
+
+
+        translator.identifyLanguage(lang) {
+            var fix = ""
+            when(it) {
+                "en" -> {
+                    fix = "gb".uppercase()
+                    val firstLetter = Character.codePointAt(fix, 0) - 0x41 + 0x1F1E6
+                    val secondLetter = Character.codePointAt(fix, 1) - 0x41 + 0x1F1E6
+                    param(
+                        String(Character.toChars(firstLetter)) + String(
+                            Character.toChars(
+                                secondLetter
+                            )
+                        )
+                    )
+                }
+
+                "ja" -> {
+                    fix = "jp".uppercase()
+                    val firstLetter = Character.codePointAt(fix, 0) - 0x41
+                    val secondLetter = Character.codePointAt(fix, 1) - 0x41
+                    param(
+                        String(Character.toChars(firstLetter + 0x1F1E6)) + String(
+                            Character.toChars(
+                                secondLetter + 0x1F1E6
+                            )
+                        )
+                    )
+                }
+
+                "ko" -> {
+                    fix = "kr".uppercase()
+                    val firstLetter = Character.codePointAt(fix, 0) - 0x41
+                    val secondLetter = Character.codePointAt(fix, 1) - 0x41
+                    param(
+                        String(Character.toChars(firstLetter + 0x1F1E6)) + String(
+                            Character.toChars(
+                                secondLetter + 0x1F1E6
+                            )
+                        )
+                    )
+                }
+
+                "zh" -> {
+                    fix = "cn".uppercase()
+                    val firstLetter = Character.codePointAt(fix, 0) - 0x41
+                    val secondLetter = Character.codePointAt(fix, 1) - 0x41
+                    param(
+                        String(Character.toChars(firstLetter + 0x1F1E6)) + String(
+                            Character.toChars(
+                                secondLetter + 0x1F1E6
+                            )
+                        )
+                    )
+                }
+
+                "ar" -> {
+                    fix = "sa".uppercase()
+                    val firstLetter = Character.codePointAt(fix, 0) - 0x41
+                    val secondLetter = Character.codePointAt(fix, 1) - 0x41
+                    param(
+                        String(Character.toChars(firstLetter + 0x1F1E6)) + String(
+                            Character.toChars(
+                                secondLetter + 0x1F1E6
+                            )
+                        )
+                    )
+                }
+
+                else -> {
+                    val firstLetter = Character.codePointAt(it.uppercase(), 0) - 0x41 + 0x1F1E6
+                    val secondLetter = Character.codePointAt(it.uppercase(), 1) - 0x41 + 0x1F1E6
+                    param(
+                        String(Character.toChars(firstLetter)) + String(
+                            Character.toChars(
+                                secondLetter
+                            )
+                        )
+                    )
+                }
+
+            }
         }
     }
 

@@ -29,8 +29,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val cameraLanguage = stringPreferencesKey("camera_language")
     private val textLanguage = stringPreferencesKey("text_language")
 
-    private var speechInput
-    : String = "Not Set"
+    private var speechInput: String = "Not Set"
     private var speechOutput: String = "Not Set"
     private var alphabet: String = "Not Set"
     private var cameraOutput: String = "Not Set"
@@ -71,34 +70,36 @@ class SettingsFragment : PreferenceFragmentCompat() {
         var cameraText = getText(R.string.cam_language)
         var textText = getText(R.string.text_language)
 
-        getFlag(speechInput) {
+        val translator = Translator()
+
+        translator.setFlag(speechInput) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
 
         for (i in 0..5) {
             when (i) {
                 0 -> {
-                    getFlag(speechInput) {
+                    translator.setFlag(speechInput) {
                         speechInSettings?.title = "$speechInputText - $speechInput - $it"
                     }
                 }
                 1 -> {
-                    getFlag(speechOutput) {
+                    translator.setFlag(speechOutput) {
                         speechOutSettings?.title = "$speechInputText - $speechOutput - $it"
                     }
                 }
                 2 -> {
-                    getFlag(alphabet) {
+                    translator.setFlag(alphabet) {
 
                     }
                 }
                 3 -> {
-                    getFlag(cameraOutput) {
+                    translator.setFlag(cameraOutput) {
                         cameraSettings?.title = "$cameraText - $cameraOutput - $it"
                     }
                 }
                 4 -> {
-                    getFlag(textOutput) {
+                    translator.setFlag(textOutput) {
                         textSettings?.title = "$textText - $textOutput - $it"
                     }
                 }
@@ -115,7 +116,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            getFlag(newLang) {
+            translator.setFlag(newLang) {
                 preference.title = "Source Language - $newLangName - $it"
             }
             main(newLangName, speechLanguageInput)
@@ -126,7 +127,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            getFlag(newLang) {
+            translator.setFlag(newLang) {
                 preference.title = "Target Language - $newLangName - $it"
             }
             main(newLangName, speechLanguageOutput)
@@ -146,7 +147,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            getFlag(newLang) {
+            translator.setFlag(newLang) {
                 preference.title = "Target Language - $newLangName - $it"
             }
             main(newLangName, cameraLanguage)
@@ -157,7 +158,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            getFlag(newLang) {
+            translator.setFlag(newLang) {
                 preference.title = "Target Language - $newLangName - $it"
             }
             main(newLangName, textLanguage)
@@ -191,19 +192,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         return true
     }
 
-    private fun getFlag(lang: String, param: (String) -> Unit) {
-        val translator = Translator()
-        translator.identifyLanguage(lang) {
-
-            val cCode = it.uppercase()
-            val firstLetter = Character.codePointAt(cCode, 0) - 0x41 + 0x1F1E6
-            val secondLetter = Character.codePointAt(cCode, 1) - 0x41 + 0x1F1E6
-
-            param(String(Character.toChars(firstLetter)) + String(Character.toChars(secondLetter)))
-
-        }
-
-    }
 
     private fun checkData(): Boolean {
         if (speechInput != "Not Set" || speechOutput != "Not Set" || cameraOutput != "Not Set" || textOutput != "Not Set" || alphabet != "Not Set") {
