@@ -107,20 +107,35 @@ class CameraActivity: AppCompatActivity() {
 
             checkData()
 
+            val translator = Translator()
+            translator.setFlag(targetLanguage) {
+                binding.camFlagOut.text = it
+            }
+
         }
-
-
-
 
     private fun checkData() {
         val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
         val language = prefs.getString(getString(com.example.translation_app.R.string.cam_language), "")
+        alphabet = prefs.getString(getString(com.example.translation_app.R.string.alphabet_language_1), "").toString()
         targetLanguage = language.toString()
         val textRecognition = TextRecognition()
         textRecognition.identifyLanguage(targetLanguage) {
             targetLanguage = it
         }
+        checkAlphabet(alphabet)
+    }
 
+    private fun checkAlphabet(source: String) {
+        when(source) {
+            "Japanese" -> alphabet = "Japanese"
+            "Chinese" -> alphabet = "Chinese"
+            "Korean" -> alphabet = "Korean"
+            "Devanagari" -> alphabet = "Devanagari"
+            "Russian" -> alphabet = "Russian"
+            "Arabic" -> alphabet = "Arabic"
+            else -> alphabet = "Latin"
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -153,32 +168,6 @@ class CameraActivity: AppCompatActivity() {
                     baseContext, it
                 ) == PackageManager.PERMISSION_GRANTED
             }
-        //
-//
-        private fun startCamera() {
-//        listening for data from the camera
-            cameraProviderFuture.addListener({
-                val cameraProvider = cameraProviderFuture.get()
-
-//            connect preview use case to the preview on xml file
-                val preview = Preview.Builder().build().also{
-                    it.setSurfaceProvider(binding.preview.surfaceProvider)
-                }
-
-                imageCapture = ImageCapture.Builder().build()
-
-                val camerasSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-                try {
-                    cameraProvider.unbindAll()
-                    cameraProvider.bindToLifecycle(
-                        this, cameraSelector, preview, imageCapture
-                    )
-                } catch (e: Exception) {
-
-                }
-            }, ContextCompat.getMainExecutor(this))
-        }
 
         private fun getOutputDirectory(): File {
             val mediaDir = externalMediaDirs.firstOrNull()?.let {
@@ -215,41 +204,32 @@ class CameraActivity: AppCompatActivity() {
             val image = imageProxy.image
             if (image != null) {
                 val inputImage = InputImage.fromMediaImage(image, rotationDegrees)
-                var recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(
-                    TextRecognizerOptions.DEFAULT_OPTIONS)
-                recognizer.process(inputImage)
-                    .addOnSuccessListener {visionText ->
-                        if(visionText.text != "") {
-//                            processTextBlock(visionText)
-                            binding.preview.setBackgroundResource(R.drawable.camera_border_2)
-                            val inputText = visionText.text
-                            val rec = TextRecognition()
-                            rec.identifyLanguage(inputText) {
-                                if (it == "und") {
-                                    translatedText = "Cannot identify language"
-                                    binding.preview.setBackgroundResource(R.drawable.camera_border)
-                                }
-                                else {
-                                    binding.preview.setBackgroundResource(R.drawable.camera_border_2)
+//                checkAlphabet(targetLanguage)
+                TextRecognition().initTextRec(inputImage, alphabet) {
+                    if (it != null) {
+                        binding.preview.setBackgroundResource(R.drawable.camera_border_2)
+                        val inputText = it
+                        val rec = TextRecognition()
+                        rec.identifyLanguage(inputText) {
+                            if (it == "und") {
+                                translatedText = "Cannot identify language"
+                                binding.preview.setBackgroundResource(R.drawable.camera_border)
+                            }
+                            else {
+                                binding.preview.setBackgroundResource(R.drawable.camera_border_2)
 
-                                    rec.initTranslator(inputText, it, targetLanguage) {
-                                        translatedText = it
-                                    }
+                                rec.initTranslator(inputText, it, targetLanguage) { _it ->
+                                    translatedText = _it
                                 }
                             }
-                        } else {
-                            binding.preview.setBackgroundResource(R.drawable.camera_border)
                         }
-
-                        imageProxy.close()
-                    }
-                    .addOnFailureListener { e ->
-//                        param("Failed to recognize text ${e.message}")
+                    } else {
                         binding.preview.setBackgroundResource(R.drawable.camera_border)
-                        imageProxy.close()
                     }
 
-            }
+                    imageProxy.close()
+                    }
+                }
         }
 
         cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, imageAnalysis, preview)

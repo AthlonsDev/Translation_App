@@ -31,6 +31,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
@@ -75,6 +76,12 @@ class DashboardFragment : Fragment() {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        binding.inputText.addTextChangedListener { text ->
+            val translator = Translator()
+            translator.setFlag(text.toString()) {
+                binding.textFlagIn.text = it
+            }
+        }
 
         binding.outputText.movementMethod = ScrollingMovementMethod()
 
@@ -83,11 +90,16 @@ class DashboardFragment : Fragment() {
             val translator = Translator()
             val inputText = binding.inputText.text.toString()
             val outputText = binding.outputText
+
             translator.identifyLanguage(inputText) { it1 ->
                 translator.initTranslator(inputText, it1, targetLanguage) {
                     outputText.text = it
                 }
             }
+        }
+
+        binding.imageView4.setOnClickListener {
+            hideKeyboard(requireActivity())
         }
 
         readData()
@@ -96,11 +108,12 @@ class DashboardFragment : Fragment() {
         return root
     }
 
+
     fun hideKeyboardFrom(context: Context, view: View) {
         val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
-    fun hideKeyboard(activity: Activity) {
+    private fun hideKeyboard(activity: Activity) {
         val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
         var view = activity.currentFocus
@@ -128,11 +141,21 @@ class DashboardFragment : Fragment() {
             val preferences = context?.dataStore?.data?.first()
             val textOutput = preferences?.get(dataoutputKey)
             targetLanguage = textOutput.toString()
-            var cameraLang = getString(R.string.camera_label)
-            val textRecognition = TextRecognition()
+            val textRecognition = Translator()
             textRecognition.identifyLanguage(targetLanguage) {
                 targetLanguage = it
             }
+
+            setFlag(targetLanguage) {
+                binding.textFlagOut.text = it
+            }
+        }
+    }
+
+    private fun setFlag(lang: String, param: (String) -> Unit) {
+        val translator = Translator()
+        translator.setFlag(lang) {
+            param(it)
         }
     }
 

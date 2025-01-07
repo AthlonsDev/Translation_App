@@ -31,7 +31,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private var speechInput: String = "Not Set"
     private var speechOutput: String = "Not Set"
-    private var alphabet: String = "Not Set"
+    private var cameraInput: String = "Not Set"
     private var cameraOutput: String = "Not Set"
     private var textOutput: String = "Not Set"
 
@@ -54,27 +54,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
 //        textOutput = langName
 //        alphabet = "Latin"
 
-        readData(speechLanguageInput)
-        readData(speechLanguageOutput)
-        readData(alphabetInput)
-        readData(cameraLanguage)
-        readData(textLanguage)
-
-
-
-
 
         var speechInputText = getString(R.string.speech_language_1)
         var speechOutputText = getString(R.string.speech_language_2)
-        var alphabetText = getString(R.string.alphabet_language_1)
+        var cameraTextInput = getString(R.string.alphabet_language_1)
         var cameraText = getText(R.string.cam_language)
         var textText = getText(R.string.text_language)
 
         val translator = Translator()
-
-        translator.setFlag(speechInput) {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-        }
 
         for (i in 0..5) {
             when (i) {
@@ -85,12 +72,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
                 1 -> {
                     translator.setFlag(speechOutput) {
-                        speechOutSettings?.title = "$speechInputText - $speechOutput - $it"
+                        speechOutSettings?.title = "$speechOutputText - $speechOutput - $it"
                     }
                 }
                 2 -> {
-                    translator.setFlag(alphabet) {
-
+                    translator.setFlag(cameraInput) {
+                        alphabetSettings?.title = "$cameraTextInput - $cameraInput - $it"
                     }
                 }
                 3 -> {
@@ -106,9 +93,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         }
 
-//        speechInSettings?.title = "$speechInputText - $speechInput"
-//        speechOutSettings?.title = "$speechOutputText - $speechOutput"
-        alphabetSettings?.title = "$alphabetText - $alphabet"
+        readData(speechLanguageInput)
+        readData(speechLanguageOutput)
+        readData(alphabetInput)
+        readData(cameraLanguage)
+        readData(textLanguage)
+
+        speechInSettings?.title = "$speechInputText - $speechInput"
+        speechOutSettings?.title = "$speechOutputText - $speechOutput"
+        alphabetSettings?.title = "$cameraTextInput - $cameraInput"
         cameraSettings?.title = "$cameraText - $cameraOutput"
         textSettings?.title = "$textText - $textOutput"
 
@@ -117,7 +110,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
             translator.setFlag(newLang) {
-                preference.title = "Source Language - $newLangName - $it"
+                preference.title = "Source Language - $newLangName"
             }
             main(newLangName, speechLanguageInput)
             true
@@ -128,7 +121,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
             translator.setFlag(newLang) {
-                preference.title = "Target Language - $newLangName - $it"
+                preference.title = "Target Language - $newLangName"
             }
             main(newLangName, speechLanguageOutput)
             true
@@ -138,7 +131,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            preference.title = "Alphabet Language - $newLangName"
+            preference.title = "Camera Input - $newLangName"
             main(newLangName, alphabetInput)
             true
         }
@@ -148,7 +141,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
             translator.setFlag(newLang) {
-                preference.title = "Target Language - $newLangName - $it"
+                preference.title = "Target Language - $newLangName"
             }
             main(newLangName, cameraLanguage)
             true
@@ -159,11 +152,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
             translator.setFlag(newLang) {
-                preference.title = "Target Language - $newLangName - $it"
+                preference.title = "Target Language - $newLangName"
             }
             main(newLangName, textLanguage)
             true
         }
+
+
 
     }
 
@@ -194,7 +189,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
     private fun checkData(): Boolean {
-        if (speechInput != "Not Set" || speechOutput != "Not Set" || cameraOutput != "Not Set" || textOutput != "Not Set" || alphabet != "Not Set") {
+        if (speechInput != "Not Set" || speechOutput != "Not Set" || cameraOutput != "Not Set" || textOutput != "Not Set" || cameraInput != "Not Set") {
             return false
         }
         readData(speechLanguageInput)
@@ -234,6 +229,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val locale = Locale.getDefault()
             val langName = locale.getDisplayName(locale)
             val value = preferences?.get(key)
+
             if (key == speechLanguageInput) {
                 if(value == null) {
                     speechInput = "To Set"
@@ -251,8 +247,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 }
             }
             if (key == alphabetInput) {
-                if (value == "latin") {
-                    alphabet = "latin"
+                if (value == null) {
+                    cameraInput = langName
+                }
+                else {
+                    cameraInput = value
                 }
 
             }

@@ -6,16 +6,16 @@
 
 
     <string-array name="Languages">
-        <item>English - &#127988;</item>
-        <item>Español</item>
-        <item>Français</item>
-        <item>Italiano</item>
-        <item>Deutsch</item>
-        <item>日本語</item>
-        <item>中國人</item>
-        <item>한국어</item>
-        <item>русский</item>
-        <item>العربية</item>
+        <item>English - &#127468;&#127463;</item>
+        <item>Español - &#127466;&#127480;</item>
+        <item>Français - &#127467;&#127479;</item>
+        <item>Italiano - &#127470;&#127481;</item>
+        <item>Deutsch - &#127465;&#127466;</item>
+        <item>日本語 - &#127471;&#127477;</item>
+        <item>中國人 - &#127464;&#127475;</item>
+        <item>한국어 - &#127472;&#127479;</item>
+        <item>русский - &#127479;&#127482;</item>
+        <item> - العربية&#127480;&#127462;</item>
     </string-array>
 
     <string-array name="Alphabet">
@@ -48,8 +48,8 @@
     <string name="Text">Text</string>
     <string name="speech_language_1">Voice Input Language</string>
     <string name="speech_language_2">Voice Output Language</string>
-    <string name="alphabet_language_1">Alphabet Type</string>
-    <string name="cam_language">Camera Language</string>
+    <string name="alphabet_language_1">Camera Input</string>
+    <string name="cam_language">Camera Output</string>
     <string name="text_language">Text Language</string>
     <string name="save_pref_btn">Save Settings</string>
     <string name="camera_label">Translating To:</string>

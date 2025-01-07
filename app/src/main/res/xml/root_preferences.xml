@@ -24,8 +24,8 @@
 
         <ListPreference
             android:defaultValue="1"
-            android:entries="@array/Alphabet"
-            android:entryValues="@array/Alphabet"
+            android:entries="@array/Languages"
+            android:entryValues="@array/Languages"
             android:key="@string/alphabet_language_1"
             app:title="@string/alphabet_language_1" />
         <ListPreference

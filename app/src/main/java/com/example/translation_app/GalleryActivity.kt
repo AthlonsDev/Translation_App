@@ -73,20 +73,39 @@ class GalleryActivity: AppCompatActivity() {
 //            readData()
             checkData()
 
+            val translator = Translator()
+            translator.setFlag(targetLanguage) {
+                binding.camFlagOut.text = it
+            }
+
         }
 
         private fun checkData() {
             val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)
-            val language = prefs.getString(getString(com.example.translation_app.R.string.cam_language), "")
-            targetLanguage = language.toString()
+            targetLanguage = prefs.getString(getString(com.example.translation_app.R.string.cam_language), "").toString()
+            alphabet = prefs.getString(getString(com.example.translation_app.R.string.alphabet_language_1), "").toString()
             val textRecognition = TextRecognition()
             textRecognition.identifyLanguage(targetLanguage) {
                 targetLanguage = it
             }
 
+            checkAlphabet(alphabet)
         }
 
-        override fun onSupportNavigateUp(): Boolean {
+        private fun checkAlphabet(source: String) {
+            alphabet = when(source) {
+                "Japanese" -> "Japanese"
+                "Chinese" -> "Chinese"
+                "Korean" -> "Korean"
+                "Devanagari" -> "Devanagari"
+                "Russian" -> "Russian"
+                "Arabic" -> "Arabic"
+                else -> "Latin"
+            }
+        }
+
+
+    override fun onSupportNavigateUp(): Boolean {
             onBackPressed()
             return true
         }

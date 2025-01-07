@@ -105,12 +105,13 @@ class Translator {
                     fix = "cn".uppercase()
                     val firstLetter = Character.codePointAt(fix, 0) - 0x41
                     val secondLetter = Character.codePointAt(fix, 1) - 0x41
-                    param(
-                        String(Character.toChars(firstLetter + 0x1F1E6)) + String(
-                            Character.toChars(
-                                secondLetter + 0x1F1E6
-                            )
+                    val result = String(Character.toChars(firstLetter + 0x1F1E6)) + String(
+                        Character.toChars(
+                            secondLetter + 0x1F1E6
                         )
+                    )
+                    param(
+                        result
                     )
                 }
 
