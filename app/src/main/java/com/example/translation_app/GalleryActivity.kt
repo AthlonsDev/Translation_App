@@ -16,10 +16,14 @@ import android.provider.MediaStore
 import android.util.AttributeSet
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
+import androidx.core.view.size
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.preference.PreferenceManager
 import com.example.translation_app.Models.ModelActivity
@@ -77,6 +81,32 @@ class GalleryActivity: AppCompatActivity() {
             translator.setFlag(targetLanguage) {
                 binding.camFlagOut.text = it
             }
+
+//            binding.camFlagOut.setOnClickListener {
+//                Toast.makeText(this, "Source language: $targetLanguage", Toast.LENGTH_SHORT).show()
+//            }
+
+//            val spinner = binding.spinner2
+//            if (spinner != null) {
+//                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, Constants.LANGUAGES)
+//                spinner.adapter = adapter
+//                spinner.setSelection(1, false)
+//                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+//                {
+//                    override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+//                        targetLanguage = Constants.LANGUAGES[position]
+//                        val translator = Translator()
+//                        translator.setFlag(targetLanguage) {
+//                            binding.camFlagOut.text = it
+//                        }
+//                    }
+//
+//                    override fun onNothingSelected(parent: AdapterView<*>) {
+//                        // write code to perform some action
+//                    }
+//
+//                }
+//            }
 
         }
 

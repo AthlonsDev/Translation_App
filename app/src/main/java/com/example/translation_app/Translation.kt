@@ -54,12 +54,11 @@ class Translator {
     }
 
     fun setFlag(lang: String, param: (String) -> Unit) {
-        val translator = Translator()
         val iso = Locale.getISOCountries()
         var country = ""
 
 
-        translator.identifyLanguage(lang) {
+        identifyLanguage(lang) {
             var fix = ""
             when(it) {
                 "en" -> {

@@ -243,7 +243,6 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
     }
 
     override fun onBeginningOfSpeech() {
-        binding.speechText.text = "Listening..."
     }
 
     override fun onRmsChanged(p0: Float) {
@@ -255,7 +254,6 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
     }
 
     override fun onEndOfSpeech() {
-        binding.speechText.text = "Processing..."
     }
 
     override fun onError(p0: Int) {
@@ -267,13 +265,11 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
         transcript = data?.get(0).toString()
         Toast.makeText(requireContext(), transcript, Toast.LENGTH_SHORT).show()
         translateText(transcript, targetLanguage, inputLanguage)
-        binding.speechText.text = transcript
     }
 
     override fun onPartialResults(p0: Bundle?) {
         val data = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         transcript = data?.get(0).toString()
-        binding.speechText.text = transcript
     }
 
     override fun onLanguageDetection(results: Bundle) {

@@ -105,6 +105,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         cameraSettings?.title = "$cameraText - $cameraOutput"
         textSettings?.title = "$textText - $textOutput"
 
+
+
         speechInSettings?.setOnPreferenceChangeListener { preference, newValue ->
             val newLang = newValue as String
             val newLocale = Locale(newLang)
