@@ -77,10 +77,23 @@ class GalleryActivity: AppCompatActivity() {
 //            readData()
             checkData()
 
-            val translator = Translator()
-            translator.setFlag(targetLanguage) {
-                binding.camFlagOut.text = it
+        for (i in 0..1) {
+            when (i) {
+                0 -> {
+                    setFlag(alphabet.toString()) {
+                        binding.camFlagIn.text = it
+                    }
+                }
+                1 -> {
+                    setFlag(targetLanguage) {
+                        binding.camFlagOut.text = it
+                    }
+                }
             }
+        }
+
+        checkAlphabet(alphabet)
+
 
 //            binding.camFlagOut.setOnClickListener {
 //                Toast.makeText(this, "Source language: $targetLanguage", Toast.LENGTH_SHORT).show()
@@ -119,7 +132,6 @@ class GalleryActivity: AppCompatActivity() {
                 targetLanguage = it
             }
 
-            checkAlphabet(alphabet)
         }
 
         private fun checkAlphabet(source: String) {
@@ -134,7 +146,12 @@ class GalleryActivity: AppCompatActivity() {
             }
         }
 
-
+    private fun setFlag(lang: String, param: (String) -> Unit) {
+        val translator = Translator()
+        translator.setFlag(lang) {
+            param(it)
+        }
+    }
     override fun onSupportNavigateUp(): Boolean {
             onBackPressed()
             return true

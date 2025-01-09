@@ -54,10 +54,18 @@ class Translator {
     }
 
     fun setFlag(lang: String, param: (String) -> Unit) {
-        val iso = Locale.getISOCountries()
-        var country = ""
-
-
+        if(lang == "日本語 - \uD83C\uDDEF\uD83C\uDDF5") {
+            val fix = "jp".uppercase()
+            val firstLetter = Character.codePointAt(fix, 0) - 0x41
+            val secondLetter = Character.codePointAt(fix, 1) - 0x41
+            param(
+                String(Character.toChars(firstLetter + 0x1F1E6)) + String(
+                    Character.toChars(
+                        secondLetter + 0x1F1E6
+                    )
+                )
+            )
+        }
         identifyLanguage(lang) {
             var fix = ""
             when(it) {

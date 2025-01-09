@@ -111,9 +111,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            translator.setFlag(newLang) {
-                preference.title = "Source Language - $newLangName"
-            }
+            preference.title = "Source Language - $newLangName"
             main(newLangName, speechLanguageInput)
             true
         }
@@ -122,9 +120,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            translator.setFlag(newLang) {
-                preference.title = "Target Language - $newLangName"
-            }
+            preference.title = "Target Language - $newLangName"
             main(newLangName, speechLanguageOutput)
             true
         }
@@ -142,9 +138,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            translator.setFlag(newLang) {
-                preference.title = "Target Language - $newLangName"
-            }
+            preference.title = "Target Language - $newLangName"
             main(newLangName, cameraLanguage)
             true
         }
@@ -153,9 +147,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val newLang = newValue as String
             val newLocale = Locale(newLang)
             val newLangName = newLocale.getDisplayName(newLocale)
-            translator.setFlag(newLang) {
-                preference.title = "Target Language - $newLangName"
-            }
+            preference.title = "Target Language - $newLangName"
             main(newLangName, textLanguage)
             true
         }

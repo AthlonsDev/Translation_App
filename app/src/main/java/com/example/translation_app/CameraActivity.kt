@@ -107,11 +107,22 @@ class CameraActivity: AppCompatActivity() {
 
             checkData()
 
-            val translator = Translator()
-            translator.setFlag(targetLanguage) {
-                binding.camFlagOut.text = it
+            for (i in 0..1) {
+                when (i) {
+                    0 -> {
+                        setFlag(alphabet.toString()) {
+                            binding.camFlagIn.text = it
+                        }
+                    }
+                    1 -> {
+                        setFlag(targetLanguage) {
+                            binding.camFlagOut.text = it
+                        }
+                    }
+                }
             }
 
+            checkAlphabet(alphabet)
         }
 
     private fun checkData() {
@@ -123,7 +134,6 @@ class CameraActivity: AppCompatActivity() {
         textRecognition.identifyLanguage(targetLanguage) {
             targetLanguage = it
         }
-        checkAlphabet(alphabet)
     }
 
     private fun checkAlphabet(source: String) {
@@ -135,6 +145,13 @@ class CameraActivity: AppCompatActivity() {
             "Russian" -> alphabet = "Russian"
             "Arabic" -> alphabet = "Arabic"
             else -> alphabet = "Latin"
+        }
+    }
+
+    private fun setFlag(lang: String, param: (String) -> Unit) {
+        val translator = Translator()
+        translator.setFlag(lang) {
+            param(it)
         }
     }
 
