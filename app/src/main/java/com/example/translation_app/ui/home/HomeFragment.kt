@@ -114,6 +114,39 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
         if(ContextCompat.checkSelfPermission(requireContext(), Constants.REQUIRED_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED){
             checkPermission();
         }
+        var flag = true
+        binding.flipButton.setOnClickListener {
+            if (flag) {
+                flag = false
+                val temp = inputLanguage
+                inputLanguage = Locale(targetLanguage)
+                targetLanguage = temp.toString()
+                setFlag(inputLanguage.toString()) {
+                    binding.speechFlagIn.text = it
+                }
+                setFlag(targetLanguage) {
+                    binding.speechFlagOut.text = it
+                }
+            } else {
+                val temp = inputLanguage
+                inputLanguage = Locale(targetLanguage)
+                targetLanguage = temp.toString()
+                setFlag(inputLanguage.toString()) {
+                    binding.speechFlagIn.text = it
+                }
+                setFlag(targetLanguage) {
+                    binding.speechFlagOut.text = it
+                }
+            }
+        }
+
+        binding.textButton.setOnClickListener {
+            if (binding.transcriptView.visibility == View.INVISIBLE) {
+                binding.transcriptView.visibility = View.VISIBLE
+            } else {
+                binding.transcriptView.visibility = View.INVISIBLE
+            }
+        }
 
         return root
     }
@@ -223,6 +256,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
         translator.identifyLanguage(transcript) { result ->
             translator.initTranslator(transcript, result, targetLanguage) {
                 textToSpeechEngine.speak(it, TextToSpeech.QUEUE_FLUSH, null, null)
+                binding.transcriptView.text = it
             }
         }
     }

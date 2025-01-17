@@ -28,6 +28,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.preference.PreferenceManager
 import com.example.translation_app.Models.ModelActivity
 import com.example.translation_app.databinding.ActivityGalleryBinding
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -38,6 +41,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.FileDescriptor
 import java.io.IOException
+import java.util.Arrays
 import java.util.Locale
 import kotlin.coroutines.coroutineContext
 
@@ -93,6 +97,8 @@ class GalleryActivity: AppCompatActivity() {
         }
 
         checkAlphabet(alphabet)
+
+        addAds()
 
 
 //            binding.camFlagOut.setOnClickListener {
@@ -335,6 +341,20 @@ class GalleryActivity: AppCompatActivity() {
 
         }
 
+    }
+
+    private fun addAds() {
+        val adSize = com.google.android.gms.ads.AdSize.BANNER
+        val adView = binding.adView
+//        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+//        adView.setAdSize(adSize)
+
+        val testDeviceIds = Arrays.asList("33BE2250B43518CCDA7DE426D04EE231")
+        val configuration = RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
+        MobileAds.setRequestConfiguration(configuration)
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     private fun drawRectangle(rect: Rect) {

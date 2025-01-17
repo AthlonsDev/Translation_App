@@ -38,6 +38,9 @@ import com.example.translation_app.MainActivity
 import com.example.translation_app.Models.ModelActivity
 import com.example.translation_app.R
 import com.example.translation_app.databinding.ActivityCameraBinding
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
@@ -51,6 +54,7 @@ import java.io.File
 import java.io.FileDescriptor
 import java.io.IOException
 import java.text.SimpleDateFormat
+import java.util.Arrays
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -123,6 +127,7 @@ class CameraActivity: AppCompatActivity() {
             }
 
             checkAlphabet(alphabet)
+            addAds()
         }
 
     private fun checkData() {
@@ -357,6 +362,20 @@ class CameraActivity: AppCompatActivity() {
 
     private fun clearCanvas() {
         customView.clearCanvas()
+    }
+
+    private fun addAds() {
+        val adSize = com.google.android.gms.ads.AdSize.BANNER
+        val adView = binding.adView
+//        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+//        adView.setAdSize(adSize)
+
+        val testDeviceIds = Arrays.asList("33BE2250B43518CCDA7DE426D04EE231")
+        val configuration = RequestConfiguration.Builder().setTestDeviceIds(testDeviceIds).build()
+        MobileAds.setRequestConfiguration(configuration)
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     class CustomView(context: Context?, attrs: AttributeSet?, rect: Rect) :
