@@ -12,7 +12,7 @@
             <!--            android:height="182dp" />-->
 
             <solid
-                android:color="@color/dark_blue" />
+                android:color="#1B03DAC5" />
 
             <stroke
                 android:width="2dp"
