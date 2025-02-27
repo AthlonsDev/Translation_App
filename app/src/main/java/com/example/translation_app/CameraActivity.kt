@@ -136,6 +136,9 @@ class CameraActivity: AppCompatActivity() {
         alphabet = prefs.getString(getString(com.example.translation_app.R.string.alphabet_language_1), "").toString()
         targetLanguage = language.toString()
         val textRecognition = TextRecognition()
+        if (targetLanguage.contains("-")) {
+            targetLanguage = targetLanguage.split("-")[0]
+        }
         textRecognition.identifyLanguage(targetLanguage) {
             targetLanguage = it
         }

@@ -134,6 +134,9 @@ class GalleryActivity: AppCompatActivity() {
             targetLanguage = prefs.getString(getString(com.example.translation_app.R.string.cam_language), "").toString()
             alphabet = prefs.getString(getString(com.example.translation_app.R.string.alphabet_language_1), "").toString()
             val textRecognition = TextRecognition()
+            if (targetLanguage.contains("-")) {
+                targetLanguage = targetLanguage.split("-")[0]
+            }
             textRecognition.identifyLanguage(targetLanguage) {
                 targetLanguage = it
             }
@@ -226,6 +229,12 @@ class GalleryActivity: AppCompatActivity() {
                                 binding.preview.setBackgroundResource(R.drawable.camera_border_2)
                                 val inputText = visionText.text
                                 val rec = TextRecognition()
+//                                processTextBlock(visionText)
+//                                rec.recognizeText(inputImage) {
+//                                    if (it != null) {
+//                                        processTextBlock(it)
+//                                    }
+//                                }
                                 rec.identifyLanguage(inputText) {
                                     if (it == "und") {
                                         binding.galleryText.text = "Cannot identify language"
@@ -320,6 +329,11 @@ class GalleryActivity: AppCompatActivity() {
             val blockText = block.text
             val blockCornerPoints = block.cornerPoints
             val blockFrame = block.boundingBox
+
+            val rect = blockFrame?.let { Rect(it.left, blockFrame.top, blockFrame.right, blockFrame.bottom) }
+            if (rect != null) {
+                drawRectangle(rect)
+            }
             for (line in block.lines) {
                 val lineText = line.text
                 val lineCornerPoints = line.cornerPoints
@@ -328,19 +342,14 @@ class GalleryActivity: AppCompatActivity() {
                     val elementText = i.text
                     val elementCornerPoints = i.cornerPoints
                     val elementFrame = i.boundingBox
-
                     // draw the text block on the image
                     val rect = elementFrame?.let { Rect(it.left, elementFrame.top, elementFrame.right, elementFrame.bottom) }
                     if (rect != null) {
                         drawRectangle(rect)
                     }
-
-
                 }
             }
-
         }
-
     }
 
     private fun addAds() {

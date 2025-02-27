@@ -142,6 +142,9 @@ class DashboardFragment : Fragment() {
             val textOutput = preferences?.get(dataoutputKey)
             targetLanguage = textOutput.toString()
             val textRecognition = Translator()
+            if (targetLanguage.contains("-")) {
+                targetLanguage = targetLanguage.split("-")[0]
+            }
             textRecognition.identifyLanguage(targetLanguage) {
                 targetLanguage = it
             }

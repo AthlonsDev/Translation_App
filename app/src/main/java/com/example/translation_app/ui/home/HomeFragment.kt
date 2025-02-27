@@ -181,6 +181,9 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 //            val langName = locale.getDisplayName(locale)
 //            targetLanguage = langName
             val translator = Translator()
+            if (targetLanguage.contains("-")) {
+                targetLanguage = targetLanguage.split("-")[0]
+            }
             translator.identifyLanguage(targetLanguage) { result ->
                 targetLanguage = result
             }
