@@ -34,7 +34,7 @@ class ModelsAdapter(private val itemList: List<ModelsViewModel>): RecyclerView.A
     }
 
     override fun onBindViewHolder(holder: ModelsViewHolder, position: Int) {
-        val modelsViewHolder = itemList[position]
+        val modelsViewHolder = itemList[position] // get the item at the position
         holder.bind(modelsViewHolder)
         var index = holder.adapterPosition
         val button = holder.model_button

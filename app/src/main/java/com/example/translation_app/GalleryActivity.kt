@@ -19,6 +19,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -68,7 +69,7 @@ class GalleryActivity: AppCompatActivity() {
 
             binding.button.setOnClickListener {
                 val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-                startActivityForResult(gallery, pickImage)
+                resultLauncher.launch(gallery)
             }
 
             if (!allPermissionGranted()) {
@@ -100,33 +101,15 @@ class GalleryActivity: AppCompatActivity() {
 
         addAds()
 
+        }
 
-//            binding.camFlagOut.setOnClickListener {
-//                Toast.makeText(this, "Source language: $targetLanguage", Toast.LENGTH_SHORT).show()
-//            }
-
-//            val spinner = binding.spinner2
-//            if (spinner != null) {
-//                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, Constants.LANGUAGES)
-//                spinner.adapter = adapter
-//                spinner.setSelection(1, false)
-//                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
-//                {
-//                    override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-//                        targetLanguage = Constants.LANGUAGES[position]
-//                        val translator = Translator()
-//                        translator.setFlag(targetLanguage) {
-//                            binding.camFlagOut.text = it
-//                        }
-//                    }
-//
-//                    override fun onNothingSelected(parent: AdapterView<*>) {
-//                        // write code to perform some action
-//                    }
-//
-//                }
-//            }
-
+        private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data: Intent? = result.data
+                imageUri = data?.data
+                binding.imageView.setImageURI(imageUri)
+                imageToBitmap(imageUri!!)
+            }
         }
 
         private fun checkData() {
@@ -194,35 +177,27 @@ class GalleryActivity: AppCompatActivity() {
             }
 
 
-        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-            super.onActivityResult(requestCode, resultCode, data)
-            if(resultCode == RESULT_OK && requestCode == pickImage) {
-                imageUri = data?.data
-                binding.imageView.setImageURI(imageUri)
-                imageToBitmap(imageUri!!)
-            }
-        }
+//        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//            super.onActivityResult(requestCode, resultCode, data)
+//            if(resultCode == RESULT_OK && requestCode == pickImage) {
+//                imageUri = data?.data
+//                binding.imageView.setImageURI(imageUri)
+//                imageToBitmap(imageUri!!)
+//            }
+//        }
 
-        fun imageToBitmap(imageUri: Uri) {
+        private fun imageToBitmap(imageUri: Uri) {
             try {
-                val parcelFileDescriptor = contentResolver.openFileDescriptor(imageUri, "r")
-                val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-                val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-                parcelFileDescriptor.close()
+                val parcelFileDescriptor = contentResolver.openFileDescriptor(imageUri, "r") //open file descriptor for the file for reading
+                val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor //get file descriptor
+                val image = BitmapFactory.decodeFileDescriptor(fileDescriptor) //decode file descriptor into bitmap
+                parcelFileDescriptor.close() //close the file descriptor
 
                 if (image != null) {
-                    val inputImage = InputImage.fromBitmap(image, 0);
+                    val inputImage = InputImage.fromBitmap(image, 0)
 
-//                    val textRecognition = TextRecognition()
-//                    val text = textRecognition.recognizeText(inputImage) {
-//                        if (it != null) {
-//                            processTextBlock(it)
-//                        }
-//                    }
-
-                    var recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(
-                        TextRecognizerOptions.DEFAULT_OPTIONS)
-                        recognizer.process(inputImage)
+                    var recognizer = com.google.mlkit.vision.text.TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                    recognizer.process(inputImage)
                         .addOnSuccessListener {visionText ->
 
                             if(visionText.text != "") {
@@ -230,11 +205,7 @@ class GalleryActivity: AppCompatActivity() {
                                 val inputText = visionText.text
                                 val rec = TextRecognition()
 //                                processTextBlock(visionText)
-//                                rec.recognizeText(inputImage) {
-//                                    if (it != null) {
-//                                        processTextBlock(it)
-//                                    }
-//                                }
+
                                 rec.identifyLanguage(inputText) {
                                     if (it == "und") {
                                         binding.galleryText.text = "Cannot identify language"
@@ -263,94 +234,6 @@ class GalleryActivity: AppCompatActivity() {
             }
         }
 
-        fun goToImageViewer(bmp: Bitmap) {
-            try {
-                //Write file
-                val filename = "bitmap.png"
-                val stream = openFileOutput(filename, MODE_PRIVATE)
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, stream)
-
-                //Cleanup
-                stream.close()
-                bmp.recycle()
-
-                val inputImage = InputImage.fromFilePath(this, Uri.parse(filename))
-
-                val textRecognition = TextRecognition()
-                textRecognition.initTextRec(inputImage, alphabet) { text ->
-                    textRecognition.identifyLanguage(text) {
-                        textRecognition.initTranslator(text, it, targetLanguage) {
-                            binding.galleryText.text = it
-                        }
-                    }
-                }
-
-                //Pop intent
-//                val in1 = Intent(this, ImageActivity::class.java)
-//                in1.putExtra("image", filename)
-//                startActivity(in1)
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-            }
-        }
-
-//    fun imageFromUrl(url: String) {
-//
-//        Picasso.get()
-//            .load(url)
-//            .into(object : com.squareup.picasso.Target {
-//                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-//                    binding.previewImage.setImageBitmap(bitmap)
-//                    val inputImage = InputImage.fromBitmap(bitmap!!, 0)
-//                    val textRecognition = TextRecognition()
-//                    textRecognition.initTextRec(inputImage, alphabet) { text ->
-//                        textRecognition.identifyLanguage(text) {
-//                            textRecognition.initTranslator(text, it, targetLanguage) {
-//                                translatedText = it
-//                                binding.outputText.text = translatedText
-//                            }
-//                        }
-//                    }
-//                }
-//                override fun onBitmapFailed(e: Exception?, errorDrawable: android.graphics.drawable.Drawable?) {
-//                    Toast.makeText(requireContext(), "Failed to load image ${e.toString()}", Toast.LENGTH_SHORT).show()
-//                }
-//
-//                override fun onPrepareLoad(placeHolderDrawable: android.graphics.drawable.Drawable?) {
-//                    Toast.makeText(requireContext(), "Loading image...", Toast.LENGTH_SHORT).show()
-//                }
-//            })
-//    }
-
-    private fun processTextBlock(result: Text) {
-        // [START mlkit_process_text_block]
-        val resultText = result.text
-        for (block in result.textBlocks) {
-            val blockText = block.text
-            val blockCornerPoints = block.cornerPoints
-            val blockFrame = block.boundingBox
-
-            val rect = blockFrame?.let { Rect(it.left, blockFrame.top, blockFrame.right, blockFrame.bottom) }
-            if (rect != null) {
-                drawRectangle(rect)
-            }
-            for (line in block.lines) {
-                val lineText = line.text
-                val lineCornerPoints = line.cornerPoints
-                val lineFrame = line.boundingBox
-                for (i in line.elements) {
-                    val elementText = i.text
-                    val elementCornerPoints = i.cornerPoints
-                    val elementFrame = i.boundingBox
-                    // draw the text block on the image
-                    val rect = elementFrame?.let { Rect(it.left, elementFrame.top, elementFrame.right, elementFrame.bottom) }
-                    if (rect != null) {
-                        drawRectangle(rect)
-                    }
-                }
-            }
-        }
-    }
 
     private fun addAds() {
         val adSize = com.google.android.gms.ads.AdSize.BANNER

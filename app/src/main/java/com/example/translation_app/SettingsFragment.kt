@@ -46,14 +46,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val cameraSettings = findPreference<Preference>(getString(R.string.cam_language))
         val textSettings = findPreference<Preference>(getString(R.string.text_language))
 
-//        set ouput language to locale as default
-//        val locale = Locale.getDefault()
-//        val langName = locale.getDisplayName(locale)
-//        speechOutput = langName
-//        cameraOutput = langName
-//        textOutput = langName
-//        alphabet = "Latin"
-
 
         var speechInputText = getString(R.string.speech_language_1)
         var speechOutputText = getString(R.string.speech_language_2)
@@ -178,19 +170,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
 //        checkData()
-        return true
-    }
-
-
-    private fun checkData(): Boolean {
-        if (speechInput != "Not Set" || speechOutput != "Not Set" || cameraOutput != "Not Set" || textOutput != "Not Set" || cameraInput != "Not Set") {
-            return false
-        }
-        readData(speechLanguageInput)
-        readData(speechLanguageOutput)
-        readData(alphabetInput)
-        readData(cameraLanguage)
-        readData(textLanguage)
         return true
     }
 

@@ -108,20 +108,15 @@ class DashboardFragment : Fragment() {
         return root
     }
 
-
-    fun hideKeyboardFrom(context: Context, view: View) {
-        val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
     private fun hideKeyboard(activity: Activity) {
         val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        //Find the currently focused view, so we can grab the correct window token from it.
+        //find the currently focused view
         var view = activity.currentFocus
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        //if there is no view
         if (view == null) {
-            view = View(activity)
+            view = View(activity) // Create a new view
         }
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        imm.hideSoftInputFromWindow(view.windowToken, 0) // Hide the keyboard
     }
 
     override fun onDestroyView() {

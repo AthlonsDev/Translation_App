@@ -62,8 +62,6 @@ import kotlin.coroutines.coroutineContext
 
 
 class CameraActivity: AppCompatActivity() {
-        //
-        private var imageCapture: ImageCapture?= null
 
         private lateinit var binding: ActivityCameraBinding
         private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
@@ -83,11 +81,14 @@ class CameraActivity: AppCompatActivity() {
             binding = ActivityCameraBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
+            //set directory to store images captured by camera
             outputDirectory = getOutputDirectory()
+            //set up camera executor to run camera operations
             cameraExecutor = Executors.newSingleThreadExecutor()
 
-            cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+            //initialize camera provider and camera selector
+            cameraProviderFuture = ProcessCameraProvider.getInstance(this) //binds camera lifecycle to the activity lifecycle
+            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA //selects the back camera as the default camera
 
             binding.imageText.movementMethod = android.text.method.ScrollingMovementMethod()
 
@@ -209,6 +210,7 @@ class CameraActivity: AppCompatActivity() {
 
     private fun startLiveCamera(cameraProvider: ProcessCameraProvider) {
 
+        //set up preview to display camera feed
         val preview : Preview = Preview.Builder().build()
         preview.setSurfaceProvider(binding.preview.surfaceProvider)
 
@@ -216,7 +218,7 @@ class CameraActivity: AppCompatActivity() {
             .requireLensFacing(CameraSelector.LENS_FACING_BACK)
             .build()
 
-        val point = Point()
+        //set up image capture to capture images
         val imageAnalysis = ImageAnalysis.Builder()
             .setTargetResolution(Size(binding.preview.x.toInt(), binding.preview.y.toInt()))
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)

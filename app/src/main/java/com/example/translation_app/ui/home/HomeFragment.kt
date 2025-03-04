@@ -73,7 +73,6 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val translator = Translator()
         readData()
         for (i in 0..1) {
             when (i) {
@@ -96,19 +95,19 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             }
         }
 
-        transcript = ""
-        val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
-        binding.micButton.setOnTouchListener { v, event ->
+        transcript = "" //initialize transcript
+        val speechRecognizer = SpeechRecognizer.createSpeechRecognizer(requireContext()) //initialize speech recognizer
+        binding.micButton.setOnTouchListener { v, event -> //set on touch listener for mic button to start and stop listening
             when (event?.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    RecSpeech()
+                    RecSpeech() //start listening when button is pressed
                 }
 
                 MotionEvent.ACTION_UP -> {
-                    speechRecognizer.stopListening()
+                    speechRecognizer.stopListening() //stop listening when button is released
                 }
             }
-            v?.onTouchEvent(event) ?: true
+            v?.onTouchEvent(event) ?: true //return true if event is handled and false if not
         }
 
         if(ContextCompat.checkSelfPermission(requireContext(), Constants.REQUIRED_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED){
@@ -166,20 +165,14 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
     }
 
     suspend fun readUserPreferences() {
-        with(CoroutineScope(coroutineContext)) {
-            val datainputeKey = stringPreferencesKey("speech_language_1")
-            val dataoutputKey = stringPreferencesKey("speech_language_2")
+        with(CoroutineScope(coroutineContext)) { //get data from data store using coroutine
+            val datainputeKey = stringPreferencesKey("speech_language_1") //get input language key
+            val dataoutputKey = stringPreferencesKey("speech_language_2") //get output language key
             val preferences = context?.dataStore?.data?.first()
             val speechLanguageInput = preferences?.get(datainputeKey)
             val speechLanguageOutput = preferences?.get(dataoutputKey)
             inputLanguage = Locale(speechLanguageInput)
-            val input = Locale("Japanese")
-            val getIso = input.displayVariant
-//            Toast.makeText(requireContext(), getIso, Toast.LENGTH_SHORT).show()
             targetLanguage = speechLanguageOutput.toString()
-//            val locale = Locale.getDefault()
-//            val langName = locale.getDisplayName(locale)
-//            targetLanguage = langName
             val translator = Translator()
             if (targetLanguage.contains("-")) {
                 targetLanguage = targetLanguage.split("-")[0]
@@ -187,8 +180,6 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             translator.identifyLanguage(targetLanguage) { result ->
                 targetLanguage = result
             }
-//            binding.textView.text = "${getString(R.string.speech_input)} - ${speechLanguageInput.toString()}"
-//            binding.textView2.text = "${getString(R.string.speech_output)} - ${speechLanguageOutput.toString()}"
         }
     }
 
@@ -222,24 +213,12 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             )
             val cap = result.uppercase()
             val it = "$result-$cap"
-//            val newLocale = Locale("italian", "IT")
-//            val it = "it-IT"
 
             speechRecognizerIntent.putExtra(EXTRA_LANGUAGE, it)
             speechRecognizerIntent.putExtra(EXTRA_LANGUAGE_PREFERENCE, it)
             speechRecognizerIntent.putExtra(EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, true)
             speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak to Translate")
 
-//            onBeginningOfSpeech()
-            //get result of speech
-            try {
-//                setRecognitionListener(this)
-//                startActivityForResult(speechRecognizerIntent, Constants.REQUEST_CODE_SPEECH_INPUT)
-//                textToSpeechEngine.speak("Speak to Translate", TextToSpeech.QUEUE_FLUSH, null, null)
-            } catch (e: Exception) {
-                // on below line we are displaying error message in toast
-                Toast.makeText(requireContext(), " " + e.message, Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
@@ -338,19 +317,15 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        // in this method we are checking request
-        // code with our result code.
+
         if (requestCode == Constants.REQUEST_CODE_SPEECH_INPUT) {
-            // on below line we are checking if result code is ok
             if (resultCode == RESULT_OK && data != null) {
 
-                // in that case we are extracting the
-                // data from our array list
+                // extract the data from array list
                 val res: ArrayList<String> =
                     data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS) as ArrayList<String>
 
-                // on below line we are setting data
-                // to our output text view.
+                //set the data to variable.
                 transcript = (
                     Objects.requireNonNull(res)[0]
 
