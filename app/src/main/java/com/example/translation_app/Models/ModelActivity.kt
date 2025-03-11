@@ -43,11 +43,9 @@ class ModelActivity: AppCompatActivity() {
         listView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         adapter = ModelsAdapter(data)
         listView.adapter = adapter
-//        adapter = ModelsAdapter(data)
 
         checkModels()
 
-//        data.add(ModelsViewModel("English"))
         addRec()
 
         checkData()
@@ -160,7 +158,6 @@ class ModelActivity: AppCompatActivity() {
                     // Error.
                 }
         }
-
 
     }
 

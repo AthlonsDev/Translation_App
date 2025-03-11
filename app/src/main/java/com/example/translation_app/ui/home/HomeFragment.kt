@@ -31,6 +31,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModelProvider
 import com.example.translation_app.Constants
 import com.example.translation_app.R
+import com.example.translation_app.TextRecognition
 import com.example.translation_app.Translator
 import com.example.translation_app.dataStore
 import com.example.translation_app.databinding.FragmentHomeBinding
@@ -43,14 +44,10 @@ import java.util.Objects
 import kotlin.coroutines.coroutineContext
 
 
-// At the top level of your kotlin file:
-//val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings").getValue(this, SettingsFragment.SPEECH_LANGUAGE_1)
 class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
 
     private var _binding: FragmentHomeBinding? = null
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
 
@@ -113,31 +110,6 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
         if(ContextCompat.checkSelfPermission(requireContext(), Constants.REQUIRED_PERMISSIONS[1]) != PackageManager.PERMISSION_GRANTED){
             checkPermission();
         }
-        var flag = true
-        binding.flipButton.setOnClickListener {
-            if (flag) {
-                flag = false
-                val temp = inputLanguage
-                inputLanguage = Locale(targetLanguage)
-                targetLanguage = temp.toString()
-                setFlag(inputLanguage.toString()) {
-                    binding.speechFlagIn.text = it
-                }
-                setFlag(targetLanguage) {
-                    binding.speechFlagOut.text = it
-                }
-            } else {
-                val temp = inputLanguage
-                inputLanguage = Locale(targetLanguage)
-                targetLanguage = temp.toString()
-                setFlag(inputLanguage.toString()) {
-                    binding.speechFlagIn.text = it
-                }
-                setFlag(targetLanguage) {
-                    binding.speechFlagOut.text = it
-                }
-            }
-        }
 
         binding.textButton.setOnClickListener {
             if (binding.transcriptView.visibility == View.INVISIBLE) {
@@ -171,14 +143,18 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             val preferences = context?.dataStore?.data?.first()
             val speechLanguageInput = preferences?.get(datainputeKey)
             val speechLanguageOutput = preferences?.get(dataoutputKey)
-            inputLanguage = Locale(speechLanguageInput)
             targetLanguage = speechLanguageOutput.toString()
-            val translator = Translator()
-            if (targetLanguage.contains("-")) {
-                targetLanguage = targetLanguage.split("-")[0]
+            val textRecognition = Translator()
+            if (speechLanguageInput != null) {
+                textRecognition.languageFix(speechLanguageInput){
+                    inputLanguage = Locale(it)
+                }
             }
-            translator.identifyLanguage(targetLanguage) { result ->
-                targetLanguage = result
+            textRecognition.languageFix(targetLanguage) {
+                targetLanguage = it
+            }
+            textRecognition.identifyLanguage(targetLanguage) {
+                targetLanguage = it
             }
         }
     }
@@ -197,17 +173,12 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
         speechRecognizer.setRecognitionListener(this)
         speechRecognizer.startListening(speechRecognizerIntent)
 
-        if (inputLanguage.toString() == "Not Set" || inputLanguage.toString() == "null") {
-            Toast.makeText(requireContext(), "Please set input language", Toast.LENGTH_SHORT).show()
-            return
-        }
-
 //        inputLanguage of speech needs to be translated to english
         val translator = Translator()
         translator.identifyLanguage(inputLanguage.toString()) { result ->
 
-            speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-            speechRecognizerIntent.putExtra(
+            speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH) //initialize speech recognizer intent
+            speechRecognizerIntent.putExtra( //set extra properties for speech recognizer intent
                 EXTRA_LANGUAGE_MODEL,
                 LANGUAGE_MODEL_FREE_FORM
             )
@@ -228,7 +199,7 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             TextToSpeech.OnInitListener { status ->
                 // set our locale only if init was success.
                 if (status == TextToSpeech.SUCCESS) {
-                    textToSpeechEngine.language = Locale.UK
+                    textToSpeechEngine.language = Locale(targetLanguage)
                 }
             })
     }
@@ -242,17 +213,6 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             }
         }
     }
-
-    private fun setRecognitionListener (listener: RecognitionListener) {
-        val recognizer = SpeechRecognizer.createSpeechRecognizer(requireContext())
-        recognizer.setRecognitionListener(listener)
-        recognizer.startListening(speechRecognizerIntent)
-
-
-    }
-
-
-
     override fun onReadyForSpeech(p0: Bundle?) {
         val data = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         transcript = data?.get(0).toString()
@@ -279,13 +239,13 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
     override fun onResults(p0: Bundle?) {
         val data = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         transcript = data?.get(0).toString()
-        Toast.makeText(requireContext(), transcript, Toast.LENGTH_SHORT).show()
         translateText(transcript, targetLanguage, inputLanguage)
     }
 
     override fun onPartialResults(p0: Bundle?) {
         val data = p0?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
         transcript = data?.get(0).toString()
+        translateText(transcript, targetLanguage, inputLanguage)
     }
 
     override fun onLanguageDetection(results: Bundle) {
@@ -313,7 +273,6 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
         _binding = null
     }
 
-    // on below line we are calling on activity result method.
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 

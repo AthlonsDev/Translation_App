@@ -1,12 +1,18 @@
 package com.example.translation_app
 
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
+import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
+import org.junit.Assert.*
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import org.junit.Assert.*
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -21,4 +27,18 @@ class ExampleInstrumentedTest {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals("com.example.translation_app", appContext.packageName)
     }
+}
+
+@RunWith(AndroidJUnit4::class)
+@LargeTest
+class HelloWorldEspressoTest {
+
+    @get:Rule
+    val activityRule = ActivityScenarioRule(MainActivity::class.java)
+
+//    @Test fun TestButton() {
+//        onView().check(matches(isDisplayed()))
+//    }
+
+
 }

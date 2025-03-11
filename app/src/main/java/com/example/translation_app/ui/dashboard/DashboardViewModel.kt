@@ -19,23 +19,11 @@ class DashboardViewModel : ViewModel() {
 
 
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is dashboard Fragment"
+    private val _translatedText = MutableLiveData<String>()
+    val translatedText: LiveData<String> get() = _translatedText
+
+    fun setTranslatedText(text: String) {
+        _translatedText.value = text
     }
-    val text: LiveData<String> = _text
-
-    private val _inputText = MutableLiveData<String>().apply {
-        value = "This is dashboard Fragment"
-    }
-//
-    val inputText: LiveData<String> = _inputText
-
-//    val contentResolver = requireActivity().contentResolver
-
-//    private val _outputText = MutableLiveData<String>().apply {
-//        value = getString(contentResolver, R.string.speech_output.toString())
-//    }
-//
-//    val outputText: LiveData<String> = _outputText
 
 }

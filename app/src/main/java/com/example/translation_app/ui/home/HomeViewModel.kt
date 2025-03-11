@@ -16,23 +16,12 @@ import com.google.mlkit.nl.translate.TranslatorOptions
 class HomeViewModel : ViewModel() {
 
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    private val _translatedText = MutableLiveData<String>()
+    val translatedText: LiveData<String> get() = _translatedText
+
+    fun setTranslatedText(text: String) {
+        _translatedText.value = text
     }
-
-    var identifiedLanguage = ""
-
-    private val _inputText = MutableLiveData<String>().apply {
-        value = R.string.speech_input.toString()
-    }
-
-    private val _outText = MutableLiveData<String>().apply {
-        value = R.string.speech_output.toString()
-    }
-
-
-    val inputText: LiveData<String> = _inputText
-    val outText: LiveData<String> = _outText
 
 
 }

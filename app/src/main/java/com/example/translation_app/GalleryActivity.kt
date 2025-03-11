@@ -117,8 +117,11 @@ class GalleryActivity: AppCompatActivity() {
             targetLanguage = prefs.getString(getString(com.example.translation_app.R.string.cam_language), "").toString()
             alphabet = prefs.getString(getString(com.example.translation_app.R.string.alphabet_language_1), "").toString()
             val textRecognition = TextRecognition()
-            if (targetLanguage.contains("-")) {
-                targetLanguage = targetLanguage.split("-")[0]
+            if (targetLanguage.contains(" ")) {
+                targetLanguage = targetLanguage.split(" ")[0]
+            }
+            if (alphabet.contains(" ")) {
+                alphabet = alphabet.split(" ")[0]
             }
             textRecognition.identifyLanguage(targetLanguage) {
                 targetLanguage = it
@@ -175,16 +178,6 @@ class GalleryActivity: AppCompatActivity() {
                     baseContext, it
                 ) == PackageManager.PERMISSION_GRANTED
             }
-
-
-//        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//            super.onActivityResult(requestCode, resultCode, data)
-//            if(resultCode == RESULT_OK && requestCode == pickImage) {
-//                imageUri = data?.data
-//                binding.imageView.setImageURI(imageUri)
-//                imageToBitmap(imageUri!!)
-//            }
-//        }
 
         private fun imageToBitmap(imageUri: Uri) {
             try {

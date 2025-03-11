@@ -17,14 +17,8 @@ class ModelsAdapter(private val itemList: List<ModelsViewModel>): RecyclerView.A
         fun onClicks(pos: Int, text: CharSequence, item: ModelsViewModel)
     }
 
-    interface OnTextChangeListener {
-        fun onTextChanged(text: CharSequence)
-    }
-
-
 
     private var onButtonClicklistener: OnClickListener? = null
-    private var onTextChangeListener: OnTextChangeListener? = null
     var condition = ""
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ModelsViewHolder {
@@ -39,6 +33,7 @@ class ModelsAdapter(private val itemList: List<ModelsViewModel>): RecyclerView.A
         var index = holder.adapterPosition
         val button = holder.model_button
 
+
         if (condition == "model downloaded") {
             button.text = "Remove"
         } else {
@@ -47,7 +42,7 @@ class ModelsAdapter(private val itemList: List<ModelsViewModel>): RecyclerView.A
         }
 
 
-        holder.model_button.setOnClickListener(View.OnClickListener {
+        holder.model_button.setOnClickListener {
             onButtonClicklistener?.onClicks(index, button.text, modelsViewHolder)
             if (condition == "model downloaded") {
                 button.text = "Remove"
@@ -60,18 +55,11 @@ class ModelsAdapter(private val itemList: List<ModelsViewModel>): RecyclerView.A
                 button.text = "Download"
                 holder.progress_bar.visibility = View.INVISIBLE
             }
-        })
-
-
+        }
     }
 
     fun onClickListener(listener: OnClickListener?) {
         this.onButtonClicklistener = listener
-    }
-
-    fun onTextChangeListener(listener: OnTextChangeListener?) {
-        this.onTextChangeListener = listener
-
     }
 
     override fun getItemCount(): Int {

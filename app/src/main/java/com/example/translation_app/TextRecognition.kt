@@ -53,9 +53,6 @@ class TextRecognition: Activity() {
             }
         }
 
-
-
-        var output = "Waiting for text..."
         recognizer.process(image)
             .addOnSuccessListener { visionText ->
                 // Task completed successfully

@@ -89,11 +89,11 @@ class DashboardFragment : Fragment() {
             hideKeyboard(requireActivity())
             val translator = Translator()
             val inputText = binding.inputText.text.toString()
-            val outputText = binding.outputText
+//            val outputText = binding.outputText
 
             translator.identifyLanguage(inputText) { it1 ->
                 translator.initTranslator(inputText, it1, targetLanguage) {
-                    outputText.text = it
+                    viewModel.setTranslatedText(it)
                 }
             }
         }
@@ -103,6 +103,10 @@ class DashboardFragment : Fragment() {
         }
 
         readData()
+
+        viewModel.translatedText.observe(viewLifecycleOwner) {
+            binding.outputText.text = it
+        }
 
 
         return root
@@ -137,9 +141,6 @@ class DashboardFragment : Fragment() {
             val textOutput = preferences?.get(dataoutputKey)
             targetLanguage = textOutput.toString()
             val textRecognition = Translator()
-            if (targetLanguage.contains("-")) {
-                targetLanguage = targetLanguage.split("-")[0]
-            }
             textRecognition.identifyLanguage(targetLanguage) {
                 targetLanguage = it
             }

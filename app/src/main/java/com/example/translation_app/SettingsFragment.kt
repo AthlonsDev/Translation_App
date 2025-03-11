@@ -248,17 +248,4 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    fun updateLanguage() {
-        val languageToLoad = "it" // your language fr etc
-
-        val locale = Locale(languageToLoad)
-        Locale.setDefault(locale)
-        val config = Configuration()
-        config.locale = locale
-        requireContext().resources.updateConfiguration(
-            config,
-            requireContext().resources.displayMetrics
-        )
-    }
-
 }

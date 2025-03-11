@@ -53,6 +53,14 @@ class Translator {
             }
     }
 
+    fun languageFix(input: String, param: (String) -> Unit) {
+        lateinit var target: String
+        if (input.contains(" ")) {
+            target = input.split(" ")[0]
+            param(target)
+        }
+    }
+
     fun setFlag(lang: String, param: (String) -> Unit) {
         if(lang == "日本語 - \uD83C\uDDEF\uD83C\uDDF5") {
             val fix = "jp".uppercase()
@@ -130,6 +138,19 @@ class Translator {
                         String(Character.toChars(firstLetter + 0x1F1E6)) + String(
                             Character.toChars(
                                 secondLetter + 0x1F1E6
+                            )
+                        )
+                    )
+                }
+
+                "es" -> {
+                    fix = "es".uppercase()
+                    val firstLetter = Character.codePointAt(fix, 0) - 0x41 + 0x1F1E6
+                    val secondLetter = Character.codePointAt(fix, 1) - 0x41 + 0x1F1E6
+                    param(
+                        String(Character.toChars(firstLetter)) + String(
+                            Character.toChars(
+                                secondLetter
                             )
                         )
                     )

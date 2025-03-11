@@ -137,8 +137,11 @@ class CameraActivity: AppCompatActivity() {
         alphabet = prefs.getString(getString(com.example.translation_app.R.string.alphabet_language_1), "").toString()
         targetLanguage = language.toString()
         val textRecognition = TextRecognition()
-        if (targetLanguage.contains("-")) {
-            targetLanguage = targetLanguage.split("-")[0]
+        if (targetLanguage.contains(" ")) {
+            targetLanguage = targetLanguage.split(" ")[0]
+        }
+        if (alphabet.contains(" ")) {
+            alphabet = alphabet.split(" ")[0]
         }
         textRecognition.identifyLanguage(targetLanguage) {
             targetLanguage = it
@@ -220,8 +223,8 @@ class CameraActivity: AppCompatActivity() {
 
         //set up image capture to capture images
         val imageAnalysis = ImageAnalysis.Builder()
-            .setTargetResolution(Size(binding.preview.x.toInt(), binding.preview.y.toInt()))
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setTargetResolution(Size(binding.preview.x.toInt(), binding.preview.y.toInt())) //set size equal to bounding box
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) // use only last image, without processing the previous ones
             .build()
 
         imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(this)) { imageProxy ->
@@ -232,26 +235,22 @@ class CameraActivity: AppCompatActivity() {
             if (image != null) {
                 val inputImage = InputImage.fromMediaImage(image, rotationDegrees)
 //                checkAlphabet(targetLanguage)
-                TextRecognition().initTextRec(inputImage, alphabet) {
-                    if (it != null) {
-                        binding.preview.setBackgroundResource(R.drawable.camera_border_2)
-                        val inputText = it
-                        val rec = TextRecognition()
-                        rec.identifyLanguage(inputText) {
-                            if (it == "und") {
-                                translatedText = "Cannot identify language"
-                                binding.preview.setBackgroundResource(R.drawable.camera_border)
-                            }
-                            else {
-                                binding.preview.setBackgroundResource(R.drawable.camera_border_2)
+                TextRecognition().initTextRec(inputImage, alphabet) { _it ->
+                    binding.preview.setBackgroundResource(R.drawable.camera_border_2)
+                    val inputText = _it
+                    val rec = TextRecognition()
+                    rec.identifyLanguage(inputText) {
+                        if (it == "und") {
+                            translatedText = "Cannot identify language"
+                            binding.preview.setBackgroundResource(R.drawable.camera_border)
+                        }
+                        else {
+                            binding.preview.setBackgroundResource(R.drawable.camera_border_2)
 
-                                rec.initTranslator(inputText, it, targetLanguage) { _it ->
-                                    translatedText = _it
-                                }
+                            rec.initTranslator(inputText, it, targetLanguage) { _it ->
+                                translatedText = _it
                             }
                         }
-                    } else {
-                        binding.preview.setBackgroundResource(R.drawable.camera_border)
                     }
 
                     imageProxy.close()
