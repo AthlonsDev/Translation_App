@@ -48,6 +48,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.6.0'
     implementation 'androidx.preference:preference:1.2.1'
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
@@ -132,6 +134,9 @@ dependencies {
     // Local unit tests
     testImplementation "androidx.test:core:1.4.0"
     testImplementation "junit:junit:4.13.2"
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
+    // Testing-only dependencies
+
     testImplementation "androidx.arch.core:core-testing:2.1.0"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.1"
     testImplementation "com.google.truth:truth:1.1.3"

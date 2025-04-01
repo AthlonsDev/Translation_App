@@ -106,6 +106,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/Photo_Button" />
 
+    <ImageButton
+        android:id="@+id/speak_button_cam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="22dp"
+        android:backgroundTint="#00FFFFFF"
+        android:tint="@color/teal_200"
+        ads:srcCompat="@android:drawable/ic_lock_silent_mode_off"
+        app:layout_constraintBottom_toBottomOf="@+id/Photo_Button"
+        app:layout_constraintStart_toEndOf="@+id/Photo_Button"
+        app:layout_constraintTop_toTopOf="@+id/Photo_Button" />
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"

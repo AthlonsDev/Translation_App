@@ -14,6 +14,7 @@ import android.graphics.Point
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.AttributeSet
 import android.util.Log
 import android.util.Size
@@ -127,9 +128,23 @@ class CameraActivity: AppCompatActivity() {
                 }
             }
 
+            binding.speakButtonCam.setOnClickListener {
+                textToSpeechEngine.speak(binding.imageText.text, TextToSpeech.QUEUE_FLUSH, null, null)
+            }
+
             checkAlphabet(alphabet)
             addAds()
         }
+
+    private val textToSpeechEngine: TextToSpeech by lazy {
+        // Pass in context and the listener.
+        TextToSpeech(this,
+            TextToSpeech.OnInitListener { status ->
+                if (status == TextToSpeech.SUCCESS) {
+                    textToSpeechEngine.language = Locale(targetLanguage)
+                }
+            })
+    }
 
     private fun checkData() {
         val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(baseContext)

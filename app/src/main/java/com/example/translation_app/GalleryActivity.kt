@@ -13,6 +13,7 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.speech.tts.TextToSpeech
 import android.util.AttributeSet
 import android.view.MenuItem
 import android.view.View
@@ -97,13 +98,28 @@ class GalleryActivity: AppCompatActivity() {
             }
         }
 
+        binding.speakButton.setOnClickListener {
+            textToSpeechEngine.speak(binding.galleryText.text, TextToSpeech.QUEUE_FLUSH, null, null)
+        }
+
         checkAlphabet(alphabet)
 
         addAds()
 
         }
 
-        private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        private val textToSpeechEngine: TextToSpeech by lazy {
+        // Pass in context and the listener.
+            TextToSpeech(this,
+            TextToSpeech.OnInitListener { status ->
+                if (status == TextToSpeech.SUCCESS) {
+                    textToSpeechEngine.language = Locale(targetLanguage)
+                }
+            })
+        }
+
+
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 val data: Intent? = result.data
                 imageUri = data?.data
