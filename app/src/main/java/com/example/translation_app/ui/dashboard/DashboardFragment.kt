@@ -98,7 +98,7 @@ class DashboardFragment : Fragment() {
             }
         }
 
-        binding.imageView4.setOnClickListener {
+        binding.backgroundText.setOnClickListener {
             hideKeyboard(requireActivity())
         }
 

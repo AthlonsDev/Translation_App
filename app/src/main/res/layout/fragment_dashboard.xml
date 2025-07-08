@@ -9,17 +9,18 @@
 
 
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/background_text"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="#FFFFFF"
+        android:backgroundTint="#E8E8E8"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/speech_design" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/output_text"
@@ -46,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/teal_200"
+        android:backgroundTint="@color/white"
         android:clickable="true"
         android:src="@drawable/baseline_translate_24"
         app:layout_constraintBottom_toTopOf="@+id/output_text"

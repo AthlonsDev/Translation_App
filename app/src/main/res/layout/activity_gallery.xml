@@ -13,15 +13,15 @@
         android:id="@+id/imageView4"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:backgroundTint="#006CA3"
+        android:background="#FFFFFF"
+        android:backgroundTint="#E8E8E8"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/my_toolbar"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/speech_design" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.camera.view.PreviewView
         android:id="@+id/preview"
@@ -74,7 +74,7 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/teal_200"
+        android:backgroundTint="@color/white"
         android:clickable="true"
         app:layout_constraintBottom_toTopOf="@+id/gallery_text"
         app:layout_constraintEnd_toEndOf="parent"
@@ -135,11 +135,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="22dp"
         android:backgroundTint="#00FFFFFF"
-        android:tint="@color/teal_200"
         ads:srcCompat="@android:drawable/ic_lock_silent_mode_off"
         app:layout_constraintBottom_toBottomOf="@+id/button"
         app:layout_constraintStart_toEndOf="@+id/button"
-        app:layout_constraintTop_toTopOf="@+id/button" />
+        app:layout_constraintTop_toTopOf="@+id/button"
+        app:tint="@color/black" />
 
     <!--    <Spinner-->
     <!--        android:id="@+id/spinner2"-->

@@ -15,7 +15,6 @@ import android.speech.RecognizerIntent.EXTRA_LANGUAGE_MODEL
 import android.speech.RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE
 import android.speech.RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE
 import android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-import android.speech.RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import android.view.LayoutInflater
@@ -24,14 +23,17 @@ import android.view.MenuInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModelProvider
 import com.example.translation_app.Constants
 import com.example.translation_app.R
-import com.example.translation_app.TextRecognition
 import com.example.translation_app.Translator
 import com.example.translation_app.dataStore
 import com.example.translation_app.databinding.FragmentHomeBinding
@@ -44,7 +46,7 @@ import java.util.Objects
 import kotlin.coroutines.coroutineContext
 
 
-class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
+class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener, AdapterView.OnItemSelectedListener {
 
     private var _binding: FragmentHomeBinding? = null
 
@@ -75,12 +77,13 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             when (i) {
                 0 -> {
                     setFlag(inputLanguage.toString()) {
-                        binding.speechFlagIn.text = it
+                        binding.flagIn.text = "$inputLanguage - $it"
                     }
                 }
                 1 -> {
                     setFlag(targetLanguage) {
-                        binding.speechFlagOut.text = it
+                        val target = Locale(targetLanguage)
+                        binding.flagOut.text = "$target - $it"
                     }
                 }
             }
@@ -111,16 +114,21 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             checkPermission();
         }
 
-        binding.textButton.setOnClickListener {
-            if (binding.transcriptView.visibility == View.INVISIBLE) {
-                binding.transcriptView.visibility = View.VISIBLE
-            } else {
-                binding.transcriptView.visibility = View.INVISIBLE
-            }
+        binding.switchButton.setOnClickListener{
+            val temp = binding.flagIn.text //swap input and output text
+            binding.flagIn.text = binding.flagOut.text //swap input and output flags
+            binding.flagOut.text = temp //set output flag to input flag
+            val _temp = inputLanguage.toString() //swap input and output languages
+            inputLanguage = Locale(targetLanguage) //set input language to target language
+            targetLanguage = _temp //set target language to input language
+
         }
+
 
         return root
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.toolbar, menu)
@@ -153,9 +161,9 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
             textRecognition.languageFix(targetLanguage) {
                 targetLanguage = it
             }
-            textRecognition.identifyLanguage(targetLanguage) {
-                targetLanguage = it
-            }
+//            textRecognition.identifyLanguage(targetLanguage) {
+//                targetLanguage = it
+//            }
         }
     }
 
@@ -291,6 +299,15 @@ class HomeFragment : androidx.fragment.app.Fragment(), RecognitionListener {
                 )
             }
         }
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        Toast.makeText(requireContext(), "${parent?.getChildAt(position)}", Toast.LENGTH_SHORT).show()
+
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        parent?.emptyView
     }
 }
 
