@@ -213,7 +213,17 @@ class GalleryActivity: AppCompatActivity() {
                                 binding.preview.setBackgroundResource(R.drawable.camera_border_2)
                                 val inputText = visionText.text
                                 val rec = TextRecognition()
-//                                processTextBlock(visionText)
+
+
+
+                                for (block in visionText.textBlocks) {
+                                    val boundingBox = block.boundingBox
+                                    val cornerPoints = block.cornerPoints
+                                    val text = block.text
+
+
+                                    extractTextBlock(visionText) // Extract text block information
+                                }
 
                                 rec.identifyLanguage(inputText) {
                                     if (it == "und") {
@@ -242,6 +252,44 @@ class GalleryActivity: AppCompatActivity() {
                 e.printStackTrace()
             }
         }
+
+    private fun processTextBlock(visionText: Text?) {
+        if (visionText != null && visionText.textBlocks.isNotEmpty()) {
+            binding.galleryText.text = visionText.text
+            binding.preview.setBackgroundResource(R.drawable.camera_border_2)
+            val rect = visionText.textBlocks[0].boundingBox
+            if (rect != null) {
+                drawRectangle(rect)
+            }
+        } else {
+            binding.galleryText.text = "No text found"
+            clearCanvas()
+        }
+
+    }
+
+    private fun extractTextBlock(result: Text) {
+        val resultText = result.text
+        for (block in result.textBlocks) {
+            val blockText = block.text // Get the text of the block
+            val blockCornerPoints = block.cornerPoints // Get the corner points of the block
+            val blockFrame = block.boundingBox  // Get the bounding box of the block
+            // Draw rectangle around the block
+            drawRectangle(blockFrame ?: Rect(0, 0, 0, 0)) // Draw rectangle around the block
+            for (line in block.lines) {
+                val lineText = line.text
+                val lineCornerPoints = line.cornerPoints
+                val lineFrame = line.boundingBox
+
+                for (element in line.elements) {
+                    val elementText = element.text
+                    val elementCornerPoints = element.cornerPoints
+                    val elementFrame = element.boundingBox
+
+                }
+            }
+        }
+    }
 
 
     private fun addAds() {
