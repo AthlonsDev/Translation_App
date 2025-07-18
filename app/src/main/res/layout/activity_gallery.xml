@@ -9,6 +9,23 @@
     android:layout_height="match_parent"
     android:theme="@style/Theme.Translation_App">
 
+<!--    <FrameLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/overlay_image"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:scaleType="fitCenter" />-->
+
+<!--        <com.example.translation_app.GraphicOverlay-->
+<!--            android:id="@+id/graphicOverlay"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent" />-->
+<!--    </FrameLayout>-->
+
+
     <ImageView
         android:id="@+id/imageView4"
         android:layout_width="0dp"
@@ -77,7 +94,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
         android:clickable="true"
-        app:layout_constraintBottom_toTopOf="@+id/gallery_text"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"

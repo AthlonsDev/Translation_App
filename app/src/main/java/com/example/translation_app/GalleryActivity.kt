@@ -8,8 +8,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Rect
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -19,6 +21,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -221,8 +224,14 @@ class GalleryActivity: AppCompatActivity() {
                                     val cornerPoints = block.cornerPoints
                                     val text = block.text
 
+//                                    translateText(visionText.text, targetLanguage)
+                                    extractTextBlock(visionText, image)
 
-                                    extractTextBlock(visionText) // Extract text block information
+//                                    val translatedText: String = translateText(text, targetLanguage)
+//
+//
+//                                    extractTextBlock(visionText, image, translatedText)
+
                                 }
 
                                 rec.identifyLanguage(inputText) {
@@ -253,6 +262,25 @@ class GalleryActivity: AppCompatActivity() {
             }
         }
 
+    private fun translateText(text: String, targetLanguage: String): String {
+        val rec = TextRecognition()
+        var translatedText: String? = null
+        rec.identifyLanguage(text) { language ->
+            if (language == "und") {
+                binding.galleryText.text = "Cannot identify language"
+            } else {
+                rec.initTranslator(text, language, targetLanguage) {
+                    binding.galleryText.text = translatedText.toString()
+//                    convert string to Text object
+//                    val newText: Text = it.getText()
+                    translatedText = it
+                }
+            }
+        }
+
+        return translatedText!!
+    }
+
     private fun processTextBlock(visionText: Text?) {
         if (visionText != null && visionText.textBlocks.isNotEmpty()) {
             binding.galleryText.text = visionText.text
@@ -268,18 +296,39 @@ class GalleryActivity: AppCompatActivity() {
 
     }
 
-    private fun extractTextBlock(result: Text) {
-        val resultText = result.text
+    private fun extractTextBlock(result: Text, image: Bitmap) {
+        val translatedItems = mutableListOf<Pair<Rect, String>>()
+        val rec = TextRecognition()
+
         for (block in result.textBlocks) {
             val blockText = block.text // Get the text of the block
             val blockCornerPoints = block.cornerPoints // Get the corner points of the block
             val blockFrame = block.boundingBox  // Get the bounding box of the block
-            // Draw rectangle around the block
-            drawRectangle(blockFrame ?: Rect(0, 0, 0, 0)) // Draw rectangle around the block
+
             for (line in block.lines) {
                 val lineText = line.text
                 val lineCornerPoints = line.cornerPoints
                 val lineFrame = line.boundingBox
+
+//                val translatedText: String = translateText(lineText, targetLanguage)
+                rec.identifyLanguage(lineText) {
+                    if (it == "und") {
+                        binding.galleryText.text = "Cannot identify language"
+                    }
+                    else {
+                        rec.initTranslator(lineText, it, targetLanguage) {
+//                            binding.galleryText.text = it
+                            drawRectangle(scaleRectToImageView(lineFrame!!, image, binding.imageView)) // Draw rectangle around the block
+                            if (lineText != null) {
+                                customView.items.add(Pair(scaleRectToImageView(lineFrame, image, binding.imageView), it))
+                            }
+
+//                            clear rectangle from canvas
+                            customView.clearCanvas()
+
+                        }
+                    }
+                }
 
                 for (element in line.elements) {
                     val elementText = element.text
@@ -290,6 +339,32 @@ class GalleryActivity: AppCompatActivity() {
             }
         }
     }
+
+    private fun scaleRectToImageView(
+        rect: Rect,
+        originalBitmap: Bitmap,
+        imageView: ImageView
+    ): Rect {
+        val drawable = imageView.drawable ?: return rect
+
+        val imageMatrix = imageView.imageMatrix
+        val values = FloatArray(9)
+        imageMatrix.getValues(values)
+
+        val scaleX = values[Matrix.MSCALE_X]
+        val scaleY = values[Matrix.MSCALE_Y]
+        val transX = values[Matrix.MTRANS_X]
+        val transY = values[Matrix.MTRANS_Y]
+
+        // Apply scaling and translation
+        val left = rect.left * scaleX + transX
+        val top = rect.top * scaleY + transY
+        val right = rect.right * scaleX + transX
+        val bottom = rect.bottom * scaleY + transY
+
+        return Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
+    }
+
 
 
     private fun addAds() {
@@ -308,6 +383,7 @@ class GalleryActivity: AppCompatActivity() {
 
     private fun drawRectangle(rect: Rect) {
         customView = CustomView(this, null, rect)
+
         binding.preview.addView(customView)
     }
 
@@ -321,12 +397,34 @@ class GalleryActivity: AppCompatActivity() {
         private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.GREEN
             style = Paint.Style.STROKE
-            strokeWidth = 6f
+            alpha = 50
+            strokeWidth = 3f
         }
+
+        private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.BLACK
+            textSize = 15f
+            style = Paint.Style.FILL
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+        }
+
+        val items = mutableListOf<Pair<Rect, String>>()
+
+
         private val boundingBox = rect
         override fun onDraw(canvas: Canvas) {
             super.onDraw(canvas)
             canvas.drawRect(boundingBox, paint)
+            for ((rect, text) in items) {
+                canvas.drawRect(rect, paint)
+
+//          Draw text above or inside the box
+                val textX = rect.left.toFloat()
+                val textY = rect.top - 5f  // slightly above the box
+                val textWidth = textPaint.measureText(text)
+                canvas.drawText(text, textX, textY, textPaint)
+            }
+
 
         }
         fun clearCanvas() {
@@ -336,4 +434,31 @@ class GalleryActivity: AppCompatActivity() {
 
     }
 
+
 }
+
+
+class GraphicOverlay(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+
+    private val boxes = mutableListOf<Rect>()
+    private val paint = Paint().apply {
+        color = Color.RED
+        style = Paint.Style.STROKE
+        strokeWidth = 4f
+    }
+
+    fun setBoundingBoxes(boundingBoxes: List<Rect>) {
+        boxes.clear()
+        boxes.addAll(boundingBoxes)
+        invalidate()
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        for (box in boxes) {
+            canvas.drawRect(box, paint)
+        }
+    }
+}
+
+
